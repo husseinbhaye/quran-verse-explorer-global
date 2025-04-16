@@ -3,8 +3,16 @@ import React, { useState } from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
-import { X, ChevronDown } from 'lucide-react';
+import { X, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import AyahView from './AyahView';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface SearchResultsProps {
   results: Ayah[];
@@ -27,13 +35,55 @@ const SearchResults = ({
   displayLanguage,
   showBothTranslations
 }: SearchResultsProps) => {
-  const [displayCount, setDisplayCount] = useState(5); // Initially show first 5 results
+  const [currentPage, setCurrentPage] = useState(1);
+  const resultsPerPage = 5;
   
-  const displayedResults = results.slice(0, displayCount);
-  const hasMoreResults = displayCount < results.length;
+  const totalPages = Math.ceil(results.length / resultsPerPage);
+  const startIndex = (currentPage - 1) * resultsPerPage;
+  const endIndex = startIndex + resultsPerPage;
+  const displayedResults = results.slice(startIndex, endIndex);
   
-  const handleShowMore = () => {
-    setDisplayCount(prev => Math.min(prev + 5, results.length));
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // Scroll back to top of results when page changes
+    const resultsContainer = document.querySelector('.search-results-content');
+    if (resultsContainer) {
+      resultsContainer.scrollTop = 0;
+    }
+  };
+
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      handlePageChange(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      handlePageChange(currentPage - 1);
+    }
+  };
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pageNumbers = [];
+    let startPage = Math.max(1, currentPage - 1);
+    let endPage = Math.min(totalPages, currentPage + 1);
+    
+    // Ensure we always show at least 3 pages when possible
+    if (endPage - startPage + 1 < 3 && totalPages > 2) {
+      if (startPage === 1) {
+        endPage = Math.min(3, totalPages);
+      } else if (endPage === totalPages) {
+        startPage = Math.max(1, totalPages - 2);
+      }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+    
+    return pageNumbers;
   };
 
   return (
@@ -52,7 +102,7 @@ const SearchResults = ({
         </div>
         
         <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full max-h-[calc(90vh-9rem)]">
+          <ScrollArea className="h-full max-h-[calc(90vh-9rem)] search-results-content">
             <div className="p-4">
               {loading ? (
                 <div className="flex items-center justify-center p-8">
@@ -70,8 +120,8 @@ const SearchResults = ({
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
                     {displayLanguage === 'english' 
-                      ? `Showing ${displayedResults.length} of ${results.length} results` 
-                      : `Affichage de ${displayedResults.length} sur ${results.length} résultats`}
+                      ? `Showing ${displayedResults.length} of ${results.length} results (Page ${currentPage} of ${totalPages})` 
+                      : `Affichage de ${displayedResults.length} sur ${results.length} résultats (Page ${currentPage} sur ${totalPages})`}
                   </p>
                   {displayedResults.map((ayah) => (
                     <AyahView
@@ -85,17 +135,36 @@ const SearchResults = ({
                     />
                   ))}
                   
-                  {hasMoreResults && (
-                    <div className="flex justify-center pt-4">
-                      <Button 
-                        variant="secondary" 
-                        onClick={handleShowMore}
-                        className="flex items-center gap-2"
-                      >
-                        {displayLanguage === 'english' ? 'Show More' : 'Afficher plus'}
-                        <ChevronDown size={16} />
-                      </Button>
-                    </div>
+                  {results.length > resultsPerPage && (
+                    <Pagination className="mt-4">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={goToPreviousPage}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        
+                        {getPageNumbers().map(page => (
+                          <PaginationItem key={page}>
+                            <PaginationLink 
+                              isActive={page === currentPage}
+                              onClick={() => handlePageChange(page)}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={goToNextPage}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
                   )}
                 </div>
               )}
