@@ -1,0 +1,209 @@
+
+import { Surah, Ayah, Translation } from '../types/quran';
+
+const BASE_URL = 'https://api.alquran.cloud/v1';
+
+// Fetch all surahs
+export const fetchSurahs = async (): Promise<Surah[]> => {
+  try {
+    const response = await fetch(`${BASE_URL}/surah`);
+    if (!response.ok) throw new Error('Failed to fetch surahs');
+    const data = await response.json();
+    
+    // Add French names
+    return data.data.map((surah: any) => ({
+      id: surah.number,
+      name: surah.name,
+      englishName: surah.englishName,
+      englishNameTranslation: surah.englishNameTranslation,
+      frenchName: getFrenchSurahName(surah.number, surah.englishName),
+      numberOfAyahs: surah.numberOfAyahs,
+      revelationType: surah.revelationType
+    }));
+  } catch (error) {
+    console.error('Error fetching surahs:', error);
+    throw error;
+  }
+};
+
+// Fetch ayahs for a specific surah
+export const fetchAyahsBySurah = async (surahId: number): Promise<Ayah[]> => {
+  try {
+    const response = await fetch(`${BASE_URL}/surah/${surahId}`);
+    if (!response.ok) throw new Error(`Failed to fetch ayahs for surah ${surahId}`);
+    const data = await response.json();
+    return data.data.ayahs.map((ayah: any) => ({
+      number: ayah.number,
+      text: ayah.text,
+      surah: surahId,
+      numberInSurah: ayah.numberInSurah
+    }));
+  } catch (error) {
+    console.error(`Error fetching ayahs for surah ${surahId}:`, error);
+    throw error;
+  }
+};
+
+// Fetch translation for a specific surah
+export const fetchTranslationBySurah = async (surahId: number, language: string): Promise<Translation[]> => {
+  // Map the language to the appropriate edition
+  const editionCode = language === 'english' ? 'en.sahih' : 'fr.hamidullah';
+  
+  try {
+    const response = await fetch(`${BASE_URL}/surah/${surahId}/${editionCode}`);
+    if (!response.ok) throw new Error(`Failed to fetch ${language} translation for surah ${surahId}`);
+    const data = await response.json();
+    return data.data.ayahs.map((ayah: any) => ({
+      text: ayah.text,
+      ayah: ayah.number,
+      language
+    }));
+  } catch (error) {
+    console.error(`Error fetching ${language} translation for surah ${surahId}:`, error);
+    throw error;
+  }
+};
+
+// Search the Quran
+export const searchQuran = async (query: string, language: string = 'arabic'): Promise<Ayah[]> => {
+  try {
+    const editionCode = language === 'arabic' ? 'quran-uthmani' : 
+                        language === 'english' ? 'en.sahih' : 'fr.hamidullah';
+    
+    const response = await fetch(`${BASE_URL}/search/${encodeURIComponent(query)}/all/${editionCode}`);
+    if (!response.ok) throw new Error(`Failed to search for "${query}"`);
+    const data = await response.json();
+    
+    return data.data.matches.map((match: any) => ({
+      number: match.number,
+      text: match.text,
+      surah: match.surah.number,
+      numberInSurah: match.numberInSurah
+    }));
+  } catch (error) {
+    console.error(`Error searching for "${query}":`, error);
+    throw error;
+  }
+};
+
+// Helper function to provide French surah names
+function getFrenchSurahName(number: number, englishName: string): string {
+  const frenchNames: Record<number, string> = {
+    1: "Al-Fatiha (L'Ouverture)",
+    2: "Al-Baqarah (La Vache)",
+    3: "Al-Imran (La Famille d'Imran)",
+    4: "An-Nisa (Les Femmes)",
+    5: "Al-Ma'idah (La Table Servie)",
+    6: "Al-An'am (Les Bestiaux)",
+    7: "Al-A'raf (Les Murailles)",
+    8: "Al-Anfal (Le Butin)",
+    9: "At-Tawbah (Le Repentir)",
+    10: "Yunus (Jonas)",
+    11: "Hud",
+    12: "Yusuf (Joseph)",
+    13: "Ar-Ra'd (Le Tonnerre)",
+    14: "Ibrahim (Abraham)",
+    15: "Al-Hijr",
+    16: "An-Nahl (Les Abeilles)",
+    17: "Al-Isra (Le Voyage Nocturne)",
+    18: "Al-Kahf (La Caverne)",
+    19: "Maryam (Marie)",
+    20: "Ta-Ha",
+    21: "Al-Anbiya (Les Prophètes)",
+    22: "Al-Hajj (Le Pèlerinage)",
+    23: "Al-Mu'minun (Les Croyants)",
+    24: "An-Nur (La Lumière)",
+    25: "Al-Furqan (Le Discernement)",
+    26: "Ash-Shu'ara (Les Poètes)",
+    27: "An-Naml (Les Fourmis)",
+    28: "Al-Qasas (Le Récit)",
+    29: "Al-Ankabut (L'Araignée)",
+    30: "Ar-Rum (Les Romains)",
+    31: "Luqman",
+    32: "As-Sajdah (La Prosternation)",
+    33: "Al-Ahzab (Les Coalisés)",
+    34: "Saba",
+    35: "Fatir (Le Créateur)",
+    36: "Ya-Sin",
+    37: "As-Saffat (Les Rangés)",
+    38: "Sad",
+    39: "Az-Zumar (Les Groupes)",
+    40: "Ghafir (Le Pardonneur)",
+    41: "Fussilat (Les Versets Détaillés)",
+    42: "Ash-Shura (La Consultation)",
+    43: "Az-Zukhruf (L'Ornement)",
+    44: "Ad-Dukhan (La Fumée)",
+    45: "Al-Jathiyah (L'Agenouillée)",
+    46: "Al-Ahqaf (Les Dunes)",
+    47: "Muhammad",
+    48: "Al-Fath (La Victoire)",
+    49: "Al-Hujurat (Les Appartements)",
+    50: "Qaf",
+    51: "Adh-Dhariyat (Les Vents qui éparpillent)",
+    52: "At-Tur (Le Mont)",
+    53: "An-Najm (L'Étoile)",
+    54: "Al-Qamar (La Lune)",
+    55: "Ar-Rahman (Le Tout Miséricordieux)",
+    56: "Al-Waqi'ah (L'Événement)",
+    57: "Al-Hadid (Le Fer)",
+    58: "Al-Mujadilah (La Discussion)",
+    59: "Al-Hashr (L'Exode)",
+    60: "Al-Mumtahanah (L'Éprouvée)",
+    61: "As-Saff (Le Rang)",
+    62: "Al-Jumu'ah (Le Vendredi)",
+    63: "Al-Munafiqun (Les Hypocrites)",
+    64: "At-Taghabun (La Grande Perte)",
+    65: "At-Talaq (Le Divorce)",
+    66: "At-Tahrim (L'Interdiction)",
+    67: "Al-Mulk (La Royauté)",
+    68: "Al-Qalam (La Plume)",
+    69: "Al-Haqqah (La Vérité Inéluctable)",
+    70: "Al-Ma'arij (Les Voies d'Ascension)",
+    71: "Nuh (Noé)",
+    72: "Al-Jinn (Les Djinns)",
+    73: "Al-Muzzammil (L'Enveloppé)",
+    74: "Al-Muddaththir (Le Revêtu d'un manteau)",
+    75: "Al-Qiyamah (La Résurrection)",
+    76: "Al-Insan (L'Homme)",
+    77: "Al-Mursalat (Les Envoyés)",
+    78: "An-Naba (La Nouvelle)",
+    79: "An-Nazi'at (Les Anges qui arrachent)",
+    80: "Abasa (Il s'est renfrogné)",
+    81: "At-Takwir (L'Obscurcissement)",
+    82: "Al-Infitar (La Rupture)",
+    83: "Al-Mutaffifin (Les Fraudeurs)",
+    84: "Al-Inshiqaq (La Déchirure)",
+    85: "Al-Buruj (Les Constellations)",
+    86: "At-Tariq (L'Astre Nocturne)",
+    87: "Al-A'la (Le Très-Haut)",
+    88: "Al-Ghashiyah (L'Enveloppante)",
+    89: "Al-Fajr (L'Aube)",
+    90: "Al-Balad (La Cité)",
+    91: "Ash-Shams (Le Soleil)",
+    92: "Al-Layl (La Nuit)",
+    93: "Ad-Duha (Le Jour Montant)",
+    94: "Ash-Sharh (L'Ouverture)",
+    95: "At-Tin (Le Figuier)",
+    96: "Al-Alaq (L'Adhérence)",
+    97: "Al-Qadr (La Destinée)",
+    98: "Al-Bayyinah (La Preuve)",
+    99: "Az-Zalzalah (La Secousse)",
+    100: "Al-Adiyat (Les Coursiers)",
+    101: "Al-Qari'ah (Le Fracas)",
+    102: "At-Takathur (La Course aux Richesses)",
+    103: "Al-Asr (Le Temps)",
+    104: "Al-Humazah (Les Calomniateurs)",
+    105: "Al-Fil (L'Éléphant)",
+    106: "Quraysh (Les Quraysh)",
+    107: "Al-Ma'un (L'Ustensile)",
+    108: "Al-Kawthar (L'Abondance)",
+    109: "Al-Kafirun (Les Infidèles)",
+    110: "An-Nasr (Les Secours)",
+    111: "Al-Masad (Les Fibres)",
+    112: "Al-Ikhlas (Le Monothéisme pur)",
+    113: "Al-Falaq (L'Aube naissante)",
+    114: "An-Nas (Les Hommes)"
+  };
+
+  return frenchNames[number] || englishName;
+}
