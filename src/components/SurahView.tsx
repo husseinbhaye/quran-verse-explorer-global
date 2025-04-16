@@ -45,6 +45,12 @@ const SurahView = ({
     );
   }
 
+  console.log('Translations:', { 
+    english: englishTranslations, 
+    french: frenchTranslations,
+    showBoth: showBothTranslations
+  });
+
   return (
     <div className="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
       <div className="max-w-3xl mx-auto">

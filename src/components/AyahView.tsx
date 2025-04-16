@@ -26,14 +26,14 @@ const AyahView = ({ ayah, englishTranslation, frenchTranslation, showBoth }: Aya
           {ayah.text}
         </p>
 
-        {englishTranslation && (showBoth || !frenchTranslation) && (
+        {englishTranslation && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">
             <h4 className="text-sm text-quran-primary font-medium mb-1">English</h4>
             <p className="text-gray-700">{englishTranslation.text}</p>
           </div>
         )}
 
-        {frenchTranslation && (showBoth || !englishTranslation) && (
+        {frenchTranslation && showBoth && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">
             <h4 className="text-sm text-quran-primary font-medium mb-1">Français</h4>
             <p className="text-gray-700">{frenchTranslation.text}</p>

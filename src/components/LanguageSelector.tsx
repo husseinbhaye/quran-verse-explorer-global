@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
-import { Globe } from 'lucide-react';
+import { Globe, Languages } from 'lucide-react';
 
 interface LanguageProps {
   displayLanguage: 'english' | 'french';
@@ -34,6 +34,7 @@ const LanguageSelector = ({
         onClick={() => setShowBothTranslations(!showBothTranslations)}
         className={showBothTranslations ? "bg-quran-primary/10" : ""}
       >
+        <Languages size={16} className="mr-2" />
         {displayLanguage === 'english' ? 'Show Both Translations' : 'Afficher Les Deux Traductions'}
         {showBothTranslations && <span className="ml-2 text-xs">✓</span>}
       </Button>
