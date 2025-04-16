@@ -4,6 +4,13 @@ import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
 import BookmarkButton from './BookmarkButton';
 import { AudioPlayer } from './audio';
+import { Button } from './ui/button';
+import { Share2 } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 
 interface AyahViewProps {
   ayah: Ayah;
@@ -22,6 +29,43 @@ const AyahView = ({
   surahName,
   displayLanguage 
 }: AyahViewProps) => {
+  // Create the verse text for sharing
+  const getShareText = () => {
+    const surahAyah = `${surahName} ${ayah.surah}:${ayah.numberInSurah}`;
+    const arabicText = ayah.text;
+    const translationText = englishTranslation?.text || frenchTranslation?.text || '';
+    
+    return `${surahAyah}\n\n${arabicText}\n\n${translationText}`;
+  };
+
+  // Share handlers
+  const handleShareWhatsApp = () => {
+    const text = encodeURIComponent(getShareText());
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
+  const handleShareTwitter = () => {
+    const text = encodeURIComponent(getShareText());
+    window.open(`https://twitter.com/intent/tweet?text=${text}`, '_blank');
+  };
+
+  const handleShareFacebook = () => {
+    const text = encodeURIComponent(getShareText());
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&quote=${text}`, '_blank');
+  };
+
+  const handleShareCopy = () => {
+    navigator.clipboard.writeText(getShareText());
+    // Optional: Show a toast notification
+    if ('toast' in window) {
+      // @ts-ignore - Using global toast if available
+      window.toast({
+        title: displayLanguage === 'english' ? 'Copied to clipboard' : 'Copié dans le presse-papiers',
+        duration: 2000,
+      });
+    }
+  };
+
   return (
     <Card 
       id={`ayah-${ayah.surah}-${ayah.numberInSurah}`}
@@ -32,6 +76,48 @@ const AyahView = ({
           {ayah.surah}:{ayah.numberInSurah}
         </span>
         <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Share2 size={16} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent side="left" align="end" className="w-56">
+              <div className="flex flex-col gap-2">
+                <h4 className="font-medium text-sm">
+                  {displayLanguage === 'english' ? 'Share verse' : 'Partager le verset'}
+                </h4>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={handleShareWhatsApp}
+                >
+                  WhatsApp
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={handleShareTwitter}
+                >
+                  Twitter
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={handleShareFacebook}
+                >
+                  Facebook
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start" 
+                  onClick={handleShareCopy}
+                >
+                  {displayLanguage === 'english' ? 'Copy to clipboard' : 'Copier dans le presse-papiers'}
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
           <BookmarkButton 
             ayah={ayah} 
             surahName={surahName} 
