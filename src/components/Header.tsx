@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Moon, Sun, Search } from 'lucide-react';
 import { Button } from './ui/button';
@@ -22,7 +21,6 @@ const Header = ({ onSearch }: HeaderProps) => {
     <header className="bg-quran-primary text-white p-4 shadow-md">
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center space-x-4 mb-4 md:mb-0">
-          {/* Logo Image */}
           <div className="w-24 h-24 flex items-center justify-center">
             <img 
               src="/lovable-uploads/72b66895-06f2-4960-a5ff-52e2a9ed4e85.png" 
@@ -58,7 +56,6 @@ const Header = ({ onSearch }: HeaderProps) => {
         </form>
       </div>
       
-      {/* Horizontal menu */}
       <div className="container mx-auto mt-4">
         <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
           <a 
@@ -90,12 +87,11 @@ const Header = ({ onSearch }: HeaderProps) => {
         </nav>
       </div>
       
-      {/* Redesigned scrolling donation message */}
       <div className="container mx-auto mt-2 bg-quran-secondary/20 py-2 border-y border-quran-secondary/30">
         <div className="marquee-container">
-          <span className="marquee-content">
+          <div className="marquee-content">
             DONATE TO EEMAAN FOUNDATION MAURITIUS: MCB BANK ACCOUNT: 000451030435 - (IBAN: MU25MCBL0944000451030435000MUR) - Zakat, Lillah, Sadaqah Jaariyah.
-          </span>
+          </div>
         </div>
       </div>
     </header>
