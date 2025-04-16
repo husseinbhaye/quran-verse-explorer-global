@@ -63,4 +63,5 @@
   display: inline-block;
   white-space: nowrap;
   animation: marquee 20s linear infinite;
+  padding-left: 100%;
 }

@@ -93,7 +93,7 @@ const Header = ({ onSearch }: HeaderProps) => {
       {/* Scrolling donation message */}
       <div className="container mx-auto mt-2 overflow-hidden bg-quran-secondary/20 py-2 border-y border-quran-secondary/30">
         <div className="marquee">
-          <div className="marquee-content text-quran-secondary font-medium">
+          <div className="marquee-content">
             DONATE TO EEMAAN FOUNDATION MAURITIUS: MCB BANK ACCOUNT: 000451030435 - (IBAN: MU25MCBL0944000451030435000MUR) - Zakat, Lillah, Sadaqah Jaariyah.
           </div>
         </div>
