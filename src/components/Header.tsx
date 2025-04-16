@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Moon, Sun, Search } from 'lucide-react';
 import { Button } from './ui/button';
@@ -22,7 +23,7 @@ const Header = ({ onSearch }: HeaderProps) => {
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center space-x-4 mb-4 md:mb-0">
           {/* Logo Image */}
-          <div className="w-16 h-16 flex items-center justify-center">
+          <div className="w-24 h-24 flex items-center justify-center">
             <img 
               src="/lovable-uploads/72b66895-06f2-4960-a5ff-52e2a9ed4e85.png" 
               alt="Eemaan Foundation Logo" 
