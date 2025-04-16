@@ -1,9 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
-import { X, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import AyahView from './AyahView';
 import {
   Pagination,
@@ -37,19 +37,22 @@ const SearchResults = ({
 }: SearchResultsProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const resultsPerPage = 5;
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   
   const totalPages = Math.ceil(results.length / resultsPerPage);
   const startIndex = (currentPage - 1) * resultsPerPage;
   const endIndex = startIndex + resultsPerPage;
   const displayedResults = results.slice(startIndex, endIndex);
   
+  // Reset scroll position when page changes
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // Scroll back to top of results when page changes
-    const resultsContainer = document.querySelector('.search-results-content');
-    if (resultsContainer) {
-      resultsContainer.scrollTop = 0;
-    }
   };
 
   const goToNextPage = () => {
@@ -101,76 +104,79 @@ const SearchResults = ({
           </Button>
         </div>
         
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full max-h-[calc(90vh-9rem)] search-results-content">
-            <div className="p-4">
-              {loading ? (
-                <div className="flex items-center justify-center p-8">
-                  <div className="w-12 h-12 border-4 border-t-quran-primary rounded-full animate-spin"></div>
-                </div>
-              ) : results.length === 0 ? (
-                <div className="text-center p-8">
-                  <p className="text-muted-foreground">
-                    {displayLanguage === 'english' 
-                      ? 'No results found. Try a different search term.' 
-                      : 'Aucun résultat trouvé. Essayez un autre terme de recherche.'}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    {displayLanguage === 'english' 
-                      ? `Showing ${displayedResults.length} of ${results.length} results (Page ${currentPage} of ${totalPages})` 
-                      : `Affichage de ${displayedResults.length} sur ${results.length} résultats (Page ${currentPage} sur ${totalPages})`}
-                  </p>
-                  {displayedResults.map((ayah) => (
-                    <AyahView
-                      key={ayah.number}
-                      ayah={ayah}
-                      englishTranslation={englishTranslations[ayah.number]}
-                      frenchTranslation={frenchTranslations[ayah.number]}
-                      showBoth={showBothTranslations}
-                      surahName={displayLanguage === 'english' ? 'Search Result' : 'Résultat de recherche'}
-                      displayLanguage={displayLanguage}
-                    />
-                  ))}
-                  
-                  {results.length > resultsPerPage && (
-                    <Pagination className="mt-4">
-                      <PaginationContent>
-                        <PaginationItem>
-                          <PaginationPrevious 
-                            onClick={goToPreviousPage}
-                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                          />
-                        </PaginationItem>
-                        
-                        {getPageNumbers().map(page => (
-                          <PaginationItem key={page}>
-                            <PaginationLink 
-                              isActive={page === currentPage}
-                              onClick={() => handlePageChange(page)}
-                              className="cursor-pointer"
-                            >
-                              {page}
-                            </PaginationLink>
-                          </PaginationItem>
-                        ))}
-                        
-                        <PaginationItem>
-                          <PaginationNext 
-                            onClick={goToNextPage}
-                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                          />
-                        </PaginationItem>
-                      </PaginationContent>
-                    </Pagination>
-                  )}
-                </div>
-              )}
+        {loading ? (
+          <div className="flex items-center justify-center p-8 flex-1">
+            <div className="w-12 h-12 border-4 border-t-quran-primary rounded-full animate-spin"></div>
+          </div>
+        ) : results.length === 0 ? (
+          <div className="text-center p-8 flex-1">
+            <p className="text-muted-foreground">
+              {displayLanguage === 'english' 
+                ? 'No results found. Try a different search term.' 
+                : 'Aucun résultat trouvé. Essayez un autre terme de recherche.'}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="p-4 pb-0">
+              <p className="text-sm text-muted-foreground">
+                {displayLanguage === 'english' 
+                  ? `Showing ${displayedResults.length} of ${results.length} results (Page ${currentPage} of ${totalPages})` 
+                  : `Affichage de ${displayedResults.length} sur ${results.length} résultats (Page ${currentPage} sur ${totalPages})`}
+              </p>
             </div>
-          </ScrollArea>
-        </div>
+            
+            <ScrollArea className="flex-1 overflow-auto" viewportRef={scrollAreaRef}>
+              <div className="p-4 pt-2 space-y-4">
+                {displayedResults.map((ayah) => (
+                  <AyahView
+                    key={ayah.number}
+                    ayah={ayah}
+                    englishTranslation={englishTranslations[ayah.number]}
+                    frenchTranslation={frenchTranslations[ayah.number]}
+                    showBoth={showBothTranslations}
+                    surahName={displayLanguage === 'english' ? 'Search Result' : 'Résultat de recherche'}
+                    displayLanguage={displayLanguage}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
+            
+            {results.length > resultsPerPage && (
+              <div className="p-4 border-t">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={goToPreviousPage}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    
+                    {getPageNumbers().map(page => (
+                      <PaginationItem key={page}>
+                        <PaginationLink 
+                          isActive={page === currentPage}
+                          onClick={() => handlePageChange(page)}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={goToNextPage}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
+        )}
         
         <div className="p-4 border-t">
           <Button variant="outline" onClick={onClose} className="w-full">
