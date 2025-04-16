@@ -32,17 +32,7 @@ const MainContent: React.FC<MainContentProps> = ({
 }) => {
   return (
     <div className="flex-1 flex flex-col">
-      <SurahView 
-        surah={selectedSurah}
-        ayahs={ayahs}
-        englishTranslations={englishTranslations}
-        frenchTranslations={frenchTranslations}
-        loading={loading}
-        showBothTranslations={showBothTranslations}
-        displayLanguage={displayLanguage}
-      />
-      
-      <div className="flex justify-between items-center px-4 py-2 border-t bg-background">
+      <div className="flex justify-between items-center px-4 py-2 border-b bg-background">
         <BookmarksDrawer 
           displayLanguage={displayLanguage} 
           onSelectAyah={onSelectAyah}
@@ -54,8 +44,19 @@ const MainContent: React.FC<MainContentProps> = ({
           setShowBothTranslations={setShowBothTranslations}
         />
       </div>
+      
+      <SurahView 
+        surah={selectedSurah}
+        ayahs={ayahs}
+        englishTranslations={englishTranslations}
+        frenchTranslations={frenchTranslations}
+        loading={loading}
+        showBothTranslations={showBothTranslations}
+        displayLanguage={displayLanguage}
+      />
     </div>
   );
 };
 
 export default MainContent;
+
