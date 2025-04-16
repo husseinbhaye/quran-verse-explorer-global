@@ -1,9 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
-import { X } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import AyahView from './AyahView';
 
 interface SearchResultsProps {
@@ -27,6 +27,15 @@ const SearchResults = ({
   displayLanguage,
   showBothTranslations
 }: SearchResultsProps) => {
+  const [displayCount, setDisplayCount] = useState(5); // Initially show first 5 results
+  
+  const displayedResults = results.slice(0, displayCount);
+  const hasMoreResults = displayCount < results.length;
+  
+  const handleShowMore = () => {
+    setDisplayCount(prev => Math.min(prev + 5, results.length));
+  };
+
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-card border shadow-lg rounded-lg w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -61,10 +70,10 @@ const SearchResults = ({
                 <div className="space-y-4">
                   <p className="text-sm text-muted-foreground">
                     {displayLanguage === 'english' 
-                      ? `Found ${results.length} results` 
-                      : `Trouvé ${results.length} résultats`}
+                      ? `Showing ${displayedResults.length} of ${results.length} results` 
+                      : `Affichage de ${displayedResults.length} sur ${results.length} résultats`}
                   </p>
-                  {results.map((ayah) => (
+                  {displayedResults.map((ayah) => (
                     <AyahView
                       key={ayah.number}
                       ayah={ayah}
@@ -75,6 +84,19 @@ const SearchResults = ({
                       displayLanguage={displayLanguage}
                     />
                   ))}
+                  
+                  {hasMoreResults && (
+                    <div className="flex justify-center pt-4">
+                      <Button 
+                        variant="secondary" 
+                        onClick={handleShowMore}
+                        className="flex items-center gap-2"
+                      >
+                        {displayLanguage === 'english' ? 'Show More' : 'Afficher plus'}
+                        <ChevronDown size={16} />
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
