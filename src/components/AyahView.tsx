@@ -3,6 +3,7 @@ import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
 import BookmarkButton from './BookmarkButton';
+import AudioPlayer from './AudioPlayer';
 
 interface AyahViewProps {
   ayah: Ayah;
@@ -45,6 +46,12 @@ const AyahView = ({
         <p className="arabic text-right text-2xl leading-loose mb-4" dir="rtl">
           {ayah.text}
         </p>
+
+        <AudioPlayer 
+          surahId={ayah.surah} 
+          ayahId={ayah.numberInSurah} 
+          className="mt-4 mb-2" 
+        />
 
         {englishTranslation && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">

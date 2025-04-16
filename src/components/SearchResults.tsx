@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
