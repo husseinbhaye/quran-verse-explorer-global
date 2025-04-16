@@ -69,6 +69,8 @@ const SearchResults = ({
                   englishTranslation={englishTranslations[ayah.number]}
                   frenchTranslation={frenchTranslations[ayah.number]}
                   showBoth={showBothTranslations}
+                  surahName={displayLanguage === 'english' ? 'Search Result' : 'Résultat de recherche'}
+                  displayLanguage={displayLanguage}
                 />
               ))}
             </div>
