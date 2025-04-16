@@ -17,19 +17,18 @@ const LanguageSelector = ({
   showBothTranslations,
   setShowBothTranslations
 }: LanguageProps) => {
-  // Fix the language handling by ensuring a defined value is always set
-  const handleLanguageChange = (value: string | undefined) => {
-    console.log('Language changed:', value); 
-    // Only update if value is defined and is one of our supported languages
+  // Make sure language toggle works correctly by forcing it to use the current displayLanguage
+  useEffect(() => {
+    console.log('LanguageSelector - Current display language:', displayLanguage);
+  }, [displayLanguage]);
+
+  const handleLanguageChange = (value: string) => {
+    console.log('Language change requested to:', value);
+    // Only update if value is one of our supported languages
     if (value === 'english' || value === 'french') {
       setDisplayLanguage(value);
     }
   };
-
-  // Log current language on mount and when it changes
-  useEffect(() => {
-    console.log('Current display language:', displayLanguage);
-  }, [displayLanguage]);
 
   return (
     <div className="p-4 border-t bg-card flex flex-col sm:flex-row items-center justify-between">
@@ -40,9 +39,10 @@ const LanguageSelector = ({
           type="single" 
           value={displayLanguage} 
           onValueChange={handleLanguageChange}
+          className="border rounded-md"
         >
-          <ToggleGroupItem value="english" aria-label="English">EN</ToggleGroupItem>
-          <ToggleGroupItem value="french" aria-label="French">FR</ToggleGroupItem>
+          <ToggleGroupItem value="english" aria-label="English" className="data-[state=on]:bg-quran-primary data-[state=on]:text-white">EN</ToggleGroupItem>
+          <ToggleGroupItem value="french" aria-label="French" className="data-[state=on]:bg-quran-primary data-[state=on]:text-white">FR</ToggleGroupItem>
         </ToggleGroup>
       </div>
       

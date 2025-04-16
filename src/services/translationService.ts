@@ -21,7 +21,9 @@ export const fetchTranslationBySurah = async (surahId: number, language: string)
   try {
     const data = await fetchFromAPI(`/surah/${surahId}/${editionCode}`);
     
-    // Ensure we're correctly mapping the language
+    // Add additional logging to trace translation data
+    console.log(`Retrieved ${data.data.ayahs.length} translations for ${language}`);
+    
     return data.data.ayahs.map((ayah: any) => ({
       text: ayah.text,
       ayah: ayah.number,

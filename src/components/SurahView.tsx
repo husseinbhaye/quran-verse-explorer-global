@@ -23,14 +23,19 @@ const SurahView = ({
   showBothTranslations,
   displayLanguage
 }: SurahViewProps) => {
-  // Log when language or translations change
+  // Log when language or translations change with more detailed information
   useEffect(() => {
-    console.log('SurahView - language:', displayLanguage, 
-      'translations:', { 
-        english: englishTranslations.length, 
-        french: frenchTranslations.length 
-      });
-  }, [displayLanguage, englishTranslations, frenchTranslations]);
+    if (surah) {
+      console.log('SurahView update - language:', displayLanguage, 
+        'surah:', surah.englishName,
+        'translations:', { 
+          english: englishTranslations.length, 
+          french: frenchTranslations.length,
+          englishSample: englishTranslations[0]?.text.substring(0, 20),
+          frenchSample: frenchTranslations[0]?.text.substring(0, 20)
+        });
+    }
+  }, [displayLanguage, englishTranslations, frenchTranslations, surah]);
 
   if (loading) {
     return (
@@ -61,6 +66,8 @@ const SurahView = ({
   const secondaryTranslations = displayLanguage === 'english' ? frenchTranslations : englishTranslations;
   const surahName = displayLanguage === 'english' ? surah.englishName : surah.frenchName;
 
+  console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations`);
+
   return (
     <div className="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
       <div className="max-w-3xl mx-auto">
@@ -78,11 +85,11 @@ const SurahView = ({
 
         <div className="space-y-4">
           {ayahs.map((ayah) => {
-            // Use the primary translation based on display language
+            // Find the primary and secondary translations for this ayah
             const primaryTranslation = primaryTranslations.find(t => t.ayah === ayah.number);
             const secondaryTranslation = secondaryTranslations.find(t => t.ayah === ayah.number);
             
-            // Map to the expected props structure of AyahView
+            // Map to the expected props structure of AyahView based on current display language
             const englishTranslation = displayLanguage === 'english' ? primaryTranslation : secondaryTranslation;
             const frenchTranslation = displayLanguage === 'french' ? primaryTranslation : secondaryTranslation;
 
