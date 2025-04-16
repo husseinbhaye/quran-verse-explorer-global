@@ -62,6 +62,8 @@
 .marquee-content {
   display: inline-block;
   white-space: nowrap;
-  animation: marquee 20s linear infinite;
+  animation: marquee 15s linear infinite;
   padding-left: 100%;
+  color: #D4AF37;
+  font-weight: 500;
 }
