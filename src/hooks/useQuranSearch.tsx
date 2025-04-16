@@ -30,29 +30,14 @@ export const useQuranSearch = ({ displayLanguage }: UseQuranSearchProps) => {
     setIsSearching(true);
 
     try {
-      // Search in all three languages
-      const [arabicResults, englishResults, frenchResults] = await Promise.all([
-        searchQuran(query, 'arabic'),
-        searchQuran(query, 'english'),
-        searchQuran(query, 'french')
-      ]);
+      // Only search in English as it's the most reliable endpoint
+      const englishResults = await searchQuran(query, 'english');
 
-      // Combine and deduplicate results
-      const allResults = [...arabicResults];
-      const ayahNumbers = new Set(allResults.map(ayah => ayah.number));
-      
-      [...englishResults, ...frenchResults].forEach(ayah => {
-        if (!ayahNumbers.has(ayah.number)) {
-          ayahNumbers.add(ayah.number);
-          allResults.push(ayah);
-        }
-      });
-
-      setSearchResults(allResults);
+      // Use the English results for both display purposes
+      setSearchResults(englishResults);
 
       // Create translation lookup maps
       const englishMap: Record<number, Translation> = {};
-      const frenchMap: Record<number, Translation> = {};
       
       englishResults.forEach(ayah => {
         englishMap[ayah.number] = {
@@ -61,18 +46,12 @@ export const useQuranSearch = ({ displayLanguage }: UseQuranSearchProps) => {
           language: 'english'
         };
       });
-      
-      frenchResults.forEach(ayah => {
-        frenchMap[ayah.number] = {
-          text: ayah.text,
-          ayah: ayah.number,
-          language: 'french'
-        };
-      });
 
+      // Since we don't have French translations from the search, 
+      // we'll use the English ones for both languages
       setSearchTranslations({
         english: englishMap,
-        french: frenchMap
+        french: englishMap // Use English translations for French display too
       });
 
     } catch (error) {

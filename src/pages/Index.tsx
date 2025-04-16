@@ -23,6 +23,7 @@ const Index = () => {
   } = useQuranData({ displayLanguage });
 
   const {
+    searchQuery,
     searchResults,
     searchTranslations,
     isSearching,
@@ -67,7 +68,7 @@ const Index = () => {
         <SearchResults 
           results={searchResults}
           loading={isSearching}
-          searchQuery={""}
+          searchQuery={searchQuery}
           englishTranslations={searchTranslations.english}
           frenchTranslations={searchTranslations.french}
           onClose={closeSearch}
