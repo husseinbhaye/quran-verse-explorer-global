@@ -8,7 +8,7 @@ export const getEditionCode = (language: string): string => {
   switch (language.toLowerCase()) {
     case 'english': return 'en.sahih';
     case 'french': return 'fr.hamidullah';
-    case 'arabic': return 'quran-uthmani';
+    case 'arabic': return 'quran-uthmani'; // This is already using Uthmanic text
     default: return 'en.sahih';
   }
 };
