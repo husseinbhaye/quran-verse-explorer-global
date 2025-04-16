@@ -15,10 +15,11 @@ const Index = () => {
     surahs, 
     loading, 
     selectedSurah, 
-    setSelectedSurah, 
+    setSelectedSurah,
     ayahs, 
     englishTranslations, 
-    frenchTranslations 
+    frenchTranslations,
+    goToAyah
   } = useQuranData({ displayLanguage });
 
   const {
@@ -58,6 +59,7 @@ const Index = () => {
           displayLanguage={displayLanguage}
           setDisplayLanguage={setDisplayLanguage}
           setShowBothTranslations={setShowBothTranslations}
+          onSelectAyah={goToAyah}
         />
       </div>
 

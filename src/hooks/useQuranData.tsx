@@ -73,6 +73,37 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
     loadSurahContent();
   }, [selectedSurah, displayLanguage, toast]);
 
+  // Function to navigate to a specific ayah
+  const goToAyah = async (surahId: number, ayahNumber: number) => {
+    try {
+      setSelectedSurah(surahId);
+      
+      // Wait for the ayahs to load
+      await new Promise(resolve => {
+        const checkAyahsLoaded = setInterval(() => {
+          if (!loading && ayahs.length > 0) {
+            clearInterval(checkAyahsLoaded);
+            resolve(true);
+          }
+        }, 100);
+      });
+      
+      // Scroll to the ayah
+      setTimeout(() => {
+        const ayahElement = document.getElementById(`ayah-${surahId}-${ayahNumber}`);
+        if (ayahElement) {
+          ayahElement.scrollIntoView({ behavior: 'smooth' });
+          ayahElement.classList.add('highlight-ayah');
+          setTimeout(() => {
+            ayahElement.classList.remove('highlight-ayah');
+          }, 2000);
+        }
+      }, 500);
+    } catch (error) {
+      console.error('Error navigating to ayah:', error);
+    }
+  };
+
   return {
     surahs,
     loading,
@@ -80,6 +111,7 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
     setSelectedSurah,
     ayahs,
     englishTranslations,
-    frenchTranslations
+    frenchTranslations,
+    goToAyah
   };
 };

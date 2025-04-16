@@ -11,6 +11,7 @@ interface SurahViewProps {
   frenchTranslations: Translation[];
   loading: boolean;
   showBothTranslations: boolean;
+  displayLanguage: 'english' | 'french';
 }
 
 const SurahView = ({
@@ -19,7 +20,8 @@ const SurahView = ({
   englishTranslations,
   frenchTranslations,
   loading,
-  showBothTranslations
+  showBothTranslations,
+  displayLanguage
 }: SurahViewProps) => {
   if (loading) {
     return (
@@ -45,11 +47,7 @@ const SurahView = ({
     );
   }
 
-  console.log('Translations:', { 
-    english: englishTranslations, 
-    french: frenchTranslations,
-    showBoth: showBothTranslations
-  });
+  const surahName = displayLanguage === 'english' ? surah.englishName : surah.frenchName;
 
   return (
     <div className="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
@@ -78,6 +76,8 @@ const SurahView = ({
                 englishTranslation={englishTranslation}
                 frenchTranslation={frenchTranslation}
                 showBoth={showBothTranslations}
+                surahName={surahName}
+                displayLanguage={displayLanguage}
               />
             );
           })}

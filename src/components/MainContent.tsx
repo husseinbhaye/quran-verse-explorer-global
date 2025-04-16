@@ -3,6 +3,7 @@ import React from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import SurahView from './SurahView';
 import LanguageSelector from './LanguageSelector';
+import BookmarksDrawer from './BookmarksDrawer';
 
 interface MainContentProps {
   selectedSurah: Surah | null;
@@ -14,6 +15,7 @@ interface MainContentProps {
   displayLanguage: 'english' | 'french';
   setDisplayLanguage: (language: 'english' | 'french') => void;
   setShowBothTranslations: (show: boolean) => void;
+  onSelectAyah: (surahId: number, ayahNumber: number) => void;
 }
 
 const MainContent: React.FC<MainContentProps> = ({
@@ -25,7 +27,8 @@ const MainContent: React.FC<MainContentProps> = ({
   showBothTranslations,
   displayLanguage,
   setDisplayLanguage,
-  setShowBothTranslations
+  setShowBothTranslations,
+  onSelectAyah
 }) => {
   return (
     <div className="flex-1 flex flex-col">
@@ -36,14 +39,21 @@ const MainContent: React.FC<MainContentProps> = ({
         frenchTranslations={frenchTranslations}
         loading={loading}
         showBothTranslations={showBothTranslations}
+        displayLanguage={displayLanguage}
       />
       
-      <LanguageSelector 
-        displayLanguage={displayLanguage}
-        setDisplayLanguage={setDisplayLanguage}
-        showBothTranslations={showBothTranslations}
-        setShowBothTranslations={setShowBothTranslations}
-      />
+      <div className="flex justify-between items-center px-4 py-2 border-t bg-background">
+        <BookmarksDrawer 
+          displayLanguage={displayLanguage} 
+          onSelectAyah={onSelectAyah}
+        />
+        <LanguageSelector 
+          displayLanguage={displayLanguage}
+          setDisplayLanguage={setDisplayLanguage}
+          showBothTranslations={showBothTranslations}
+          setShowBothTranslations={setShowBothTranslations}
+        />
+      </div>
     </div>
   );
 };

@@ -2,24 +2,44 @@
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
+import BookmarkButton from './BookmarkButton';
 
 interface AyahViewProps {
   ayah: Ayah;
   englishTranslation?: Translation;
   frenchTranslation?: Translation;
   showBoth: boolean;
+  surahName: string;
+  displayLanguage: 'english' | 'french';
 }
 
-const AyahView = ({ ayah, englishTranslation, frenchTranslation, showBoth }: AyahViewProps) => {
+const AyahView = ({ 
+  ayah, 
+  englishTranslation, 
+  frenchTranslation, 
+  showBoth, 
+  surahName,
+  displayLanguage 
+}: AyahViewProps) => {
   return (
-    <Card className="mb-6 overflow-hidden border-quran-primary/20 shadow-sm">
+    <Card 
+      id={`ayah-${ayah.surah}-${ayah.numberInSurah}`}
+      className="mb-6 overflow-hidden border-quran-primary/20 shadow-sm transition-colors"
+    >
       <div className="bg-quran-primary/10 px-4 py-2 flex justify-between items-center border-b border-quran-primary/20">
         <span className="text-sm font-medium">
           {ayah.surah}:{ayah.numberInSurah}
         </span>
-        <span className="bg-quran-primary text-white text-xs px-2 py-1 rounded-md">
-          آية {ayah.numberInSurah}
-        </span>
+        <div className="flex items-center gap-2">
+          <BookmarkButton 
+            ayah={ayah} 
+            surahName={surahName} 
+            displayLanguage={displayLanguage} 
+          />
+          <span className="bg-quran-primary text-white text-xs px-2 py-1 rounded-md">
+            آية {ayah.numberInSurah}
+          </span>
+        </div>
       </div>
       <div className="p-6">
         <p className="arabic text-right text-2xl leading-loose mb-4" dir="rtl">
