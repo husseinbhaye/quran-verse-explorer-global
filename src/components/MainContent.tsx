@@ -59,4 +59,3 @@ const MainContent: React.FC<MainContentProps> = ({
 };
 
 export default MainContent;
-

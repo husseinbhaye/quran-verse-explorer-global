@@ -57,6 +57,38 @@ const Header = ({ onSearch }: HeaderProps) => {
           </Button>
         </form>
       </div>
+      
+      {/* Horizontal menu */}
+      <div className="container mx-auto mt-4">
+        <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+          <a 
+            href="https://www.eemaanfoundation.org/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-white hover:text-quran-secondary transition-colors"
+          >
+            Eemaan Foundation
+          </a>
+          <span className="hidden md:inline text-quran-secondary">|</span>
+          <a 
+            href="https://islamic-institute.com/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-white hover:text-quran-secondary transition-colors"
+          >
+            Islamic Institute
+          </a>
+          <span className="hidden md:inline text-quran-secondary">|</span>
+          <a 
+            href="https://www.facebook.com/FatwaSeries" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-white hover:text-quran-secondary transition-colors"
+          >
+            Fatwa Series
+          </a>
+        </nav>
+      </div>
     </header>
   );
 };
