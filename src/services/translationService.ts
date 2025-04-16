@@ -4,6 +4,7 @@ import { fetchFromAPI } from './api';
 
 // Map language to the appropriate edition code
 export const getEditionCode = (language: string): string => {
+  console.log('Getting edition code for language:', language);
   switch (language) {
     case 'english': return 'en.sahih';
     case 'french': return 'fr.hamidullah';
@@ -15,10 +16,12 @@ export const getEditionCode = (language: string): string => {
 // Fetch translation for a specific surah
 export const fetchTranslationBySurah = async (surahId: number, language: string): Promise<Translation[]> => {
   const editionCode = getEditionCode(language);
+  console.log(`Fetching translation for surah ${surahId} in ${language} using edition: ${editionCode}`);
   
   try {
     const data = await fetchFromAPI(`/surah/${surahId}/${editionCode}`);
     
+    // Ensure we're correctly mapping the language
     return data.data.ayahs.map((ayah: any) => ({
       text: ayah.text,
       ayah: ayah.number,

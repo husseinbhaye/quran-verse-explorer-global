@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
 import { Separator } from './ui/separator';
@@ -23,6 +23,15 @@ const SurahView = ({
   showBothTranslations,
   displayLanguage
 }: SurahViewProps) => {
+  // Log when language or translations change
+  useEffect(() => {
+    console.log('SurahView - language:', displayLanguage, 
+      'translations:', { 
+        english: englishTranslations.length, 
+        french: frenchTranslations.length 
+      });
+  }, [displayLanguage, englishTranslations, frenchTranslations]);
+
   if (loading) {
     return (
       <div className="flex-1 p-6 flex items-center justify-center">
@@ -40,13 +49,16 @@ const SurahView = ({
         <div className="text-center">
           <h2 className="text-3xl font-arabic mb-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
           <p className="text-lg text-gray-600">
-            Select a Surah to begin reading
+            {displayLanguage === 'english' ? 'Select a Surah to begin reading' : 'Sélectionnez une sourate pour commencer la lecture'}
           </p>
         </div>
       </div>
     );
   }
 
+  // Determine which translation to show based on the display language
+  const primaryTranslations = displayLanguage === 'english' ? englishTranslations : frenchTranslations;
+  const secondaryTranslations = displayLanguage === 'english' ? frenchTranslations : englishTranslations;
   const surahName = displayLanguage === 'english' ? surah.englishName : surah.frenchName;
 
   return (
@@ -66,8 +78,13 @@ const SurahView = ({
 
         <div className="space-y-4">
           {ayahs.map((ayah) => {
-            const englishTranslation = englishTranslations.find(t => t.ayah === ayah.number);
-            const frenchTranslation = frenchTranslations.find(t => t.ayah === ayah.number);
+            // Use the primary translation based on display language
+            const primaryTranslation = primaryTranslations.find(t => t.ayah === ayah.number);
+            const secondaryTranslation = secondaryTranslations.find(t => t.ayah === ayah.number);
+            
+            // Map to the expected props structure of AyahView
+            const englishTranslation = displayLanguage === 'english' ? primaryTranslation : secondaryTranslation;
+            const frenchTranslation = displayLanguage === 'french' ? primaryTranslation : secondaryTranslation;
 
             return (
               <AyahView

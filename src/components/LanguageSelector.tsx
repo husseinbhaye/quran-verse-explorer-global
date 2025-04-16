@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from './ui/button';
 import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
 import { Globe, Languages } from 'lucide-react';
@@ -17,12 +17,19 @@ const LanguageSelector = ({
   showBothTranslations,
   setShowBothTranslations
 }: LanguageProps) => {
-  const handleLanguageChange = (value: string) => {
-    console.log('Language changed:', value); // Add logging
+  // Fix the language handling by ensuring a defined value is always set
+  const handleLanguageChange = (value: string | undefined) => {
+    console.log('Language changed:', value); 
+    // Only update if value is defined and is one of our supported languages
     if (value === 'english' || value === 'french') {
       setDisplayLanguage(value);
     }
   };
+
+  // Log current language on mount and when it changes
+  useEffect(() => {
+    console.log('Current display language:', displayLanguage);
+  }, [displayLanguage]);
 
   return (
     <div className="p-4 border-t bg-card flex flex-col sm:flex-row items-center justify-between">
@@ -56,4 +63,3 @@ const LanguageSelector = ({
 };
 
 export default LanguageSelector;
-

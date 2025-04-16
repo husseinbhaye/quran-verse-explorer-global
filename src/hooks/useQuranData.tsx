@@ -17,6 +17,11 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
   const [englishTranslations, setEnglishTranslations] = useState<Translation[]>([]);
   const [frenchTranslations, setFrenchTranslations] = useState<Translation[]>([]);
 
+  // Log language changes
+  useEffect(() => {
+    console.log('useQuranData - displayLanguage changed:', displayLanguage);
+  }, [displayLanguage]);
+
   // Fetch surahs on initial load
   useEffect(() => {
     const loadSurahs = async () => {
@@ -40,9 +45,11 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
     loadSurahs();
   }, [displayLanguage, toast]);
 
-  // Fetch ayahs and translations when a surah is selected
+  // Fetch ayahs and translations when a surah is selected OR language changes
   useEffect(() => {
     if (!selectedSurah) return;
+    
+    console.log('Loading surah content for', selectedSurah, 'with language:', displayLanguage);
 
     const loadSurahContent = async () => {
       setLoading(true);
@@ -56,6 +63,11 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
         setAyahs(arabicAyahs);
         setEnglishTranslations(englishTrans);
         setFrenchTranslations(frenchTrans);
+        
+        console.log('Translations loaded:', {
+          english: englishTrans.length,
+          french: frenchTrans.length
+        });
       } catch (error) {
         toast({
           title: displayLanguage === 'english' ? 'Error' : 'Erreur',
