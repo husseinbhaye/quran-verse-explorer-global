@@ -13,13 +13,13 @@ interface SurahListProps {
 
 const SurahList = ({ surahs, selectedSurah, onSelectSurah, displayLanguage }: SurahListProps) => {
   return (
-    <aside className="w-full md:w-64 bg-card border-r">
+    <aside className="w-full md:w-64 bg-card border-r sticky top-0 h-screen">
       <div className="p-4 border-b">
         <h2 className="text-xl font-semibold">
           {displayLanguage === 'english' ? 'Chapters (Surahs)' : 'Chapitres (Sourates)'}
         </h2>
       </div>
-      <ScrollArea className="h-[calc(100vh-12rem)]">
+      <ScrollArea className="h-[calc(100vh-5rem)]">
         <div className="p-2">
           {surahs.map((surah) => (
             <Button

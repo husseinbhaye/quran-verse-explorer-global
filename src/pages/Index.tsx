@@ -42,7 +42,7 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header onSearch={handleSearch} />
 
-      <div className="flex-1 flex flex-col md:flex-row">
+      <div className="flex-1 flex flex-col md:flex-row relative">
         <SurahList 
           surahs={surahs}
           selectedSurah={selectedSurah}
