@@ -1,10 +1,10 @@
 
-import React, { useState, useRef } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Play, Pause, Volume2, VolumeX, SkipForward } from 'lucide-react';
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { cn } from '@/lib/utils';
-import { ReciterId, getAudioUrl, RECITERS } from '../services';
+import { ReciterId, getAudioUrl, getAlternativeAudioUrl, RECITERS } from '../services';
 
 interface AudioPlayerProps {
   surahId: number;
@@ -20,9 +20,24 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
   const [currentTime, setCurrentTime] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [usingAlternativeUrl, setUsingAlternativeUrl] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrl = getAudioUrl(surahId, ayahId, reciterId);
+  const audioUrl = usingAlternativeUrl 
+    ? getAlternativeAudioUrl(surahId, ayahId, reciterId) 
+    : getAudioUrl(surahId, ayahId, reciterId);
+
+  // Reset player state when surahId or ayahId changes
+  useEffect(() => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setError(null);
+    setUsingAlternativeUrl(false);
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+  }, [surahId, ayahId, reciterId]);
 
   const handlePlayPause = () => {
     if (!audioRef.current) return;
@@ -31,9 +46,15 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
       audioRef.current.pause();
     } else {
       setIsLoading(true);
+      setError(null);
       audioRef.current.play().catch(err => {
         console.error('Error playing audio:', err);
-        setError('Unable to play audio');
+        if (!usingAlternativeUrl) {
+          // Try alternative URL format
+          setUsingAlternativeUrl(true);
+        } else {
+          setError('Unable to play audio');
+        }
         setIsLoading(false);
       });
     }
@@ -77,6 +98,24 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  // Effect to update audio source when URL changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+    }
+  }, [audioUrl]);
+
+  // Try alternative URL if the first one fails
+  const handleError = () => {
+    if (!usingAlternativeUrl) {
+      console.log('Primary audio URL failed, trying alternative format');
+      setUsingAlternativeUrl(true);
+    } else {
+      setError('Error loading audio');
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col space-y-2", className)}>
       <audio
@@ -87,10 +126,7 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onEnded={handleEnded}
-        onError={() => {
-          setError('Error loading audio');
-          setIsLoading(false);
-        }}
+        onError={handleError}
       />
       
       <div className="flex items-center space-x-2">
@@ -112,6 +148,7 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
             step={0.1}
             onValueChange={handleSliderChange}
             className="cursor-pointer"
+            disabled={!duration || !!error}
           />
         </div>
         
@@ -120,6 +157,7 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
           size="icon"
           onClick={toggleMute}
           className="text-quran-primary hover:text-quran-primary/80"
+          disabled={!!error}
         >
           {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
         </Button>

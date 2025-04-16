@@ -23,7 +23,16 @@ export type ReciterId = keyof typeof RECITERS;
  * @returns The URL to the audio file
  */
 export const getAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterId = 'ar.alafasy'): string => {
-  // Format: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3 for surah 1, ayah 1
+  // Format: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1_1.mp3 for surah 1, ayah 1
+  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}_${ayahId}.mp3`;
+};
+
+/**
+ * Get the alternative audio URL if the primary URL fails
+ * This uses a different format that some API endpoints might use
+ */
+export const getAlternativeAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterId = 'ar.alafasy'): string => {
+  // Alternative format with a colon separator: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1:1.mp3
   return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}:${ayahId}.mp3`;
 };
 
@@ -40,4 +49,3 @@ export const checkAudioAvailability = async (reciterId: ReciterId): Promise<bool
     return false;
   }
 };
-
