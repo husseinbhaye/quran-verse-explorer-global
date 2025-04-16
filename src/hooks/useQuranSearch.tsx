@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Ayah, Translation } from '../types/quran';
-import { searchQuran } from '../services/quranService';
+import { searchQuran } from '../services';
 
 interface UseQuranSearchProps {
   displayLanguage: 'english' | 'french';

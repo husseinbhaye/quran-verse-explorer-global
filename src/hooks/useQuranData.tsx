@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Surah, Ayah, Translation } from '../types/quran';
-import { fetchSurahs, fetchAyahsBySurah, fetchTranslationBySurah } from '../services/quranService';
+import { fetchSurahs, fetchAyahsBySurah, fetchTranslationBySurah } from '../services';
 
 interface UseQuranDataProps {
   displayLanguage: 'english' | 'french';
