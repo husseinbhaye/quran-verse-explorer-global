@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, SkipForward } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Slider } from './ui/slider';
 import { cn } from '@/lib/utils';
 import { ReciterId, getAudioUrl, getAlternativeAudioUrl, RECITERS } from '../services';
+import { toast } from './ui/use-toast';
 
 interface AudioPlayerProps {
   surahId: number;
@@ -52,8 +53,19 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
         if (!usingAlternativeUrl) {
           // Try alternative URL format
           setUsingAlternativeUrl(true);
+          toast({
+            title: 'Trying alternative audio source',
+            description: 'The primary source failed, attempting to use backup source.',
+            duration: 3000
+          });
         } else {
           setError('Unable to play audio');
+          toast({
+            title: 'Audio unavailable',
+            description: 'Unable to play recitation for this ayah.',
+            variant: "destructive",
+            duration: 3000
+          });
         }
         setIsLoading(false);
       });
@@ -98,10 +110,30 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  // Reset and try again with the opposite URL format
+  const handleRetry = () => {
+    setUsingAlternativeUrl(!usingAlternativeUrl);
+    setError(null);
+    setIsLoading(true);
+    
+    // Small delay to ensure the audio element has time to update its source
+    setTimeout(() => {
+      if (audioRef.current) {
+        audioRef.current.load();
+        audioRef.current.play().catch(err => {
+          console.error('Retry failed:', err);
+          setError('Audio still unavailable');
+          setIsLoading(false);
+        });
+      }
+    }, 300);
+  };
+
   // Effect to update audio source when URL changes
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.load();
+      setIsLoading(true);
     }
   }, [audioUrl]);
 
@@ -167,8 +199,21 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
         </span>
       </div>
 
-      {error && <p className="text-xs text-destructive">{error}</p>}
-      {isLoading && <p className="text-xs text-muted-foreground">Loading audio...</p>}
+      {error && (
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-destructive">{error}</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRetry}
+            className="text-xs"
+          >
+            <RefreshCw size={12} className="mr-1" /> Try Again
+          </Button>
+        </div>
+      )}
+      
+      {isLoading && !error && <p className="text-xs text-muted-foreground">Loading audio...</p>}
     </div>
   );
 };

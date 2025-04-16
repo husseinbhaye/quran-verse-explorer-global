@@ -23,8 +23,8 @@ export type ReciterId = keyof typeof RECITERS;
  * @returns The URL to the audio file
  */
 export const getAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterId = 'ar.alafasy'): string => {
-  // Format: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1_1.mp3 for surah 1, ayah 1
-  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}_${ayahId}.mp3`;
+  // Format for mp3: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3 for surah 1, ayah 1
+  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}.mp3`;
 };
 
 /**
@@ -32,8 +32,10 @@ export const getAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterI
  * This uses a different format that some API endpoints might use
  */
 export const getAlternativeAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterId = 'ar.alafasy'): string => {
-  // Alternative format with a colon separator: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1:1.mp3
-  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}:${ayahId}.mp3`;
+  // Format for verse-specific mp3: https://verses.quran.com/Alafasy/mp3/001001.mp3
+  const surahStr = surahId.toString().padStart(3, '0');
+  const ayahStr = ayahId.toString().padStart(3, '0');
+  return `https://verses.quran.com/Alafasy/mp3/${surahStr}${ayahStr}.mp3`;
 };
 
 /**
