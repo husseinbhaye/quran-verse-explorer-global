@@ -52,7 +52,7 @@ const SurahView = ({
     return (
       <div className="flex-1 p-6 flex items-center justify-center pattern-bg">
         <div className="text-center">
-          <h2 className="text-3xl font-arabic mb-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
+          <h2 className="text-3xl font-['UthmanicHafs'] arabic mb-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
           <p className="text-lg text-gray-600">
             {displayLanguage === 'english' ? 'Select a Surah to begin reading' : 'Sélectionnez une sourate pour commencer la lecture'}
           </p>
@@ -72,7 +72,7 @@ const SurahView = ({
     <div className="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8 geometric-pattern pt-6">
-          <h1 className="arabic text-3xl my-4">{surah.name}</h1>
+          <h1 className="arabic text-3xl my-4 font-['UthmanicHafs']">{surah.name}</h1>
           <h2 className="text-xl font-medium text-quran-primary">
             {surah.englishName} - {surah.frenchName}
           </h2>
@@ -80,7 +80,7 @@ const SurahView = ({
             {surah.englishNameTranslation} | {surah.numberOfAyahs} Verses | {surah.revelationType}
           </p>
           <Separator className="my-4 bg-quran-primary/20" />
-          <p className="arabic text-xl my-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
+          <p className="arabic text-xl my-4 font-['UthmanicHafs']">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
         </div>
 
         <div className="space-y-4">

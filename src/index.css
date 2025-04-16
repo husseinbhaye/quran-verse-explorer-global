@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,9 +109,10 @@
 
 /* Arabic font settings */
 .arabic {
-  font-family: "UthmanicHafs", "Scheherazade New", "Amiri", serif;
+  font-family: "UthmanicHafs", "Scheherazade New", "Amiri", serif !important;
   line-height: 2;
   letter-spacing: 0.5px;
+  font-weight: normal;
 }
 
 /* Pattern background */
