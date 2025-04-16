@@ -23,8 +23,18 @@ export type ReciterId = keyof typeof RECITERS;
  * @returns The URL to the audio file
  */
 export const getAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterId = 'ar.alafasy'): string => {
-  // Format for mp3: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3 for surah 1, ayah 1
-  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}.mp3`;
+  // Format for verse-specific mp3: https://verses.quran.com/Alafasy/mp3/001001.mp3
+  const surahStr = surahId.toString().padStart(3, '0');
+  const ayahStr = ayahId.toString().padStart(3, '0');
+  
+  // For Alafasy reciter, use this format which has good coverage of ayahs
+  if (reciterId === 'ar.alafasy') {
+    return `https://verses.quran.com/Alafasy/mp3/${surahStr}${ayahStr}.mp3`;
+  }
+  
+  // For other reciters, we'll use the generic API format
+  // Note: The format is surah_ayah.mp3
+  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}_${ayahId}.mp3`;
 };
 
 /**
@@ -32,10 +42,8 @@ export const getAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterI
  * This uses a different format that some API endpoints might use
  */
 export const getAlternativeAudioUrl = (surahId: number, ayahId: number, reciterId: ReciterId = 'ar.alafasy'): string => {
-  // Format for verse-specific mp3: https://verses.quran.com/Alafasy/mp3/001001.mp3
-  const surahStr = surahId.toString().padStart(3, '0');
-  const ayahStr = ayahId.toString().padStart(3, '0');
-  return `https://verses.quran.com/Alafasy/mp3/${surahStr}${ayahStr}.mp3`;
+  // Another common format with colon separator: https://cdn.islamic.network/quran/audio/128/ar.alafasy/1:1.mp3
+  return `https://cdn.islamic.network/quran/audio/128/${reciterId}/${surahId}:${ayahId}.mp3`;
 };
 
 /**
