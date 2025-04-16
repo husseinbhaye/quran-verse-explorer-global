@@ -119,5 +119,6 @@ const frenchSurahNames: Record<number, string> = {
 
 // Helper function to provide French surah names
 export const getFrenchSurahName = (number: number, englishName: string): string => {
+  console.log('Getting French name for:', { number, englishName }); // Added logging
   return frenchSurahNames[number] || englishName;
 };
