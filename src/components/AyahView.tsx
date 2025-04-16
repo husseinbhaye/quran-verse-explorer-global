@@ -3,7 +3,7 @@ import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
 import BookmarkButton from './BookmarkButton';
-import AudioPlayer from './AudioPlayer';
+import { AudioPlayer } from './audio';
 
 interface AyahViewProps {
   ayah: Ayah;
