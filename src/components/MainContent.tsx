@@ -1,0 +1,51 @@
+
+import React from 'react';
+import { Surah, Ayah, Translation } from '../types/quran';
+import SurahView from './SurahView';
+import LanguageSelector from './LanguageSelector';
+
+interface MainContentProps {
+  selectedSurah: Surah | null;
+  ayahs: Ayah[];
+  englishTranslations: Translation[];
+  frenchTranslations: Translation[];
+  loading: boolean;
+  showBothTranslations: boolean;
+  displayLanguage: 'english' | 'french';
+  setDisplayLanguage: (language: 'english' | 'french') => void;
+  setShowBothTranslations: (show: boolean) => void;
+}
+
+const MainContent: React.FC<MainContentProps> = ({
+  selectedSurah,
+  ayahs,
+  englishTranslations,
+  frenchTranslations,
+  loading,
+  showBothTranslations,
+  displayLanguage,
+  setDisplayLanguage,
+  setShowBothTranslations
+}) => {
+  return (
+    <div className="flex-1 flex flex-col">
+      <SurahView 
+        surah={selectedSurah}
+        ayahs={ayahs}
+        englishTranslations={englishTranslations}
+        frenchTranslations={frenchTranslations}
+        loading={loading}
+        showBothTranslations={showBothTranslations}
+      />
+      
+      <LanguageSelector 
+        displayLanguage={displayLanguage}
+        setDisplayLanguage={setDisplayLanguage}
+        showBothTranslations={showBothTranslations}
+        setShowBothTranslations={setShowBothTranslations}
+      />
+    </div>
+  );
+};
+
+export default MainContent;
