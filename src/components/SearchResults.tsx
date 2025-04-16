@@ -126,21 +126,23 @@ const SearchResults = ({
               </p>
             </div>
             
-            <ScrollArea className="flex-1 overflow-auto" viewportRef={scrollAreaRef}>
-              <div className="p-4 pt-2 space-y-4">
-                {displayedResults.map((ayah) => (
-                  <AyahView
-                    key={ayah.number}
-                    ayah={ayah}
-                    englishTranslation={englishTranslations[ayah.number]}
-                    frenchTranslation={frenchTranslations[ayah.number]}
-                    showBoth={showBothTranslations}
-                    surahName={displayLanguage === 'english' ? 'Search Result' : 'Résultat de recherche'}
-                    displayLanguage={displayLanguage}
-                  />
-                ))}
-              </div>
-            </ScrollArea>
+            <div className="flex-1 overflow-hidden" ref={scrollAreaRef}>
+              <ScrollArea className="h-full">
+                <div className="p-4 pt-2 space-y-4">
+                  {displayedResults.map((ayah) => (
+                    <AyahView
+                      key={ayah.number}
+                      ayah={ayah}
+                      englishTranslation={englishTranslations[ayah.number]}
+                      frenchTranslation={frenchTranslations[ayah.number]}
+                      showBoth={showBothTranslations}
+                      surahName={displayLanguage === 'english' ? 'Search Result' : 'Résultat de recherche'}
+                      displayLanguage={displayLanguage}
+                    />
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
             
             {results.length > resultsPerPage && (
               <div className="p-4 border-t">
