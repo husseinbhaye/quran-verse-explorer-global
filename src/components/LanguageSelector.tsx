@@ -26,7 +26,10 @@ const LanguageSelector = ({
     console.log('Language change requested to:', value);
     // Only update if value is one of our supported languages
     if (value === 'english' || value === 'french') {
+      console.log('Setting display language to:', value);
       setDisplayLanguage(value);
+    } else {
+      console.log('Invalid language value:', value);
     }
   };
 

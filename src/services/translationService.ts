@@ -5,7 +5,7 @@ import { fetchFromAPI } from './api';
 // Map language to the appropriate edition code
 export const getEditionCode = (language: string): string => {
   console.log('Getting edition code for language:', language);
-  switch (language) {
+  switch (language.toLowerCase()) {
     case 'english': return 'en.sahih';
     case 'french': return 'fr.hamidullah';
     case 'arabic': return 'quran-uthmani';
@@ -22,7 +22,10 @@ export const fetchTranslationBySurah = async (surahId: number, language: string)
     const data = await fetchFromAPI(`/surah/${surahId}/${editionCode}`);
     
     // Add additional logging to trace translation data
-    console.log(`Retrieved ${data.data.ayahs.length} translations for ${language}`);
+    console.log(`Retrieved ${data.data.ayahs.length} translations for ${language} edition ${editionCode}`);
+    if (data.data.ayahs.length > 0) {
+      console.log(`First verse sample: ${data.data.ayahs[0].text.substring(0, 30)}`);
+    }
     
     return data.data.ayahs.map((ayah: any) => ({
       text: ayah.text,
@@ -39,6 +42,7 @@ export const fetchTranslationBySurah = async (surahId: number, language: string)
 export const searchQuran = async (query: string, language: string = 'arabic') => {
   try {
     const editionCode = getEditionCode(language);
+    console.log(`Searching in ${language} edition ${editionCode} for query: ${query}`);
     
     const data = await fetchFromAPI(`/search/${encodeURIComponent(query)}/all/${editionCode}`);
     

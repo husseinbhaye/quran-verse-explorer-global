@@ -17,7 +17,7 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
   const [englishTranslations, setEnglishTranslations] = useState<Translation[]>([]);
   const [frenchTranslations, setFrenchTranslations] = useState<Translation[]>([]);
 
-  // Add a specific log for language changes to track when it happens
+  // Add specific log for language changes to track when it happens
   useEffect(() => {
     console.log('useQuranData - displayLanguage changed to:', displayLanguage);
   }, [displayLanguage]);
@@ -68,7 +68,8 @@ export const useQuranData = ({ displayLanguage }: UseQuranDataProps) => {
           english: englishTrans.length,
           french: frenchTrans.length,
           englishSample: englishTrans[0]?.text.substring(0, 20),
-          frenchSample: frenchTrans[0]?.text.substring(0, 20)
+          frenchSample: frenchTrans[0]?.text.substring(0, 20),
+          currentLanguage: displayLanguage
         });
       } catch (error) {
         toast({

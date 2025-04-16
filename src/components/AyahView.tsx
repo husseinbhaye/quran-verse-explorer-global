@@ -29,11 +29,21 @@ const AyahView = ({
   surahName,
   displayLanguage 
 }: AyahViewProps) => {
+  // For debugging translation display issues
+  React.useEffect(() => {
+    console.log(`AyahView ${ayah.numberInSurah} - Current language: ${displayLanguage}`);
+    console.log(`  English translation: ${englishTranslation?.text?.substring(0, 20)}...`);
+    console.log(`  French translation: ${frenchTranslation?.text?.substring(0, 20)}...`);
+  }, [ayah.numberInSurah, displayLanguage, englishTranslation, frenchTranslation]);
+
+  // Choose the primary translation based on display language
+  const primaryTranslation = displayLanguage === 'english' ? englishTranslation : frenchTranslation;
+
   // Create the verse text for sharing
   const getShareText = () => {
     const surahAyah = `${surahName} ${ayah.surah}:${ayah.numberInSurah}`;
     const arabicText = ayah.text;
-    const translationText = englishTranslation?.text || frenchTranslation?.text || '';
+    const translationText = primaryTranslation?.text || '';
     
     return `${surahAyah}\n\n${arabicText}\n\n${translationText}`;
   };
@@ -139,17 +149,25 @@ const AyahView = ({
           className="mt-4 mb-2" 
         />
 
-        {englishTranslation && (
+        {/* Primary translation based on selected language */}
+        {primaryTranslation && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">
-            <h4 className="text-sm text-quran-primary font-medium mb-1">English</h4>
-            <p className="text-gray-700">{englishTranslation.text}</p>
+            <h4 className="text-sm text-quran-primary font-medium mb-1">
+              {displayLanguage === 'english' ? 'English' : 'Français'}
+            </h4>
+            <p className="text-gray-700">{primaryTranslation.text}</p>
           </div>
         )}
 
-        {frenchTranslation && showBoth && (
+        {/* Secondary translation (only shown when showBoth is true) */}
+        {(displayLanguage === 'english' ? frenchTranslation : englishTranslation) && showBoth && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">
-            <h4 className="text-sm text-quran-primary font-medium mb-1">Français</h4>
-            <p className="text-gray-700">{frenchTranslation.text}</p>
+            <h4 className="text-sm text-quran-primary font-medium mb-1">
+              {displayLanguage === 'english' ? 'Français' : 'English'}
+            </h4>
+            <p className="text-gray-700">
+              {displayLanguage === 'english' ? frenchTranslation?.text : englishTranslation?.text}
+            </p>
           </div>
         )}
       </div>

@@ -85,14 +85,14 @@ const SurahView = ({
 
         <div className="space-y-4">
           {ayahs.map((ayah) => {
-            // Find the primary and secondary translations for this ayah
+            // Find the matching translations for this ayah
             const primaryTranslation = primaryTranslations.find(t => t.ayah === ayah.number);
             const secondaryTranslation = secondaryTranslations.find(t => t.ayah === ayah.number);
             
-            // Map to the expected props structure of AyahView based on current display language
+            // Map to the expected props structure of AyahView
             const englishTranslation = displayLanguage === 'english' ? primaryTranslation : secondaryTranslation;
             const frenchTranslation = displayLanguage === 'french' ? primaryTranslation : secondaryTranslation;
-
+            
             return (
               <AyahView
                 key={ayah.number}
