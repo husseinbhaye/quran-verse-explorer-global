@@ -15,20 +15,36 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
   const [note, setNote] = useState<string>('');
   const [path, setPath] = useState<string>(BASE_PATH);
   const [fileHandle, setFileHandle] = useState<FileSystemFileHandle | null>(null);
+  const [fsApiAvailable, setFsApiAvailable] = useState<boolean | null>(null);
   const storageKey = `quran-note-${path}-${surahId}-${ayahNumber}`;
+
+  // Check API availability on mount
+  useEffect(() => {
+    const checkApiAvailability = () => {
+      const isAvailable = 'showSaveFilePicker' in window;
+      setFsApiAvailable(isAvailable);
+      return isAvailable;
+    };
+    
+    checkApiAvailability();
+  }, []);
 
   useEffect(() => {
     // Load existing note
     const savedNote = localStorage.getItem(storageKey);
     if (savedNote) {
-      const parsedNote: Note = JSON.parse(savedNote);
-      setNote(parsedNote.text);
+      try {
+        const parsedNote: Note = JSON.parse(savedNote);
+        setNote(parsedNote.text);
+      } catch (e) {
+        console.error("Error parsing saved note:", e);
+      }
     }
   }, [storageKey]);
 
   // Check if File System Access API is supported
   const isFileSystemAccessSupported = () => {
-    return 'showSaveFilePicker' in window;
+    return fsApiAvailable === true;
   };
 
   const ensureQuranNotesFolder = async (): Promise<FileSystemDirectoryHandle | null> => {
@@ -51,7 +67,15 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
 
       return quranNotesFolder;
     } catch (error) {
+      // Better error handling, checking for specific security errors
       console.error("Error creating QuranNotes folder:", error);
+      
+      if (error instanceof DOMException && 
+         (error.name === "SecurityError" || error.message.includes("Cross origin"))) {
+        // This is likely due to running in an iframe or cross-origin context
+        setFsApiAvailable(false);
+      }
+      
       return null;
     }
   };
@@ -66,15 +90,15 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
       createdAt: new Date().toISOString(),
     };
 
-    try {
-      // First, save to localStorage as fallback
-      const key = `quran-note-${actualPath}-${surahId}-${ayahNumber}`;
-      localStorage.setItem(key, JSON.stringify(noteData));
-      setNote(text);
-      setPath(actualPath);
+    // Always save to localStorage as primary storage or fallback
+    const key = `quran-note-${actualPath}-${surahId}-${ayahNumber}`;
+    localStorage.setItem(key, JSON.stringify(noteData));
+    setNote(text);
+    setPath(actualPath);
 
-      // Now try to save to file system if supported
-      if (isFileSystemAccessSupported()) {
+    // Try to save to file system if supported
+    if (isFileSystemAccessSupported()) {
+      try {
         const quranNotesFolder = await ensureQuranNotesFolder();
         if (!quranNotesFolder) return;
 
@@ -83,11 +107,15 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
         const writable = await fileHandle.createWritable();
         await writable.write(text);
         await writable.close();
+        return true;
+      } catch (error) {
+        console.error("Error saving note to file system:", error);
+        // We already saved to localStorage, so we don't need to throw
+        return false;
       }
-    } catch (error) {
-      console.error("Error saving note:", error);
-      throw new Error("Failed to save note");
     }
+    
+    return true; // localStorage save was successful
   };
 
   const chooseFileLocation = async () => {
@@ -100,11 +128,18 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
       if (!quranNotesFolder) return false;
 
       const filename = `surah_${surahId}_ayah_${ayahNumber}.txt`;
-      const handle = await quranNotesFolder.getFileHandle(filename, { create: true });
+      await quranNotesFolder.getFileHandle(filename, { create: true });
       
       return true;
     } catch (error) {
       console.error("Error choosing file location:", error);
+      
+      if (error instanceof DOMException && 
+         (error.name === "SecurityError" || error.message.includes("Cross origin"))) {
+        // Update state if we detect a security error
+        setFsApiAvailable(false);
+      }
+      
       return false;
     }
   };
@@ -116,7 +151,7 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
     setPath, 
     basePath: BASE_PATH, 
     isFileSystemAccessSupported: isFileSystemAccessSupported(),
-    chooseFileLocation 
+    chooseFileLocation,
+    fsApiAvailable
   };
 };
-
