@@ -4,14 +4,13 @@ import { cn } from '@/lib/utils';
 import { ReciterId } from '@/services';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 
-// Import refactored components
+// Import components
 import AudioElement from './AudioElement';
 import AudioControls from './AudioControls';
 import VolumeControl from './VolumeControl';
-import ProgressBar from './ProgressBar';
-import TimeDisplay from './TimeDisplay';
-import ErrorDisplay from './ErrorDisplay';
+import PlaybackProgress from './PlaybackProgress';
 import RepeatControl from './RepeatControl';
+import ErrorDisplay from './ErrorDisplay';
 import LoadingMessage from './LoadingMessage';
 
 interface AudioPlayerProps {
@@ -65,11 +64,11 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
           onPlayPauseClick={handlePlayPause} 
         />
         
-        <ProgressBar 
-          currentTime={currentTime} 
-          duration={duration} 
-          hasError={!!error && !isAudioUnloaded} 
-          onValueChange={handleSliderChange} 
+        <PlaybackProgress
+          currentTime={currentTime}
+          duration={duration}
+          hasError={!!error && !isAudioUnloaded}
+          onTimeChange={handleSliderChange}
         />
         
         <RepeatControl
@@ -83,8 +82,6 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
           hasError={!!error && !isAudioUnloaded} 
           onToggleMute={toggleMute} 
         />
-        
-        <TimeDisplay currentTime={currentTime} duration={duration} />
       </div>
 
       <ErrorDisplay error={isAudioUnloaded ? null : error} onRetry={handleRetry} />
@@ -94,3 +91,4 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
 };
 
 export default AudioPlayer;
+
