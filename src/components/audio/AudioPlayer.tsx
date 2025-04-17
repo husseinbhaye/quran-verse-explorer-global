@@ -12,6 +12,7 @@ import ProgressBar from './ProgressBar';
 import TimeDisplay from './TimeDisplay';
 import ErrorDisplay from './ErrorDisplay';
 import RepeatControl from './RepeatControl';
+import LoadingMessage from './LoadingMessage';
 
 interface AudioPlayerProps {
   surahId: number;
@@ -86,8 +87,7 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
       </div>
 
       <ErrorDisplay error={error} onRetry={handleRetry} />
-      
-      {isLoading && !error && <p className="text-xs text-muted-foreground">Loading audio...</p>}
+      <LoadingMessage isLoading={isLoading} error={error} />
     </div>
   );
 };
