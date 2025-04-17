@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import AudioPlayer from './audio';
 import NoteDialog from './NoteDialog';
-import { BookmarkButton } from './BookmarkButton';
+import BookmarkButton from './BookmarkButton';
 
 interface AyahViewProps {
   ayah: Ayah;
