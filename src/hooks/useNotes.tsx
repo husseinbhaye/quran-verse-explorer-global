@@ -17,15 +17,6 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
   const storageKey = `quran-note-${path}-${surahId}-${ayahNumber}`;
 
   useEffect(() => {
-    // Create directory if it doesn't exist
-    try {
-      if (window && !window.electronAPI) {
-        console.warn("This feature requires Electron for full filesystem access. Falling back to localStorage.");
-      }
-    } catch (error) {
-      console.error("Error accessing file system:", error);
-    }
-
     // Load existing note
     const savedNote = localStorage.getItem(storageKey);
     if (savedNote) {
