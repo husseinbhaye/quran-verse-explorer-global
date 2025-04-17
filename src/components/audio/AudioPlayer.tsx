@@ -3,14 +3,6 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { ReciterId } from '@/services';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
-import { Repeat } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 
 // Import refactored components
 import AudioControls from './AudioControls';
@@ -18,6 +10,7 @@ import VolumeControl from './VolumeControl';
 import ProgressBar from './ProgressBar';
 import TimeDisplay from './TimeDisplay';
 import ErrorDisplay from './ErrorDisplay';
+import RepeatControl from './RepeatControl';
 
 interface AudioPlayerProps {
   surahId: number;
@@ -77,29 +70,11 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
           onValueChange={handleSliderChange} 
         />
         
-        <div className="flex items-center gap-2">
-          <Select
-            value={repeatCount.toString()}
-            onValueChange={(value) => handleRepeatChange(Number(value))}
-          >
-            <SelectTrigger className="w-[100px] h-8">
-              <Repeat className="h-4 w-4 mr-1" />
-              <SelectValue placeholder="Repeat" />
-            </SelectTrigger>
-            <SelectContent>
-              {[1, 2, 3, 4, 5, 10].map((count) => (
-                <SelectItem key={count} value={count.toString()}>
-                  {count}x
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          {currentRepeat > 0 && (
-            <span className="text-xs text-muted-foreground">
-              {currentRepeat}/{repeatCount}
-            </span>
-          )}
-        </div>
+        <RepeatControl
+          repeatCount={repeatCount}
+          currentRepeat={currentRepeat}
+          onRepeatChange={handleRepeatChange}
+        />
 
         <VolumeControl 
           isMuted={isMuted} 
