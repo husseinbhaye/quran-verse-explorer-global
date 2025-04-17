@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
@@ -6,6 +5,7 @@ import BookmarkButton from './BookmarkButton';
 import { AudioPlayer } from './audio';
 import { Button } from './ui/button';
 import { Share2 } from 'lucide-react';
+import NoteDialog from './NoteDialog';
 import {
   Popover,
   PopoverContent,
@@ -29,17 +29,14 @@ const AyahView = ({
   surahName,
   displayLanguage 
 }: AyahViewProps) => {
-  // For debugging translation display issues
   React.useEffect(() => {
     console.log(`AyahView ${ayah.numberInSurah} - Current language: ${displayLanguage}`);
     console.log(`  English translation: ${englishTranslation?.text?.substring(0, 20)}...`);
     console.log(`  French translation: ${frenchTranslation?.text?.substring(0, 20)}...`);
   }, [ayah.numberInSurah, displayLanguage, englishTranslation, frenchTranslation]);
 
-  // Choose the primary translation based on display language
   const primaryTranslation = displayLanguage === 'english' ? englishTranslation : frenchTranslation;
 
-  // Create the verse text for sharing
   const getShareText = () => {
     const surahAyah = `${surahName} ${ayah.surah}:${ayah.numberInSurah}`;
     const arabicText = ayah.text;
@@ -48,7 +45,6 @@ const AyahView = ({
     return `${surahAyah}\n\n${arabicText}\n\n${translationText}`;
   };
 
-  // Share handlers
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(getShareText());
     window.open(`https://wa.me/?text=${text}`, '_blank');
@@ -66,9 +62,7 @@ const AyahView = ({
 
   const handleShareCopy = () => {
     navigator.clipboard.writeText(getShareText());
-    // Optional: Show a toast notification
     if ('toast' in window) {
-      // @ts-ignore - Using global toast if available
       window.toast({
         title: displayLanguage === 'english' ? 'Copied to clipboard' : 'Copié dans le presse-papiers',
         duration: 2000,
@@ -149,17 +143,20 @@ const AyahView = ({
           className="mt-4 mb-2" 
         />
 
-        {/* Primary translation based on selected language */}
         {primaryTranslation && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">
             <h4 className="text-sm text-quran-primary font-medium mb-1">
               {displayLanguage === 'english' ? 'English' : 'Français'}
             </h4>
             <p className="text-gray-700">{primaryTranslation.text}</p>
+            <NoteDialog 
+              surahId={ayah.surah} 
+              ayahNumber={ayah.numberInSurah}
+              displayLanguage={displayLanguage}
+            />
           </div>
         )}
 
-        {/* Secondary translation (only shown when showBoth is true) */}
         {(displayLanguage === 'english' ? frenchTranslation : englishTranslation) && showBoth && (
           <div className="mt-4 pt-4 border-t border-quran-primary/10">
             <h4 className="text-sm text-quran-primary font-medium mb-1">
@@ -168,6 +165,11 @@ const AyahView = ({
             <p className="text-gray-700">
               {displayLanguage === 'english' ? frenchTranslation?.text : englishTranslation?.text}
             </p>
+            <NoteDialog 
+              surahId={ayah.surah} 
+              ayahNumber={ayah.numberInSurah}
+              displayLanguage={displayLanguage}
+            />
           </div>
         )}
       </div>
