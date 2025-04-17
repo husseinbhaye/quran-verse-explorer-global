@@ -22,7 +22,7 @@ const AyahView = ({
   return (
     <div className="bg-white dark:bg-card rounded-lg p-4 shadow-sm border">
       <p 
-        className="arabic text-right text-2xl leading-loose mb-4 font-['UthmanicHafs']" 
+        className="arabic text-right text-2xl leading-loose mb-4" 
         dir="rtl"
       >
         {ayah.text}
