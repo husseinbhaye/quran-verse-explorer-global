@@ -6,11 +6,13 @@ interface Note {
   ayahNumber: number;
   text: string;
   createdAt: string;
+  path?: string;
 }
 
 export const useNotes = (surahId: number, ayahNumber: number) => {
   const [note, setNote] = useState<string>('');
-  const storageKey = `quran-note-${surahId}-${ayahNumber}`;
+  const [path, setPath] = useState<string>('default');
+  const storageKey = `quran-note-${path}-${surahId}-${ayahNumber}`;
 
   useEffect(() => {
     const savedNote = localStorage.getItem(storageKey);
@@ -20,16 +22,20 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
     }
   }, [storageKey]);
 
-  const saveNote = (text: string) => {
+  const saveNote = (text: string, notePath?: string) => {
+    const actualPath = notePath || path;
     const noteData: Note = {
       surahId,
       ayahNumber,
       text,
+      path: actualPath,
       createdAt: new Date().toISOString(),
     };
-    localStorage.setItem(storageKey, JSON.stringify(noteData));
+    const key = `quran-note-${actualPath}-${surahId}-${ayahNumber}`;
+    localStorage.setItem(key, JSON.stringify(noteData));
     setNote(text);
+    setPath(actualPath);
   };
 
-  return { note, saveNote };
+  return { note, saveNote, path, setPath };
 };

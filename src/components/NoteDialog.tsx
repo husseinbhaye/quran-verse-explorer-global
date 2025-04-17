@@ -11,6 +11,7 @@ import {
 } from './ui/dialog';
 import { useNotes } from '@/hooks/useNotes';
 import { Textarea } from './ui/textarea';
+import { Input } from './ui/input';
 import { useToast } from '@/hooks/use-toast';
 
 interface NoteDialogProps {
@@ -20,8 +21,9 @@ interface NoteDialogProps {
 }
 
 const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) => {
-  const { note, saveNote } = useNotes(surahId, ayahNumber);
+  const { note, saveNote, path, setPath } = useNotes(surahId, ayahNumber);
   const [inputValue, setInputValue] = React.useState(note);
+  const [pathValue, setPathValue] = React.useState(path);
   const { toast } = useToast();
 
   React.useEffect(() => {
@@ -29,12 +31,12 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
   }, [note]);
 
   const handleSave = () => {
-    saveNote(inputValue);
+    saveNote(inputValue, pathValue);
     toast({
       title: displayLanguage === 'english' ? 'Note saved' : 'Note enregistrée',
       description: displayLanguage === 'english' 
-        ? 'Your note has been saved successfully' 
-        : 'Votre note a été enregistrée avec succès',
+        ? `Your note has been saved to path: ${pathValue}` 
+        : `Votre note a été enregistrée dans le chemin: ${pathValue}`,
     });
   };
 
@@ -53,6 +55,17 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
           </DialogTitle>
         </DialogHeader>
         <div className="grid gap-4 py-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">
+              {displayLanguage === 'english' ? 'Storage Path' : 'Chemin de stockage'}
+            </label>
+            <Input
+              value={pathValue}
+              onChange={(e) => setPathValue(e.target.value)}
+              placeholder={displayLanguage === 'english' ? 'Enter storage path' : 'Entrez le chemin de stockage'}
+              className="w-full"
+            />
+          </div>
           <Textarea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
