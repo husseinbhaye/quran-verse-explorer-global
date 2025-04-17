@@ -21,7 +21,7 @@ interface NoteDialogProps {
 }
 
 const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) => {
-  const { note, saveNote, path, setPath } = useNotes(surahId, ayahNumber);
+  const { note, saveNote, path, setPath, basePath } = useNotes(surahId, ayahNumber);
   const [inputValue, setInputValue] = React.useState(note);
   const [pathValue, setPathValue] = React.useState(path);
   const { toast } = useToast();
@@ -31,13 +31,23 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
   }, [note]);
 
   const handleSave = () => {
-    saveNote(inputValue, pathValue);
-    toast({
-      title: displayLanguage === 'english' ? 'Note saved' : 'Note enregistrée',
-      description: displayLanguage === 'english' 
-        ? `Your note has been saved to path: ${pathValue}` 
-        : `Votre note a été enregistrée dans le chemin: ${pathValue}`,
-    });
+    try {
+      saveNote(inputValue, pathValue);
+      toast({
+        title: displayLanguage === 'english' ? 'Note saved' : 'Note enregistrée',
+        description: displayLanguage === 'english' 
+          ? `Your note has been saved to: ${pathValue}` 
+          : `Votre note a été enregistrée dans: ${pathValue}`,
+      });
+    } catch (error) {
+      toast({
+        title: displayLanguage === 'english' ? 'Error' : 'Erreur',
+        description: displayLanguage === 'english' 
+          ? 'Failed to save note. Please try again.' 
+          : 'Échec de l\'enregistrement de la note. Veuillez réessayer.',
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -62,7 +72,7 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
             <Input
               value={pathValue}
               onChange={(e) => setPathValue(e.target.value)}
-              placeholder={displayLanguage === 'english' ? 'Enter storage path' : 'Entrez le chemin de stockage'}
+              placeholder={basePath}
               className="w-full"
             />
           </div>
