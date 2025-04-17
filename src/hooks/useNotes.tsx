@@ -9,7 +9,7 @@ interface Note {
   path?: string;
 }
 
-const BASE_PATH = "C:\\Users\\peerb\\OneDrive\\Documents\\QuranNotes";
+const BASE_PATH = "QuranNotes";
 
 export const useNotes = (surahId: number, ayahNumber: number) => {
   const [note, setNote] = useState<string>('');
@@ -31,6 +31,31 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
     return 'showSaveFilePicker' in window;
   };
 
+  const ensureQuranNotesFolder = async (): Promise<FileSystemDirectoryHandle | null> => {
+    if (!isFileSystemAccessSupported()) return null;
+
+    try {
+      // Request access to the root directory
+      const rootHandle = await window.showDirectoryPicker({
+        mode: 'readwrite'
+      });
+
+      // Check if QuranNotes folder already exists
+      let quranNotesFolder;
+      try {
+        quranNotesFolder = await rootHandle.getDirectoryHandle(BASE_PATH);
+      } catch (error) {
+        // Folder doesn't exist, so create it
+        quranNotesFolder = await rootHandle.getDirectoryHandle(BASE_PATH, { create: true });
+      }
+
+      return quranNotesFolder;
+    } catch (error) {
+      console.error("Error creating QuranNotes folder:", error);
+      return null;
+    }
+  };
+
   const saveNote = async (text: string, notePath?: string) => {
     const actualPath = notePath || path;
     const noteData: Note = {
@@ -50,29 +75,12 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
 
       // Now try to save to file system if supported
       if (isFileSystemAccessSupported()) {
-        let handle = fileHandle;
-        
-        // If we don't have a file handle yet, ask user to create/select a file
-        if (!handle) {
-          try {
-            const filename = `surah_${surahId}_ayah_${ayahNumber}.txt`;
-            handle = await window.showSaveFilePicker({
-              suggestedName: filename,
-              types: [{
-                description: 'Text Files',
-                accept: {'text/plain': ['.txt']},
-              }],
-            });
-            setFileHandle(handle);
-          } catch (err) {
-            // User likely cancelled file picker
-            console.log('File picker was cancelled or failed', err);
-            return;
-          }
-        }
+        const quranNotesFolder = await ensureQuranNotesFolder();
+        if (!quranNotesFolder) return;
 
-        // Write to the file
-        const writable = await handle.createWritable();
+        const filename = `surah_${surahId}_ayah_${ayahNumber}.txt`;
+        const fileHandle = await quranNotesFolder.getFileHandle(filename, { create: true });
+        const writable = await fileHandle.createWritable();
         await writable.write(text);
         await writable.close();
       }
@@ -88,16 +96,12 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
     }
 
     try {
+      const quranNotesFolder = await ensureQuranNotesFolder();
+      if (!quranNotesFolder) return false;
+
       const filename = `surah_${surahId}_ayah_${ayahNumber}.txt`;
-      const handle = await window.showSaveFilePicker({
-        suggestedName: filename,
-        types: [{
-          description: 'Text Files',
-          accept: {'text/plain': ['.txt']},
-        }],
-      });
+      const handle = await quranNotesFolder.getFileHandle(filename, { create: true });
       
-      setFileHandle(handle);
       return true;
     } catch (error) {
       console.error("Error choosing file location:", error);
@@ -115,3 +119,4 @@ export const useNotes = (surahId: number, ayahNumber: number) => {
     chooseFileLocation 
   };
 };
+
