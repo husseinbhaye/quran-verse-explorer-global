@@ -1,6 +1,9 @@
 
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
+import AudioPlayer from './audio';
+import NoteDialog from './NoteDialog';
+import { BookmarkButton } from './BookmarkButton';
 
 interface AyahViewProps {
   ayah: Ayah;
@@ -57,6 +60,24 @@ const AyahView = ({
       <div className="flex justify-between items-center mt-4 text-xs text-gray-500">
         <span>{surahName} {ayah.numberInSurah}</span>
         <span>Ayah #{ayah.number}</span>
+      </div>
+      
+      {/* Audio player and interactive controls */}
+      <div className="mt-4 border-t pt-3">
+        <AudioPlayer surahId={ayah.surah} ayahId={ayah.numberInSurah} />
+      </div>
+      
+      {/* Action buttons */}
+      <div className="flex items-center justify-between mt-4">
+        <NoteDialog 
+          surahId={ayah.surah} 
+          ayahNumber={ayah.number} 
+          displayLanguage={displayLanguage}
+        />
+        <BookmarkButton 
+          ayah={ayah} 
+          surahName={surahName}
+        />
       </div>
     </div>
   );
