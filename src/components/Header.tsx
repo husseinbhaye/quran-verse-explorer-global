@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Moon, Sun, Search } from 'lucide-react';
 import { Button } from './ui/button';
@@ -89,9 +90,9 @@ const Header = ({ onSearch }: HeaderProps) => {
       
       <div className="container mx-auto mt-2 bg-quran-secondary/20 py-2 border-y border-quran-secondary/30">
         <div className="marquee-container">
-          <div className="marquee-content">
+          <p className="marquee-content">
             DONATE TO EEMAAN FOUNDATION MAURITIUS: MCB BANK ACCOUNT: 000451030435 - (IBAN: MU25MCBL0944000451030435000MUR) - Zakat, Lillah, Sadaqah Jaariyah.
-          </div>
+          </p>
         </div>
       </div>
     </header>
