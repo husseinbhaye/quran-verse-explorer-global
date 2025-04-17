@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from './ui/button';
-import { Pencil } from 'lucide-react';
+import { Pencil, FolderOpen } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ interface NoteDialogProps {
 }
 
 const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) => {
-  const { note, saveNote, path, setPath, basePath } = useNotes(surahId, ayahNumber);
+  const { note, saveNote, path, setPath, basePath, isFileSystemAccessSupported, chooseFileLocation } = useNotes(surahId, ayahNumber);
   const [inputValue, setInputValue] = React.useState(note);
   const [pathValue, setPathValue] = React.useState(path);
   const { toast } = useToast();
@@ -30,9 +30,9 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
     setInputValue(note);
   }, [note]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     try {
-      saveNote(inputValue, pathValue);
+      await saveNote(inputValue, pathValue);
       toast({
         title: displayLanguage === 'english' ? 'Note saved' : 'Note enregistrée',
         description: displayLanguage === 'english' 
@@ -46,6 +46,18 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
           ? 'Failed to save note. Please try again.' 
           : 'Échec de l\'enregistrement de la note. Veuillez réessayer.',
         variant: "destructive"
+      });
+    }
+  };
+
+  const handleChooseLocation = async () => {
+    const success = await chooseFileLocation();
+    if (success) {
+      toast({
+        title: displayLanguage === 'english' ? 'File Location Selected' : 'Emplacement de fichier sélectionné',
+        description: displayLanguage === 'english' 
+          ? 'You have selected where to save the note.' 
+          : 'Vous avez choisi où enregistrer la note.',
       });
     }
   };
@@ -69,12 +81,23 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
             <label className="text-sm font-medium">
               {displayLanguage === 'english' ? 'Storage Path' : 'Chemin de stockage'}
             </label>
-            <Input
-              value={pathValue}
-              onChange={(e) => setPathValue(e.target.value)}
-              placeholder={basePath}
-              className="w-full"
-            />
+            <div className="flex gap-2">
+              <Input
+                value={pathValue}
+                onChange={(e) => setPathValue(e.target.value)}
+                placeholder={basePath}
+                className="w-full"
+              />
+              {isFileSystemAccessSupported && (
+                <Button 
+                  variant="outline" 
+                  onClick={handleChooseLocation} 
+                  title={displayLanguage === 'english' ? 'Choose file location' : 'Choisir l\'emplacement du fichier'}
+                >
+                  <FolderOpen className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
           <Textarea
             value={inputValue}
@@ -89,6 +112,13 @@ const NoteDialog = ({ surahId, ayahNumber, displayLanguage }: NoteDialogProps) =
           <Button onClick={handleSave}>
             {displayLanguage === 'english' ? 'Save Note' : 'Enregistrer la note'}
           </Button>
+          {!isFileSystemAccessSupported && (
+            <p className="text-sm text-yellow-600">
+              {displayLanguage === 'english' 
+                ? 'File system access is not supported in your browser. Notes will be saved locally only.' 
+                : 'L\'accès au système de fichiers n\'est pas pris en charge dans votre navigateur. Les notes seront enregistrées uniquement localement.'}
+            </p>
+          )}
         </div>
       </DialogContent>
     </Dialog>
