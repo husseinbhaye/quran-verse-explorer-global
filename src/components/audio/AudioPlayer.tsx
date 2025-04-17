@@ -1,17 +1,8 @@
-
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { ReciterId } from '@/services';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
-
-// Import components
-import AudioElement from './AudioElement';
-import AudioControls from './AudioControls';
-import VolumeControl from './VolumeControl';
-import PlaybackProgress from './PlaybackProgress';
-import RepeatControl from './RepeatControl';
-import ErrorDisplay from './ErrorDisplay';
-import LoadingMessage from './LoadingMessage';
+import AudioErrorBoundary from './AudioErrorBoundary';
 
 interface AudioPlayerProps {
   surahId: number;
@@ -45,50 +36,51 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
   } = useAudioPlayer({ surahId, ayahId, reciterId });
 
   return (
-    <div className={cn("flex flex-col space-y-2", className)}>
-      <AudioElement 
-        audioRef={audioRef}
-        audioUrl={audioUrl}
-        isPlaying={isPlaying}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleEnded}
-        onError={handleError}
-      />
-      
-      <div className="flex items-center space-x-2">
-        <AudioControls 
-          isPlaying={isPlaying} 
-          isLoading={isLoading && !isAudioUnloaded} 
-          hasError={!!error && !isAudioUnloaded} 
-          onPlayPauseClick={handlePlayPause} 
+    <AudioErrorBoundary>
+      <div className={cn("flex flex-col space-y-2", className)}>
+        <AudioElement 
+          audioRef={audioRef}
+          audioUrl={audioUrl}
+          isPlaying={isPlaying}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={handleEnded}
+          onError={handleError}
         />
         
-        <PlaybackProgress
-          currentTime={currentTime}
-          duration={duration}
-          hasError={!!error && !isAudioUnloaded}
-          onTimeChange={handleSliderChange}
-        />
-        
-        <RepeatControl
-          repeatCount={repeatCount}
-          currentRepeat={currentRepeat}
-          onRepeatChange={handleRepeatChange}
-        />
+        <div className="flex items-center space-x-2">
+          <AudioControls 
+            isPlaying={isPlaying} 
+            isLoading={isLoading && !isAudioUnloaded} 
+            hasError={!!error && !isAudioUnloaded} 
+            onPlayPauseClick={handlePlayPause} 
+          />
+          
+          <PlaybackProgress
+            currentTime={currentTime}
+            duration={duration}
+            hasError={!!error && !isAudioUnloaded}
+            onTimeChange={handleSliderChange}
+          />
+          
+          <RepeatControl
+            repeatCount={repeatCount}
+            currentRepeat={currentRepeat}
+            onRepeatChange={handleRepeatChange}
+          />
 
-        <VolumeControl 
-          isMuted={isMuted} 
-          hasError={!!error && !isAudioUnloaded} 
-          onToggleMute={toggleMute} 
-        />
+          <VolumeControl 
+            isMuted={isMuted} 
+            hasError={!!error && !isAudioUnloaded} 
+            onToggleMute={toggleMute} 
+          />
+        </div>
+
+        <ErrorDisplay error={isAudioUnloaded ? null : error} onRetry={handleRetry} />
+        <LoadingMessage isLoading={isLoading} error={error} isAudioUnloaded={isAudioUnloaded} />
       </div>
-
-      <ErrorDisplay error={isAudioUnloaded ? null : error} onRetry={handleRetry} />
-      <LoadingMessage isLoading={isLoading} error={error} isAudioUnloaded={isAudioUnloaded} />
-    </div>
+    </AudioErrorBoundary>
   );
 };
 
 export default AudioPlayer;
-
