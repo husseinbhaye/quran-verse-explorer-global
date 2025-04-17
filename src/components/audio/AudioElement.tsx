@@ -20,6 +20,7 @@ const AudioElement = ({
   onEnded,
   onError
 }: AudioElementProps) => {
+  // Only render audio with a src when there's an actual URL
   return (
     <audio
       ref={audioRef}
@@ -30,6 +31,7 @@ const AudioElement = ({
       onPause={() => !isPlaying}
       onEnded={onEnded}
       onError={onError}
+      preload="auto"
     />
   );
 };

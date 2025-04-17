@@ -33,6 +33,7 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
     error,
     repeatCount,
     currentRepeat,
+    isAudioUnloaded,
     handlePlayPause,
     handleTimeUpdate,
     handleLoadedMetadata,
@@ -59,15 +60,15 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
       <div className="flex items-center space-x-2">
         <AudioControls 
           isPlaying={isPlaying} 
-          isLoading={isLoading} 
-          hasError={!!error} 
+          isLoading={isLoading && !isAudioUnloaded} 
+          hasError={!!error && !isAudioUnloaded} 
           onPlayPauseClick={handlePlayPause} 
         />
         
         <ProgressBar 
           currentTime={currentTime} 
           duration={duration} 
-          hasError={!!error} 
+          hasError={!!error && !isAudioUnloaded} 
           onValueChange={handleSliderChange} 
         />
         
@@ -79,15 +80,15 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
 
         <VolumeControl 
           isMuted={isMuted} 
-          hasError={!!error} 
+          hasError={!!error && !isAudioUnloaded} 
           onToggleMute={toggleMute} 
         />
         
         <TimeDisplay currentTime={currentTime} duration={duration} />
       </div>
 
-      <ErrorDisplay error={error} onRetry={handleRetry} />
-      <LoadingMessage isLoading={isLoading} error={error} />
+      <ErrorDisplay error={isAudioUnloaded ? null : error} onRetry={handleRetry} />
+      <LoadingMessage isLoading={isLoading} error={error} isAudioUnloaded={isAudioUnloaded} />
     </div>
   );
 };

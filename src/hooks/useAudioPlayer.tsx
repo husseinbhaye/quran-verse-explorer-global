@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { ReciterId, getAudioUrl, getAlternativeAudioUrl } from '@/services';
 import { toast } from '@/components/ui/use-toast';
@@ -18,11 +19,12 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
   const [usingAlternativeUrl, setUsingAlternativeUrl] = useState(false);
   const [repeatCount, setRepeatCount] = useState(1);
   const [currentRepeat, setCurrentRepeat] = useState(0);
+  const [isAudioUnloaded, setIsAudioUnloaded] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const audioUrl = usingAlternativeUrl 
+  const audioUrl = !isAudioUnloaded ? (usingAlternativeUrl 
     ? getAlternativeAudioUrl(surahId, ayahId, reciterId) 
-    : getAudioUrl(surahId, ayahId, reciterId);
+    : getAudioUrl(surahId, ayahId, reciterId)) : '';
 
   useEffect(() => {
     setIsPlaying(false);
@@ -31,6 +33,7 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
     setError(null);
     setUsingAlternativeUrl(false);
     setCurrentRepeat(0);
+    setIsAudioUnloaded(false);
     if (audioRef.current) {
       audioRef.current.currentTime = 0;
     }
@@ -39,32 +42,47 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
   const handlePlayPause = () => {
     if (!audioRef.current) return;
     
+    // If audio was unloaded, reload it before playing
+    if (isAudioUnloaded) {
+      setIsAudioUnloaded(false);
+      // Allow time for the audio to reload
+      setTimeout(() => {
+        if (audioRef.current) {
+          audioRef.current.load();
+          audioRef.current.play().catch(handlePlayError);
+        }
+      }, 100);
+      return;
+    }
+    
     if (isPlaying) {
       audioRef.current.pause();
     } else {
       setIsLoading(true);
       setError(null);
-      audioRef.current.play().catch(err => {
-        console.error('Error playing audio:', err);
-        if (!usingAlternativeUrl) {
-          setUsingAlternativeUrl(true);
-          toast({
-            title: 'Trying alternative audio source',
-            description: 'The primary source failed, attempting to use backup source.',
-            duration: 3000
-          });
-        } else {
-          setError('Unable to play audio');
-          toast({
-            title: 'Audio unavailable',
-            description: 'Unable to play recitation for this ayah.',
-            variant: "destructive",
-            duration: 3000
-          });
-        }
-        setIsLoading(false);
+      audioRef.current.play().catch(handlePlayError);
+    }
+  };
+
+  const handlePlayError = (err: any) => {
+    console.error('Error playing audio:', err);
+    if (!usingAlternativeUrl) {
+      setUsingAlternativeUrl(true);
+      toast({
+        title: 'Trying alternative audio source',
+        description: 'The primary source failed, attempting to use backup source.',
+        duration: 3000
+      });
+    } else {
+      setError('Unable to play audio');
+      toast({
+        title: 'Audio unavailable',
+        description: 'Unable to play recitation for this ayah.',
+        variant: "destructive",
+        duration: 3000
       });
     }
+    setIsLoading(false);
   };
 
   const handleTimeUpdate = () => {
@@ -93,6 +111,7 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
       setIsPlaying(false);
       setCurrentTime(0);
       setCurrentRepeat(0);
+      setIsAudioUnloaded(true);
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.src = ''; // Unload the audio
@@ -118,6 +137,7 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
     setUsingAlternativeUrl(!usingAlternativeUrl);
     setError(null);
     setIsLoading(true);
+    setIsAudioUnloaded(false);
     
     setTimeout(() => {
       if (audioRef.current) {
@@ -132,17 +152,17 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
   };
 
   useEffect(() => {
-    if (audioRef.current) {
+    if (audioRef.current && !isAudioUnloaded) {
       audioRef.current.load();
       setIsLoading(true);
     }
-  }, [audioUrl]);
+  }, [audioUrl, isAudioUnloaded]);
 
   const handleError = () => {
-    if (!usingAlternativeUrl) {
+    if (!usingAlternativeUrl && !isAudioUnloaded) {
       console.log('Primary audio URL failed, trying alternative format');
       setUsingAlternativeUrl(true);
-    } else {
+    } else if (!isAudioUnloaded) {
       setError('Error loading audio');
       setIsLoading(false);
     }
@@ -164,6 +184,7 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
     error,
     repeatCount,
     currentRepeat,
+    isAudioUnloaded,
     handlePlayPause,
     handleTimeUpdate,
     handleLoadedMetadata,
