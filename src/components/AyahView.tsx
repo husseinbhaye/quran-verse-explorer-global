@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
@@ -6,6 +7,7 @@ import { AudioPlayer } from './audio';
 import { Button } from './ui/button';
 import { Share2 } from 'lucide-react';
 import NoteDialog from './NoteDialog';
+import { useToast } from '@/hooks/use-toast';
 import {
   Popover,
   PopoverContent,
@@ -29,6 +31,8 @@ const AyahView = ({
   surahName,
   displayLanguage 
 }: AyahViewProps) => {
+  const { toast } = useToast();
+  
   React.useEffect(() => {
     console.log(`AyahView ${ayah.numberInSurah} - Current language: ${displayLanguage}`);
     console.log(`  English translation: ${englishTranslation?.text?.substring(0, 20)}...`);
@@ -62,12 +66,10 @@ const AyahView = ({
 
   const handleShareCopy = () => {
     navigator.clipboard.writeText(getShareText());
-    if ('toast' in window) {
-      window.toast({
-        title: displayLanguage === 'english' ? 'Copied to clipboard' : 'Copié dans le presse-papiers',
-        duration: 2000,
-      });
-    }
+    toast({
+      title: displayLanguage === 'english' ? 'Copied to clipboard' : 'Copié dans le presse-papiers',
+      duration: 2000,
+    });
   };
 
   return (
