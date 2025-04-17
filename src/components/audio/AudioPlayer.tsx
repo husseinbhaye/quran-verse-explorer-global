@@ -1,8 +1,16 @@
+
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { ReciterId } from '@/services';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import AudioErrorBoundary from './AudioErrorBoundary';
+import AudioElement from './AudioElement';
+import AudioControls from './AudioControls';
+import PlaybackProgress from './PlaybackProgress';
+import RepeatControl from './RepeatControl';
+import VolumeControl from './VolumeControl';
+import ErrorDisplay from './ErrorDisplay';
+import LoadingMessage from './LoadingMessage';
 
 interface AudioPlayerProps {
   surahId: number;
