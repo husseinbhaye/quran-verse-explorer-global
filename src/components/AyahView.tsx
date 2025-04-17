@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import { Card } from './ui/card';
@@ -135,7 +134,7 @@ const AyahView = ({
         </div>
       </div>
       <div className="p-6">
-        <p className="arabic text-right text-2xl leading-loose mb-4 font-['UthmanicHafs']" dir="rtl">
+        <p className="arabic text-right mb-6 px-4" dir="rtl">
           {ayah.text}
         </p>
 
