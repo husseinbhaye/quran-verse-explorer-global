@@ -76,6 +76,7 @@ const AyahView = ({
         <BookmarkButton 
           ayah={ayah} 
           surahName={surahName}
+          displayLanguage={displayLanguage}
         />
       </div>
     </div>
