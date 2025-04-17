@@ -24,7 +24,6 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
     ? getAlternativeAudioUrl(surahId, ayahId, reciterId) 
     : getAudioUrl(surahId, ayahId, reciterId);
 
-  // Reset player state when surahId or ayahId changes
   useEffect(() => {
     setIsPlaying(false);
     setCurrentTime(0);
@@ -48,7 +47,6 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
       audioRef.current.play().catch(err => {
         console.error('Error playing audio:', err);
         if (!usingAlternativeUrl) {
-          // Try alternative URL format
           setUsingAlternativeUrl(true);
           toast({
             title: 'Trying alternative audio source',
@@ -88,6 +86,7 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
         audioRef.current.play().catch(err => {
           console.error('Error replaying audio:', err);
           setError('Error during repeat playback');
+          setIsPlaying(false);
         });
       }
     } else {
@@ -118,7 +117,6 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
     setError(null);
     setIsLoading(true);
     
-    // Small delay to ensure the audio element has time to update its source
     setTimeout(() => {
       if (audioRef.current) {
         audioRef.current.load();
