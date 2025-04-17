@@ -95,6 +95,8 @@ export function useAudioPlayer({ surahId, ayahId, reciterId = 'ar.alafasy' }: Us
       setCurrentRepeat(0);
       if (audioRef.current) {
         audioRef.current.currentTime = 0;
+        audioRef.current.src = ''; // Unload the audio
+        audioRef.current.load(); // Refresh the audio element
       }
     }
   };
