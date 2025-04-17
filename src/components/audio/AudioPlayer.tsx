@@ -5,6 +5,7 @@ import { ReciterId } from '@/services';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 
 // Import refactored components
+import AudioElement from './AudioElement';
 import AudioControls from './AudioControls';
 import VolumeControl from './VolumeControl';
 import ProgressBar from './ProgressBar';
@@ -44,13 +45,12 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
 
   return (
     <div className={cn("flex flex-col space-y-2", className)}>
-      <audio
-        ref={audioRef}
-        src={audioUrl}
+      <AudioElement 
+        audioRef={audioRef}
+        audioUrl={audioUrl}
+        isPlaying={isPlaying}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => isPlaying}
-        onPause={() => !isPlaying}
         onEnded={handleEnded}
         onError={handleError}
       />
