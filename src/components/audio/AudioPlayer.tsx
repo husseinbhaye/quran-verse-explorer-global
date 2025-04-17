@@ -3,6 +3,14 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { ReciterId } from '@/services';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { Repeat } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 // Import refactored components
 import AudioControls from './AudioControls';
@@ -28,6 +36,8 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
     currentTime,
     isLoading,
     error,
+    repeatCount,
+    currentRepeat,
     handlePlayPause,
     handleTimeUpdate,
     handleLoadedMetadata,
@@ -35,7 +45,8 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
     handleSliderChange,
     toggleMute,
     handleRetry,
-    handleError
+    handleError,
+    handleRepeatChange
   } = useAudioPlayer({ surahId, ayahId, reciterId });
 
   return (
@@ -66,6 +77,30 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
           onValueChange={handleSliderChange} 
         />
         
+        <div className="flex items-center gap-2">
+          <Select
+            value={repeatCount.toString()}
+            onValueChange={(value) => handleRepeatChange(Number(value))}
+          >
+            <SelectTrigger className="w-[100px] h-8">
+              <Repeat className="h-4 w-4 mr-1" />
+              <SelectValue placeholder="Repeat" />
+            </SelectTrigger>
+            <SelectContent>
+              {[1, 2, 3, 4, 5, 10].map((count) => (
+                <SelectItem key={count} value={count.toString()}>
+                  {count}x
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {currentRepeat > 0 && (
+            <span className="text-xs text-muted-foreground">
+              {currentRepeat}/{repeatCount}
+            </span>
+          )}
+        </div>
+
         <VolumeControl 
           isMuted={isMuted} 
           hasError={!!error} 
