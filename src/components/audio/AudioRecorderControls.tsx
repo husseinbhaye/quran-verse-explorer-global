@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "../ui/button";
-import { Mic, MicOff, Play, Stop, Save } from "lucide-react";
+import { Mic, MicOff, Play, Square, Save } from "lucide-react";
 
 interface AudioRecorderControlsProps {
   displayLanguage: "english" | "french";
@@ -69,7 +69,7 @@ const AudioRecorderControls: React.FC<AudioRecorderControlsProps> = ({
           size="sm"
           className="bg-white border-yellow-500 text-yellow-500 hover:bg-yellow-50"
         >
-          <Stop className="mr-1" size={16} />
+          <Square className="mr-1" size={16} />
           {displayLanguage === "english" ? "Stop" : "Arrêter"}
         </Button>
       )}
