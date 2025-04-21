@@ -13,7 +13,7 @@ interface SurahViewProps {
   loading: boolean;
   showBothTranslations: boolean;
   displayLanguage: 'english' | 'french';
-  textSize?: "sm" | "base" | "lg" | "xl";
+  textSize: "sm" | "base" | "lg" | "xl";
   setTextSize: (size: "sm" | "base" | "lg" | "xl") => void;
 }
 
@@ -37,9 +37,11 @@ const SurahView = ({
           french: frenchTranslations.length,
           englishSample: englishTranslations[0]?.text.substring(0, 20),
           frenchSample: frenchTranslations[0]?.text.substring(0, 20)
-        });
+        },
+        'textSize:', textSize
+      );
     }
-  }, [displayLanguage, englishTranslations, frenchTranslations, surah]);
+  }, [displayLanguage, englishTranslations, frenchTranslations, surah, textSize]);
 
   if (loading) {
     return (
@@ -82,7 +84,7 @@ const SurahView = ({
   const secondaryTranslations = displayLanguage === 'english' ? frenchTranslations : englishTranslations;
   const surahName = displayLanguage === 'english' ? surah.englishName : surah.frenchName;
 
-  console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations`);
+  console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations, textSize: ${textSize}`);
 
   return (
     <div className={`flex-1 px-2 md:px-8 lg:px-16 py-2 md:py-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg ${mainTextSize}`}>
@@ -137,5 +139,3 @@ const SurahView = ({
 };
 
 export default SurahView;
-
-

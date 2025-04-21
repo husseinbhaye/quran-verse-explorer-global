@@ -43,6 +43,11 @@ const Index = () => {
     if (isMobile) setShowSidebarMobile(false);
   };
 
+  const handleSetTextSize = (size: "sm" | "base" | "lg" | "xl") => {
+    console.log("Setting text size to:", size);
+    setTextSize(size);
+  };
+
   const selectedSurahData = selectedSurah ? surahs.find(s => s.id === selectedSurah) || null : null;
 
   return (
@@ -77,7 +82,7 @@ const Index = () => {
             setShowBothTranslations={setShowBothTranslations}
             onSelectAyah={goToAyah}
             textSize={textSize}
-            setTextSize={setTextSize}  // Add the missing prop here
+            setTextSize={handleSetTextSize}
           />
         </main>
       </div>
@@ -94,9 +99,6 @@ const Index = () => {
           showBothTranslations={showBothTranslations}
         />
       )}
-
-      {/* Removed floating TextSizeControl from here */}
-
     </div>
   );
 };

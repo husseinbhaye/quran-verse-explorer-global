@@ -14,10 +14,17 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
   const currentIdx = SIZES.indexOf(textSize);
 
   const increase = () => {
-    if (currentIdx < SIZES.length - 1) setTextSize(SIZES[currentIdx + 1]);
+    if (currentIdx < SIZES.length - 1) {
+      console.log("Increasing size to:", SIZES[currentIdx + 1]);
+      setTextSize(SIZES[currentIdx + 1]);
+    }
   };
+  
   const decrease = () => {
-    if (currentIdx > 0) setTextSize(SIZES[currentIdx - 1]);
+    if (currentIdx > 0) {
+      console.log("Decreasing size to:", SIZES[currentIdx - 1]);
+      setTextSize(SIZES[currentIdx - 1]);
+    }
   };
 
   return (
