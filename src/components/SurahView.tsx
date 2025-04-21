@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
@@ -91,10 +90,8 @@ const SurahView = ({
   return (
     <div className={`flex-1 px-2 md:px-8 lg:px-16 py-2 md:py-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg ${mainTextSize}`}>
       <div>
-        {/* Center aligned all header text */}
         <div className="mb-8 geometric-pattern pt-6 flex flex-col items-center text-center">
-          {/* Move TextSizeControl ABOVE Bismillah */}
-          <div className="mb-2">
+          <div className="mb-2 relative z-30 pointer-events-auto">
             <TextSizeControl 
               textSize={textSize} 
               setTextSize={setTextSize}
@@ -114,10 +111,7 @@ const SurahView = ({
           <p className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize === "text-xl" ? "text-lg" : surahNameSize}`}>
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
-
-          {/* Removed old TextSizeControl below Bismillah */}
         </div>
-
         <div className="space-y-4">
           {ayahs.map((ayah) => {
             const primaryTranslation = primaryTranslations.find(t => t.ayah === ayah.number);
@@ -146,4 +140,3 @@ const SurahView = ({
 };
 
 export default SurahView;
-

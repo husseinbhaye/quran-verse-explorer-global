@@ -20,7 +20,7 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
       setTextSize(newSize);
     }
   };
-  
+
   const handleDecrease = () => {
     if (currentIdx > 0) {
       const newSize = SIZES[currentIdx - 1];
@@ -32,18 +32,20 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
   console.log("TextSizeControl rendered with current size:", textSize, "at index:", currentIdx);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 select-none">
       <Button
         variant="outline"
         size="icon"
         onClick={handleDecrease}
         disabled={currentIdx === 0}
         aria-label="Decrease text size"
-        className="text-quran-primary hover:bg-quran-primary/10 cursor-pointer"
+        className="text-quran-primary hover:bg-quran-primary/10 cursor-pointer pointer-events-auto"
+        tabIndex={0}
+        style={{ zIndex: 40 }}
       >
         <ChevronDown className="h-4 w-4" />
       </Button>
-      <span className="text-sm mx-1 select-none font-semibold text-quran-primary">
+      <span className="text-sm mx-1 select-none font-semibold text-quran-primary" tabIndex={-1}>
         Text Size
       </span>
       <Button
@@ -52,7 +54,9 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
         onClick={handleIncrease}
         disabled={currentIdx === SIZES.length - 1}
         aria-label="Increase text size"
-        className="text-quran-primary hover:bg-quran-primary/10 cursor-pointer"
+        className="text-quran-primary hover:bg-quran-primary/10 cursor-pointer pointer-events-auto"
+        tabIndex={0}
+        style={{ zIndex: 40 }}
       >
         <ChevronUp className="h-4 w-4" />
       </Button>
