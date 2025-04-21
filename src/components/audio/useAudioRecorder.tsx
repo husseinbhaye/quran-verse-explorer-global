@@ -13,6 +13,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -24,6 +25,11 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
+      // Clean up any stream if component unmounts
+      if (streamRef.current) {
+        const tracks = streamRef.current.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
     };
   }, []);
 
@@ -32,28 +38,66 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     setRecordingAvailable(false);
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream);
+      // Request microphone access with specific constraints for better quality
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        }
+      });
+      
+      // Store the stream for cleanup
+      streamRef.current = stream;
+      
+      // Create a new MediaRecorder with a higher bitrate for better quality
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp3',
+        audioBitsPerSecond: 128000
+      });
 
       mediaRecorderRef.current.addEventListener("dataavailable", (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
+          console.log("Audio data chunk received:", event.data.size, "bytes");
         }
       });
 
       mediaRecorderRef.current.addEventListener("stop", () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: "audio/mp3" });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        if (audioRef.current) {
-          audioRef.current.src = audioUrl;
-          setRecordingAvailable(true);
+        console.log("MediaRecorder stopped, total chunks:", audioChunksRef.current.length);
+        
+        if (audioChunksRef.current.length > 0) {
+          const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp3';
+          const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+          console.log("Audio blob created, size:", audioBlob.size, "bytes");
+          
+          const audioUrl = URL.createObjectURL(audioBlob);
+          if (audioRef.current) {
+            audioRef.current.src = audioUrl;
+            setRecordingAvailable(true);
+            console.log("Audio URL created and assigned to audio element");
+          }
+        } else {
+          console.warn("No audio data collected during recording");
+          toast({
+            title: displayLanguage === "english" ? "Recording issue" : "Problème d'enregistrement",
+            description:
+              displayLanguage === "english"
+                ? "No audio data was captured. Please check your microphone."
+                : "Aucune donnée audio n'a été capturée. Veuillez vérifier votre microphone.",
+            variant: "destructive",
+          });
         }
-        // Stop all audio tracks
-        const tracks = stream.getAudioTracks();
-        tracks.forEach((track) => track.stop());
+        
+        // Stop all audio tracks after recording
+        if (streamRef.current) {
+          const tracks = streamRef.current.getAudioTracks();
+          tracks.forEach((track) => track.stop());
+        }
       });
 
-      mediaRecorderRef.current.start();
+      // Set a timeslice to capture data more frequently
+      mediaRecorderRef.current.start(1000); // Collect data every second
       setIsRecording(true);
 
       toast({
@@ -78,6 +122,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
+      console.log("Stopping MediaRecorder...");
       mediaRecorderRef.current.stop();
       setIsRecording(false);
 
@@ -93,7 +138,10 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
   const playRecording = () => {
     if (audioRef.current && recordingAvailable) {
-      audioRef.current.play();
+      console.log("Playing audio recording...");
+      audioRef.current.play().catch(err => {
+        console.error("Error playing audio:", err);
+      });
       setIsPlaying(true);
     }
   };
@@ -120,16 +168,18 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     }
 
     try {
-      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/mp3" });
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp3';
+      const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+      console.log("Saving audio blob, size:", audioBlob.size, "bytes");
 
       // File System Access API if available
       if ("showSaveFilePicker" in window) {
         const options = {
-          suggestedName: `quran_recitation_${new Date().toISOString().slice(0, 10)}.mp3`,
+          suggestedName: `quran_recitation_${new Date().toISOString().slice(0, 10)}.${mimeType === 'audio/webm' ? 'webm' : 'mp3'}`,
           types: [
             {
-              description: "MP3 Audio",
-              accept: { "audio/mp3": [".mp3"] },
+              description: mimeType === 'audio/webm' ? "WebM Audio" : "MP3 Audio",
+              accept: { [mimeType]: [mimeType === 'audio/webm' ? [".webm"] : [".mp3"]] },
             },
           ],
         };
@@ -156,7 +206,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         const a = document.createElement("a");
         a.style.display = "none";
         a.href = url;
-        a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.mp3`;
+        a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.${mimeType === 'audio/webm' ? 'webm' : 'mp3'}`;
         document.body.appendChild(a);
         a.click();
 
