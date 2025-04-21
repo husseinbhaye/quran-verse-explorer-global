@@ -60,6 +60,143 @@ export const commonThemes: ThemeOption[] = [
       french: 'Prophètes'
     },
     keywords: ['prophet', 'messenger', 'muhammad', 'jesus', 'moses', 'abraham', 'noah']
+  },
+  // --- Additional topics below ---
+  {
+    id: 'patience',
+    label: {
+      english: 'Patience',
+      french: 'Patience'
+    },
+    keywords: ['patience', 'steadfast', 'endure', 'persevere', 'perseverance']
+  },
+  {
+    id: 'gratitude',
+    label: {
+      english: 'Gratitude',
+      french: 'Reconnaissance'
+    },
+    keywords: ['gratitude', 'thankful', 'thanks', 'thanksgiving', 'appreciate']
+  },
+  {
+    id: 'forgiveness',
+    label: {
+      english: 'Forgiveness',
+      french: 'Pardon'
+    },
+    keywords: ['forgive', 'forgiveness', 'pardon', 'merciful']
+  },
+  {
+    id: 'paradise',
+    label: {
+      english: 'Paradise (Jannah)',
+      french: 'Paradis (Jannah)'
+    },
+    keywords: ['paradise', 'jannah', 'gardens', 'delight', 'reward']
+  },
+  {
+    id: 'hellfire',
+    label: {
+      english: 'Hellfire (Jahannam)',
+      french: 'Enfer (Jahannam)'
+    },
+    keywords: ['hell', 'hellfire', 'jahannam', 'punishment', 'fire']
+  },
+  {
+    id: 'justice',
+    label: {
+      english: 'Justice',
+      french: 'Justice'
+    },
+    keywords: ['justice', 'fair', 'fairness', 'right', 'judge', 'judgement']
+  },
+  {
+    id: 'family',
+    label: {
+      english: 'Family & Parents',
+      french: 'Famille & Parents'
+    },
+    keywords: ['family', 'parents', 'mother', 'father', 'children', 'kin']
+  },
+  {
+    id: 'knowledge',
+    label: {
+      english: 'Knowledge',
+      french: 'Connaissance'
+    },
+    keywords: ['knowledge', 'wisdom', 'learn', 'teaching', 'understanding']
+  },
+  {
+    id: 'creation',
+    label: {
+      english: 'Creation',
+      french: 'Création'
+    },
+    keywords: ['creation', 'created', 'create', 'universe', 'earth', 'sky', 'heavens']
+  },
+  {
+    id: 'dua',
+    label: {
+      english: 'Supplication (Dua)',
+      french: 'Invocation (Dua)'
+    },
+    keywords: ['supplication', 'dua', 'call', 'invoke', 'pray']
+  },
+  {
+    id: 'faith',
+    label: {
+      english: 'Faith (Iman)',
+      french: 'Foi (Iman)'
+    },
+    keywords: ['faith', 'belief', 'iman', 'trust', 'certainty']
+  },
+  {
+    id: 'repentance',
+    label: {
+      english: 'Repentance (Tawbah)',
+      french: 'Repentir (Tawbah)'
+    },
+    keywords: ['repent', 'repentance', 'tawbah', 'return', 'regret']
+  },
+  {
+    id: 'mercy',
+    label: {
+      english: 'Mercy',
+      french: 'Miséricorde'
+    },
+    keywords: ['mercy', 'merciful', 'compassion', 'kindness']
+  },
+  {
+    id: 'truth',
+    label: {
+      english: 'Truth & Honesty',
+      french: 'Vérité & Honnêteté'
+    },
+    keywords: ['truth', 'truthful', 'honesty', 'sincere', 'honest']
+  },
+  {
+    id: 'guidance',
+    label: {
+      english: 'Guidance',
+      french: 'Guidance'
+    },
+    keywords: ['guide', 'guidance', 'show', 'direction', 'path']
+  },
+  {
+    id: 'wealth',
+    label: {
+      english: 'Wealth & Provision',
+      french: 'Richesse & Subsistance'
+    },
+    keywords: ['wealth', 'provision', 'sustain', 'sustenance', 'rizq', 'rich']
+  },
+  {
+    id: 'evil',
+    label: {
+      english: 'Evil & Sin',
+      french: 'Mal & Péché'
+    },
+    keywords: ['evil', 'sin', 'wrong', 'wicked', 'transgress']
   }
 ];
 
