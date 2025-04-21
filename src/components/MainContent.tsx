@@ -4,6 +4,7 @@ import { Surah, Ayah, Translation } from '../types/quran';
 import SurahView from './SurahView';
 import LanguageSelector from './LanguageSelector';
 import BookmarksDrawer from './BookmarksDrawer';
+import TextSizeControl from './TextSizeControl';
 
 interface MainContentProps {
   selectedSurah: Surah | null;
@@ -39,10 +40,16 @@ const MainContent: React.FC<MainContentProps> = ({
   return (
     <div className="flex-1 flex flex-col">
       <div className="flex justify-between items-center px-4 py-2 border-b bg-background">
-        <BookmarksDrawer 
-          displayLanguage={displayLanguage} 
-          onSelectAyah={onSelectAyah}
-        />
+        <div className="flex items-center gap-2">
+          <BookmarksDrawer 
+            displayLanguage={displayLanguage} 
+            onSelectAyah={onSelectAyah}
+          />
+          <TextSizeControl 
+            textSize={textSize}
+            setTextSize={setTextSize}
+          />
+        </div>
         <LanguageSelector 
           displayLanguage={displayLanguage}
           setDisplayLanguage={setDisplayLanguage}

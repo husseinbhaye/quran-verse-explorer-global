@@ -147,12 +147,6 @@ const Header = ({
             displayLanguage={displayLanguage} 
             onSelectAyah={onSelectAyah || (() => {})}
           />
-          <div className="flex items-center">
-            <TextSizeControl 
-              textSize={textSize}
-              setTextSize={setTextSize}
-            />
-          </div>
           <div className="flex items-center pl-2 border-l border-white/30">
             <AudioRecorder 
               displayLanguage={displayLanguage} 
