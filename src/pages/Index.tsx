@@ -77,6 +77,7 @@ const Index = () => {
             setShowBothTranslations={setShowBothTranslations}
             onSelectAyah={goToAyah}
             textSize={textSize}
+            setTextSize={setTextSize}  // Add the missing prop here
           />
         </main>
       </div>
@@ -101,4 +102,3 @@ const Index = () => {
 };
 
 export default Index;
-
