@@ -51,7 +51,7 @@ const SurahView = ({
     return (
       <div className="flex-1 p-6 flex items-center justify-center pattern-bg">
         <div className="text-center">
-          <h2 className="text-3xl font-['UthmanicHafs'] arabic text-center w-full dir-rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
+          <h2 className="text-3xl font-['UthmanicHafs'] arabic text-center dir-rtl">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
           <p className="text-lg text-gray-600">
             {displayLanguage === 'english' ? 'Select a Surah to begin reading' : 'Sélectionnez une sourate pour commencer la lecture'}
           </p>
@@ -71,15 +71,15 @@ const SurahView = ({
       <div>
         {/* Center aligned all header text */}
         <div className="mb-8 geometric-pattern pt-6 flex flex-col items-center text-center">
-          <h1 className="arabic text-3xl my-4 font-['UthmanicHafs'] w-full dir-rtl">{surah.name}</h1>
-          <h2 className="text-xl font-medium text-quran-primary w-full">
+          <h1 className="arabic text-3xl my-4 font-['UthmanicHafs'] dir-rtl text-center">{surah.name}</h1>
+          <h2 className="text-xl font-medium text-quran-primary w-full text-center">
             {surah.englishName} - {surah.frenchName}
           </h2>
-          <p className="text-sm text-gray-600 mt-2 w-full">
+          <p className="text-sm text-gray-600 mt-2 w-full text-center">
             {surah.englishNameTranslation} | {surah.numberOfAyahs} Verses | {surah.revelationType}
           </p>
           <Separator className="my-4 bg-quran-primary/20 w-full" />
-          <p className="arabic text-xl my-4 font-['UthmanicHafs'] w-full dir-rtl">
+          <p className="arabic text-xl my-4 font-['UthmanicHafs'] dir-rtl text-center">
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
         </div>
