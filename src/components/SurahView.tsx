@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
@@ -12,6 +11,7 @@ interface SurahViewProps {
   loading: boolean;
   showBothTranslations: boolean;
   displayLanguage: 'english' | 'french';
+  textSize?: "sm" | "base" | "lg" | "xl";
 }
 
 const SurahView = ({
@@ -21,7 +21,8 @@ const SurahView = ({
   frenchTranslations,
   loading,
   showBothTranslations,
-  displayLanguage
+  displayLanguage,
+  textSize = "base"
 }: SurahViewProps) => {
   useEffect(() => {
     if (surah) {
@@ -60,6 +61,19 @@ const SurahView = ({
     );
   }
 
+  const surahNameSize = {
+    sm: "text-xl",
+    base: "text-3xl",
+    lg: "text-4xl",
+    xl: "text-5xl"
+  }[textSize];
+  const mainTextSize = {
+    sm: "text-sm",
+    base: "text-base",
+    lg: "text-lg",
+    xl: "text-xl"
+  }[textSize];
+
   const primaryTranslations = displayLanguage === 'english' ? englishTranslations : frenchTranslations;
   const secondaryTranslations = displayLanguage === 'english' ? frenchTranslations : englishTranslations;
   const surahName = displayLanguage === 'english' ? surah.englishName : surah.frenchName;
@@ -67,11 +81,13 @@ const SurahView = ({
   console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations`);
 
   return (
-    <div className="flex-1 px-2 md:px-8 lg:px-16 py-2 md:py-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
+    <div className={`flex-1 px-2 md:px-8 lg:px-16 py-2 md:py-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg ${mainTextSize}`}>
       <div>
         {/* Center aligned all header text */}
         <div className="mb-8 geometric-pattern pt-6 flex flex-col items-center text-center">
-          <h1 className="arabic text-3xl my-4 font-['UthmanicHafs'] dir-rtl text-center">{surah.name}</h1>
+          <h1 className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize}`}>
+            {surah.name}
+          </h1>
           <h2 className="text-xl font-medium text-quran-primary w-full text-center">
             {surah.englishName} - {surah.frenchName}
           </h2>
@@ -79,7 +95,7 @@ const SurahView = ({
             {surah.englishNameTranslation} | {surah.numberOfAyahs} Verses | {surah.revelationType}
           </p>
           <Separator className="my-4 bg-quran-primary/20 w-full" />
-          <p className="arabic text-xl my-4 font-['UthmanicHafs'] dir-rtl text-center">
+          <p className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize === "text-xl" ? "text-lg" : surahNameSize}`}>
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
         </div>
@@ -101,6 +117,7 @@ const SurahView = ({
                 showBoth={showBothTranslations}
                 surahName={surahName}
                 displayLanguage={displayLanguage}
+                textSize={textSize}
               />
             );
           })}
@@ -111,4 +128,3 @@ const SurahView = ({
 };
 
 export default SurahView;
-

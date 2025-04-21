@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import SurahView from './SurahView';
@@ -16,6 +15,7 @@ interface MainContentProps {
   setDisplayLanguage: (language: 'english' | 'french') => void;
   setShowBothTranslations: (show: boolean) => void;
   onSelectAyah: (surahId: number, ayahNumber: number) => void;
+  textSize: "sm" | "base" | "lg" | "xl";
 }
 
 const MainContent: React.FC<MainContentProps> = ({
@@ -28,7 +28,8 @@ const MainContent: React.FC<MainContentProps> = ({
   displayLanguage,
   setDisplayLanguage,
   setShowBothTranslations,
-  onSelectAyah
+  onSelectAyah,
+  textSize
 }) => {
   return (
     <div className="flex-1 flex flex-col">
@@ -53,6 +54,7 @@ const MainContent: React.FC<MainContentProps> = ({
         loading={loading}
         showBothTranslations={showBothTranslations}
         displayLanguage={displayLanguage}
+        textSize={textSize}
       />
     </div>
   );

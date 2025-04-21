@@ -11,6 +11,7 @@ interface AyahViewProps {
   showBoth: boolean;
   surahName: string;
   displayLanguage: 'english' | 'french';
+  textSize?: "sm" | "base" | "lg" | "xl";
 }
 
 const AyahView = ({
@@ -19,39 +20,53 @@ const AyahView = ({
   frenchTranslation,
   showBoth,
   surahName,
-  displayLanguage
+  displayLanguage,
+  textSize = "base"
 }: AyahViewProps) => {
+  const arabicSize = {
+    sm: "text-lg",
+    base: "text-2xl",
+    lg: "text-3xl",
+    xl: "text-4xl"
+  }[textSize];
+  const translationSize = {
+    sm: "text-xs",
+    base: "text-base",
+    lg: "text-lg",
+    xl: "text-xl"
+  }[textSize];
+
   return (
     <div className="bg-white dark:bg-card rounded-lg p-4 shadow-sm border">
       <p 
-        className="arabic text-right text-2xl leading-loose mb-4" 
+        className={`arabic text-right leading-loose mb-4 ${arabicSize}`} 
         dir="rtl"
       >
         {ayah.text}
       </p>
-      
+
       {/* Primary translation based on selected language */}
       {displayLanguage === 'english' && englishTranslation && (
-        <p className="text-gray-800 dark:text-gray-200 mb-2">
+        <p className={`text-gray-800 dark:text-gray-200 mb-2 ${translationSize}`}>
           {englishTranslation.text}
         </p>
       )}
       
       {displayLanguage === 'french' && frenchTranslation && (
-        <p className="text-gray-800 dark:text-gray-200 mb-2">
+        <p className={`text-gray-800 dark:text-gray-200 mb-2 ${translationSize}`}>
           {frenchTranslation.text}
         </p>
       )}
       
       {/* Secondary translation if showing both is enabled */}
       {showBoth && displayLanguage === 'english' && frenchTranslation && (
-        <p className="text-gray-600 dark:text-gray-400 text-sm italic mt-2">
+        <p className={`text-gray-600 dark:text-gray-400 text-sm italic mt-2 ${translationSize}`}>
           {frenchTranslation.text}
         </p>
       )}
       
       {showBoth && displayLanguage === 'french' && englishTranslation && (
-        <p className="text-gray-600 dark:text-gray-400 text-sm italic mt-2">
+        <p className={`text-gray-600 dark:text-gray-400 text-sm italic mt-2 ${translationSize}`}>
           {englishTranslation.text}
         </p>
       )}
