@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import SurahView from './SurahView';

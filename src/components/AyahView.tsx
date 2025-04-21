@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import AudioPlayer from './audio';
@@ -29,6 +30,7 @@ const AyahView = ({
     lg: "text-3xl",
     xl: "text-4xl"
   }[textSize];
+  
   const translationSize = {
     sm: "text-xs",
     base: "text-base",
