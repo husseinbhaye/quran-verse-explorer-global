@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Plus, Minus } from "lucide-react";
+import { CirclePlus, CircleMinus } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface TextSizeControlProps {
@@ -28,10 +28,11 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
         onClick={decrease}
         disabled={textSize === "sm"}
         aria-label="Decrease text size"
+        className="text-quran-primary hover:bg-quran-primary/10"
       >
-        <Minus />
+        <CircleMinus />
       </Button>
-      <span className="text-sm mx-1">
+      <span className="text-sm mx-1 select-none font-semibold text-quran-primary">
         Text Size
       </span>
       <Button
@@ -40,8 +41,9 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
         onClick={increase}
         disabled={textSize === "xl"}
         aria-label="Increase text size"
+        className="text-quran-primary hover:bg-quran-primary/10"
       >
-        <Plus />
+        <CirclePlus />
       </Button>
     </div>
   );
