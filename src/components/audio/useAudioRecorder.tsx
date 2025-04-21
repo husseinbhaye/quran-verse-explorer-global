@@ -1,17 +1,16 @@
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UseAudioRecorderProps } from "./types/audio";
 import { getToastMessage } from "./utils/toastMessages";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useAudioPlayback } from "./hooks/useAudioPlayback";
+import { useRecordingState } from "./hooks/useRecordingState";
 
 export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingAvailable, setRecordingAvailable] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
   const { toast } = useToast();
-
+  const { audioState, startRecordingState, stopRecordingState, setPlayingState } = useRecordingState();
+  
   const {
     mediaRecorderRef,
     audioChunksRef,
@@ -28,7 +27,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
   useEffect(() => {
     audioRef.current = new Audio();
-    audioRef.current.onended = () => setIsPlaying(false);
+    audioRef.current.onended = () => setPlayingState(false);
 
     return () => {
       if (audioRef.current) {
@@ -73,7 +72,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
               audioRef.current.src = audioUrl;
               audioRef.current.load();
               console.log("Audio URL created and assigned to audio element:", audioUrl);
-              setRecordingAvailable(true);
+              stopRecordingState();
             }
           } else {
             console.warn("Created audio blob is empty");
@@ -91,14 +90,9 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         }
       });
 
-      mediaRecorderRef.current.addEventListener("error", (event) => {
-        console.error("MediaRecorder error:", event);
-        showRecordingError();
-      });
-
       mediaRecorderRef.current.start(1000);
       console.log("MediaRecorder started");
-      setIsRecording(true);
+      startRecordingState();
 
       const message = getToastMessage('startRecording', displayLanguage);
       toast(message);
@@ -108,10 +102,10 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
+    if (mediaRecorderRef.current && audioState.isRecording) {
       console.log("Stopping MediaRecorder...");
       mediaRecorderRef.current.stop();
-      setIsRecording(false);
+      stopRecordingState();
 
       const message = getToastMessage('stopRecording', displayLanguage);
       toast(message);
@@ -119,35 +113,30 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   };
 
   const playRecording = () => {
-    if (audioRef.current && recordingAvailable) {
+    if (audioRef.current && audioState.recordingAvailable) {
       console.log("Playing audio recording...");
       
       audioRef.current.onplay = () => {
         console.log("Audio playback started");
-        setIsPlaying(true);
+        setPlayingState(true);
       };
       
       audioRef.current.onended = () => {
         console.log("Audio playback ended");
-        setIsPlaying(false);
+        setPlayingState(false);
       };
       
       audioRef.current.onerror = (e) => {
         console.error("Audio playback error:", e);
-        setIsPlaying(false);
+        setPlayingState(false);
         handlePlaybackError();
       };
       
-      audioRef.current.load();
-      const playPromise = audioRef.current.play();
-      
-      if (playPromise !== undefined) {
-        playPromise.catch(err => {
-          console.error("Error playing audio:", err);
-          setIsPlaying(false);
-          handlePlaybackError();
-        });
-      }
+      audioRef.current.play().catch(err => {
+        console.error("Error playing audio:", err);
+        setPlayingState(false);
+        handlePlaybackError();
+      });
     } else {
       console.warn("No audio recording available to play");
       handleNoRecording();
@@ -158,12 +147,12 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      setIsPlaying(false);
+      setPlayingState(false);
     }
   };
 
   const saveRecording = async () => {
-    if (!recordingAvailable || audioChunksRef.current.length === 0) {
+    if (!audioState.recordingAvailable || audioChunksRef.current.length === 0) {
       handleNoRecording();
       return;
     }
@@ -205,9 +194,9 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   };
 
   return {
-    isRecording,
-    isPlaying,
-    recordingAvailable,
+    isRecording: audioState.isRecording,
+    isPlaying: audioState.isPlaying,
+    recordingAvailable: audioState.recordingAvailable,
     startRecording,
     stopRecording,
     playRecording,
