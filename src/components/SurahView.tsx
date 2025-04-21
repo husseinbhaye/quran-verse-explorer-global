@@ -3,6 +3,7 @@ import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
 import { Separator } from './ui/separator';
 import TextSizeControl from './TextSizeControl';
+import AudioRecorder from './audio/AudioRecorder';
 
 interface SurahViewProps {
   surah: Surah | null;
@@ -111,6 +112,9 @@ const SurahView = ({
           <p className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize === "text-xl" ? "text-lg" : surahNameSize}`}>
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
+          
+          {/* Add the AudioRecorder component below Bismillah */}
+          <AudioRecorder displayLanguage={displayLanguage} />
         </div>
         <div className="space-y-4">
           {ayahs.map((ayah) => {

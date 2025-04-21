@@ -1,5 +1,6 @@
 
 import AudioPlayer from './AudioPlayer';
+import AudioRecorder from './AudioRecorder';
 
-export { AudioPlayer };
+export { AudioPlayer, AudioRecorder };
 export default AudioPlayer;
