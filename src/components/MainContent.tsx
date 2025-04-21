@@ -17,6 +17,7 @@ interface MainContentProps {
   setShowBothTranslations: (show: boolean) => void;
   onSelectAyah: (surahId: number, ayahNumber: number) => void;
   textSize: "sm" | "base" | "lg" | "xl";
+  setTextSize: (size: "sm" | "base" | "lg" | "xl") => void;
 }
 
 const MainContent: React.FC<MainContentProps> = ({
@@ -30,7 +31,8 @@ const MainContent: React.FC<MainContentProps> = ({
   setDisplayLanguage,
   setShowBothTranslations,
   onSelectAyah,
-  textSize
+  textSize,
+  setTextSize
 }) => {
   return (
     <div className="flex-1 flex flex-col">
@@ -56,9 +58,11 @@ const MainContent: React.FC<MainContentProps> = ({
         showBothTranslations={showBothTranslations}
         displayLanguage={displayLanguage}
         textSize={textSize}
+        setTextSize={setTextSize}
       />
     </div>
   );
 };
 
 export default MainContent;
+

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Header from '../components/Header';
 import SurahList from '../components/SurahList';
@@ -7,13 +8,12 @@ import { useQuranData } from '../hooks/useQuranData';
 import { useQuranSearch } from '../hooks/useQuranSearch';
 import SidebarToggleButton from '../components/SidebarToggleButton';
 import { useIsMobile } from '../hooks/use-mobile';
-import TextSizeControl from '../components/TextSizeControl';
 
 const Index = () => {
-  const [displayLanguage, setDisplayLanguage] = useState<'english' | 'french'>('english');
-  const [showBothTranslations, setShowBothTranslations] = useState(false);
-  const [showSidebarMobile, setShowSidebarMobile] = useState(false);
-  const [textSize, setTextSize] = useState<"sm" | "base" | "lg" | "xl">("base");
+  const [displayLanguage, setDisplayLanguage] = React.useState<'english' | 'french'>('english');
+  const [showBothTranslations, setShowBothTranslations] = React.useState(false);
+  const [showSidebarMobile, setShowSidebarMobile] = React.useState(false);
+  const [textSize, setTextSize] = React.useState<"sm" | "base" | "lg" | "xl">("base");
 
   const isMobile = useIsMobile();
 
@@ -94,16 +94,11 @@ const Index = () => {
         />
       )}
 
-      {/* Floating text size control for desktop, can move to a better place in the future */}
-      <div className="fixed top-6 right-4 z-40 hidden md:block">
-        <TextSizeControl textSize={textSize} setTextSize={setTextSize} />
-      </div>
-      {/* Mobile: below header */}
-      <div className="md:hidden px-2 py-2 bg-white/80 backdrop-blur-sm sticky top-0 z-30 flex justify-end">
-        <TextSizeControl textSize={textSize} setTextSize={setTextSize} />
-      </div>
+      {/* Removed floating TextSizeControl from here */}
+
     </div>
   );
 };
 
 export default Index;
+

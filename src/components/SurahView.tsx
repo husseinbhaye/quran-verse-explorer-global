@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
 import { Separator } from './ui/separator';
+import TextSizeControl from './TextSizeControl';
 
 interface SurahViewProps {
   surah: Surah | null;
@@ -13,6 +14,7 @@ interface SurahViewProps {
   showBothTranslations: boolean;
   displayLanguage: 'english' | 'french';
   textSize?: "sm" | "base" | "lg" | "xl";
+  setTextSize: (size: "sm" | "base" | "lg" | "xl") => void;
 }
 
 const SurahView = ({
@@ -23,7 +25,8 @@ const SurahView = ({
   loading,
   showBothTranslations,
   displayLanguage,
-  textSize = "base"
+  textSize = "base",
+  setTextSize
 }: SurahViewProps) => {
   useEffect(() => {
     if (surah) {
@@ -99,6 +102,11 @@ const SurahView = ({
           <p className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize === "text-xl" ? "text-lg" : surahNameSize}`}>
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
+
+          {/* Text size control relocated below Bismillah */}
+          <div className="mt-2">
+            <TextSizeControl textSize={textSize} setTextSize={setTextSize} />
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -129,3 +137,5 @@ const SurahView = ({
 };
 
 export default SurahView;
+
+
