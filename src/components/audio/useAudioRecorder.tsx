@@ -1,20 +1,30 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-
-interface UseAudioRecorderProps {
-  displayLanguage: "english" | "french";
-}
+import { UseAudioRecorderProps } from "./types/audio";
+import { getToastMessage } from "./utils/toastMessages";
+import { useAudioRecording } from "./hooks/useAudioRecording";
+import { useAudioPlayback } from "./hooks/useAudioPlayback";
 
 export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingAvailable, setRecordingAvailable] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
   const { toast } = useToast();
+
+  const {
+    mediaRecorderRef,
+    audioChunksRef,
+    streamRef,
+    showRecordingError,
+    initializeRecording
+  } = useAudioRecording(displayLanguage);
+
+  const {
+    audioRef,
+    handlePlaybackError,
+    handleNoRecording
+  } = useAudioPlayback(displayLanguage);
 
   useEffect(() => {
     audioRef.current = new Audio();
@@ -25,7 +35,6 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
-      // Clean up any stream if component unmounts
       if (streamRef.current) {
         const tracks = streamRef.current.getTracks();
         tracks.forEach((track) => track.stop());
@@ -35,39 +44,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
   const startRecording = async () => {
     try {
-      // Reset audio chunks
-      audioChunksRef.current = [];
-      setRecordingAvailable(false);
-      
-      // Stop any existing media stream
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
-      }
-
-      // Request microphone access with specific constraints for better quality
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 44100,
-          channelCount: 2,
-        }
-      });
-      
-      console.log("Microphone access granted, stream created");
-      
-      // Store the stream for cleanup
-      streamRef.current = stream;
-      
-      // Create a new MediaRecorder with optimal settings
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
-        ? 'audio/webm' 
-        : MediaRecorder.isTypeSupported('audio/mp3') 
-          ? 'audio/mp3' 
-          : 'audio/wav';
-      
-      console.log(`Using mime type: ${mimeType}`);
+      const { stream, mimeType } = await initializeRecording();
       
       mediaRecorderRef.current = new MediaRecorder(stream, {
         mimeType: mimeType,
@@ -94,7 +71,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
             const audioUrl = URL.createObjectURL(audioBlob);
             if (audioRef.current) {
               audioRef.current.src = audioUrl;
-              audioRef.current.load(); // Explicitly load the audio
+              audioRef.current.load();
               console.log("Audio URL created and assigned to audio element:", audioUrl);
               setRecordingAvailable(true);
             }
@@ -107,7 +84,6 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
           showRecordingError();
         }
         
-        // Stop all audio tracks after recording
         if (streamRef.current) {
           const tracks = streamRef.current.getAudioTracks();
           tracks.forEach((track) => track.stop());
@@ -120,40 +96,15 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         showRecordingError();
       });
 
-      // Start recording
-      mediaRecorderRef.current.start(1000); // Collect data every second
+      mediaRecorderRef.current.start(1000);
       console.log("MediaRecorder started");
       setIsRecording(true);
 
-      toast({
-        title: displayLanguage === "english" ? "Recording started" : "Enregistrement démarré",
-        description:
-          displayLanguage === "english"
-            ? "You are now recording audio"
-            : "Vous enregistrez maintenant l'audio",
-      });
+      const message = getToastMessage('startRecording', displayLanguage);
+      toast(message);
     } catch (error) {
-      console.error("Error accessing microphone:", error);
-      toast({
-        title: displayLanguage === "english" ? "Error" : "Erreur",
-        description:
-          displayLanguage === "english"
-            ? "Could not access microphone. Please check permissions."
-            : "Impossible d'accéder au microphone. Veuillez vérifier les autorisations.",
-        variant: "destructive",
-      });
+      console.error("Error in startRecording:", error);
     }
-  };
-  
-  const showRecordingError = () => {
-    toast({
-      title: displayLanguage === "english" ? "Recording issue" : "Problème d'enregistrement",
-      description:
-        displayLanguage === "english"
-          ? "No audio data was captured. Please check your microphone."
-          : "Aucune donnée audio n'a été capturée. Veuillez vérifier votre microphone.",
-      variant: "destructive",
-    });
   };
 
   const stopRecording = () => {
@@ -162,13 +113,8 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
       mediaRecorderRef.current.stop();
       setIsRecording(false);
 
-      toast({
-        title: displayLanguage === "english" ? "Recording stopped" : "Enregistrement arrêté",
-        description:
-          displayLanguage === "english"
-            ? "Your recording is now available"
-            : "Votre enregistrement est maintenant disponible",
-      });
+      const message = getToastMessage('stopRecording', displayLanguage);
+      toast(message);
     }
   };
 
@@ -176,7 +122,6 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     if (audioRef.current && recordingAvailable) {
       console.log("Playing audio recording...");
       
-      // Add event listeners to better track playback state
       audioRef.current.onplay = () => {
         console.log("Audio playback started");
         setIsPlaying(true);
@@ -190,16 +135,9 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
       audioRef.current.onerror = (e) => {
         console.error("Audio playback error:", e);
         setIsPlaying(false);
-        toast({
-          title: displayLanguage === "english" ? "Playback error" : "Erreur de lecture",
-          description: displayLanguage === "english"
-            ? "Unable to play the recording"
-            : "Impossible de lire l'enregistrement",
-          variant: "destructive",
-        });
+        handlePlaybackError();
       };
       
-      // Ensure the audio is loaded before playing
       audioRef.current.load();
       const playPromise = audioRef.current.play();
       
@@ -207,24 +145,12 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         playPromise.catch(err => {
           console.error("Error playing audio:", err);
           setIsPlaying(false);
-          toast({
-            title: displayLanguage === "english" ? "Playback error" : "Erreur de lecture",
-            description: displayLanguage === "english"
-              ? "Unable to play the recording"
-              : "Impossible de lire l'enregistrement",
-            variant: "destructive",
-          });
+          handlePlaybackError();
         });
       }
     } else {
       console.warn("No audio recording available to play");
-      toast({
-        title: displayLanguage === "english" ? "No recording" : "Pas d'enregistrement",
-        description: displayLanguage === "english"
-          ? "There is no recording to play"
-          : "Il n'y a pas d'enregistrement à lire",
-        variant: "destructive",
-      });
+      handleNoRecording();
     }
   };
 
@@ -238,14 +164,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
   const saveRecording = async () => {
     if (!recordingAvailable || audioChunksRef.current.length === 0) {
-      toast({
-        title: displayLanguage === "english" ? "No recording available" : "Aucun enregistrement disponible",
-        description:
-          displayLanguage === "english"
-            ? "Please record something first"
-            : "Veuillez d'abord enregistrer quelque chose",
-        variant: "destructive",
-      });
+      handleNoRecording();
       return;
     }
 
@@ -254,7 +173,6 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
       const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
       console.log("Saving audio blob, size:", audioBlob.size, "bytes");
 
-      // Use direct download approach as showSaveFilePicker may have issues in iframes
       const url = URL.createObjectURL(audioBlob);
       const a = document.createElement("a");
       a.style.display = "none";
@@ -270,19 +188,17 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
       toast({
         title: displayLanguage === "english" ? "Recording downloaded" : "Enregistrement téléchargé",
-        description:
-          displayLanguage === "english"
-            ? "Your recording has been downloaded"
-            : "Votre enregistrement a été téléchargé",
+        description: displayLanguage === "english"
+          ? "Your recording has been downloaded"
+          : "Votre enregistrement a été téléchargé",
       });
     } catch (error) {
       console.error("Error saving recording:", error);
       toast({
         title: displayLanguage === "english" ? "Error" : "Erreur",
-        description:
-          displayLanguage === "english"
-            ? "Failed to save recording"
-            : "Échec de la sauvegarde de l'enregistrement",
+        description: displayLanguage === "english"
+          ? "Failed to save recording"
+          : "Échec de la sauvegarde de l'enregistrement",
         variant: "destructive",
       });
     }
