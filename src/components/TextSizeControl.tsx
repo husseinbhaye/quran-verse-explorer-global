@@ -1,6 +1,6 @@
 
 import React from "react";
-import { CirclePlus, CircleMinus } from "lucide-react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 import { Button } from "./ui/button";
 
 interface TextSizeControlProps {
@@ -13,7 +13,7 @@ const SIZES: Array<"sm" | "base" | "lg" | "xl"> = ["sm", "base", "lg", "xl"];
 const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize }) => {
   const currentIdx = SIZES.indexOf(textSize);
 
-  const increase = () => {
+  const handleIncrease = () => {
     if (currentIdx < SIZES.length - 1) {
       const newSize = SIZES[currentIdx + 1];
       console.log("Increasing size to:", newSize);
@@ -21,7 +21,7 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
     }
   };
   
-  const decrease = () => {
+  const handleDecrease = () => {
     if (currentIdx > 0) {
       const newSize = SIZES[currentIdx - 1];
       console.log("Decreasing size to:", newSize);
@@ -36,12 +36,12 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
       <Button
         variant="outline"
         size="icon"
-        onClick={decrease}
+        onClick={handleDecrease}
         disabled={currentIdx === 0}
         aria-label="Decrease text size"
-        className="text-quran-primary hover:bg-quran-primary/10"
+        className="text-quran-primary hover:bg-quran-primary/10 cursor-pointer"
       >
-        <CircleMinus />
+        <ChevronDown className="h-4 w-4" />
       </Button>
       <span className="text-sm mx-1 select-none font-semibold text-quran-primary">
         Text Size
@@ -49,12 +49,12 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
       <Button
         variant="outline"
         size="icon"
-        onClick={increase}
+        onClick={handleIncrease}
         disabled={currentIdx === SIZES.length - 1}
         aria-label="Increase text size"
-        className="text-quran-primary hover:bg-quran-primary/10"
+        className="text-quran-primary hover:bg-quran-primary/10 cursor-pointer"
       >
-        <CirclePlus />
+        <ChevronUp className="h-4 w-4" />
       </Button>
     </div>
   );

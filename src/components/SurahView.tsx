@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
@@ -111,10 +110,7 @@ const SurahView = ({
           <div className="mt-2">
             <TextSizeControl 
               textSize={textSize} 
-              setTextSize={(size) => {
-                console.log("SurahView: Setting text size to:", size);
-                setTextSize(size);
-              }} 
+              setTextSize={setTextSize}
             />
           </div>
         </div>
