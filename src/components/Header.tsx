@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, Search } from 'lucide-react';
 import { Button } from './ui/button';
@@ -13,6 +12,7 @@ import {
 import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
 import TextSizeControl from './TextSizeControl';
+import BookmarksDrawer from './BookmarksDrawer';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -20,9 +20,17 @@ interface HeaderProps {
   displayLanguage?: 'english' | 'french';
   textSize: "sm" | "base" | "lg" | "xl";
   setTextSize: (size: "sm" | "base" | "lg" | "xl") => void;
+  onSelectAyah?: (surahId: number, ayahNumber: number) => void;
 }
 
-const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english', textSize, setTextSize }: HeaderProps) => {
+const Header = ({ 
+  onSearch, 
+  onThemeSelect, 
+  displayLanguage = 'english', 
+  textSize, 
+  setTextSize,
+  onSelectAyah 
+}: HeaderProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -105,7 +113,6 @@ const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english', textSize
       </div>
 
       <div className="container mx-auto mt-4 flex flex-wrap items-center justify-between">
-        {/* Navigation links */}
         <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
           <a 
             href="https://www.eemaanfoundation.org/" 
@@ -135,20 +142,17 @@ const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english', textSize
           </a>
         </nav>
 
-        {/* Recorder positioned to the right */}
         <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-4">
           <BookmarksDrawer 
             displayLanguage={displayLanguage} 
-            onSelectAyah={() => {}} // Should pass real handler in parent component
+            onSelectAyah={onSelectAyah || (() => {})}
           />
-          {/* Add TextSizeControl right after BookmarksButton */}
           <div className="flex items-center">
             <TextSizeControl 
               textSize={textSize}
               setTextSize={setTextSize}
             />
           </div>
-          {/* Audio recorder component */}
           <div className="flex items-center pl-2 border-l border-white/30">
             <AudioRecorder 
               displayLanguage={displayLanguage} 

@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import Header from '../components/Header';
 import SurahList from '../components/SurahList';
@@ -53,7 +52,6 @@ const Index = () => {
   const handleSelectSurah = (surahId: number) => {
     setSelectedSurah(surahId);
     if (isMobile) setShowSidebarMobile(false);
-    // Close theme results when selecting a surah
     setThemeResults(null);
   };
 
@@ -64,21 +62,17 @@ const Index = () => {
 
   const handleThemeSelect = async (themeId: string) => {
     try {
-      // Close search results if open
       if (showSearchResults) {
         closeSearch();
       }
       
-      // Show loading toast
       toast({
         title: displayLanguage === 'english' ? 'Loading theme verses' : 'Chargement des versets thématiques',
         description: displayLanguage === 'english' ? 'Please wait...' : 'Veuillez patienter...',
       });
       
-      // Fetch verses for the selected theme
       const results = await fetchVersesByTheme(themeId, displayLanguage);
       
-      // Create translation lookup maps (similar to search results)
       const englishMap: Record<number, Translation> = {};
       
       results.forEach(ayah => {
@@ -89,17 +83,15 @@ const Index = () => {
         };
       });
       
-      // Store theme results
       setThemeResults({
         theme: themeId,
         results,
         translations: {
           english: englishMap,
-          french: englishMap // Using English translations for French too (can be enhanced later)
+          french: englishMap
         }
       });
       
-      // Success toast
       toast({
         title: displayLanguage === 'english' ? 'Theme verses loaded' : 'Versets thématiques chargés',
         description: displayLanguage === 'english' 
@@ -135,10 +127,12 @@ const Index = () => {
         onSearch={handleSearch} 
         onThemeSelect={handleThemeSelect}
         displayLanguage={displayLanguage}
+        textSize={textSize}
+        setTextSize={handleSetTextSize}
+        onSelectAyah={goToAyah}
       />
 
       <div className="flex-1 flex flex-col md:flex-row relative w-full">
-        {/* Sidebar toggle for mobile */}
         {isMobile && (
           <SidebarToggleButton onClick={() => setShowSidebarMobile(true)} />
         )}
@@ -151,7 +145,6 @@ const Index = () => {
           onCloseMobile={() => setShowSidebarMobile(false)}
         />
 
-        {/* Main content: always takes max width */}
         <main className="flex-1 w-full max-w-full min-w-0">
           <MainContent 
             selectedSurah={selectedSurahData}
