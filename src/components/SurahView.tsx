@@ -1,8 +1,10 @@
+
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
 import { Separator } from './ui/separator';
-import TextSizeControl from './TextSizeControl';
+
+// Remove import TextSizeControl from SurahView
 
 interface SurahViewProps {
   surah: Surah | null;
@@ -12,8 +14,8 @@ interface SurahViewProps {
   loading: boolean;
   showBothTranslations: boolean;
   displayLanguage: 'english' | 'french';
-  textSize: "sm" | "base" | "lg" | "xl";
-  setTextSize: (size: "sm" | "base" | "lg" | "xl") => void;
+  textSize: "sm" | "base" | "lg" | "xl"; // keep textSize here for font size ratio
+  // setTextSize: (size: "sm" | "base" | "lg" | "xl") => void; removed setTextSize, text size is controlled by Header now
 }
 
 const SurahView = ({
@@ -25,7 +27,7 @@ const SurahView = ({
   showBothTranslations,
   displayLanguage,
   textSize,
-  setTextSize
+  // setTextSize removed from destructuring props
 }: SurahViewProps) => {
   useEffect(() => {
     if (surah) {
@@ -91,12 +93,7 @@ const SurahView = ({
     <div className={`flex-1 px-2 md:px-8 lg:px-16 py-2 md:py-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg ${mainTextSize}`}>
       <div>
         <div className="mb-8 geometric-pattern pt-6 flex flex-col items-center text-center">
-          <div className="mb-2 relative z-30 pointer-events-auto">
-            <TextSizeControl 
-              textSize={textSize} 
-              setTextSize={setTextSize}
-            />
-          </div>
+          {/* Removed TextSizeControl from here */}
 
           <h1 className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize}`}>
             {surah.name}
@@ -140,3 +137,4 @@ const SurahView = ({
 };
 
 export default SurahView;
+

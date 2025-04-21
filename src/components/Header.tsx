@@ -12,14 +12,17 @@ import {
 } from './ui/dropdown-menu';
 import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
+import TextSizeControl from './TextSizeControl';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
   onThemeSelect?: (themeId: string) => void;
   displayLanguage?: 'english' | 'french';
+  textSize: "sm" | "base" | "lg" | "xl";
+  setTextSize: (size: "sm" | "base" | "lg" | "xl") => void;
 }
 
-const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english' }: HeaderProps) => {
+const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english', textSize, setTextSize }: HeaderProps) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -133,13 +136,18 @@ const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english' }: Header
         </nav>
 
         {/* Recorder positioned to the right */}
-        <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end">
-          <a 
-            href="#" 
-            className="text-white hover:text-quran-secondary transition-colors flex items-center gap-2 mr-4"
-          >
-            <span className="hidden sm:inline">Bookmarks</span>
-          </a>
+        <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-4">
+          <BookmarksDrawer 
+            displayLanguage={displayLanguage} 
+            onSelectAyah={() => {}} // Should pass real handler in parent component
+          />
+          {/* Add TextSizeControl right after BookmarksButton */}
+          <div className="flex items-center">
+            <TextSizeControl 
+              textSize={textSize}
+              setTextSize={setTextSize}
+            />
+          </div>
           {/* Audio recorder component */}
           <div className="flex items-center pl-2 border-l border-white/30">
             <AudioRecorder 
