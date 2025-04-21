@@ -67,8 +67,9 @@ const SurahView = ({
   console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations`);
 
   return (
-    <div className="flex-1 p-2 md:p-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
-      <div className="max-w-3xl mx-auto">
+    <div className="flex-1 px-2 md:px-8 lg:px-16 py-2 md:py-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
+      {/* Removed max-w-3xl and mx-auto to expand width */}
+      <div>
         <div className="text-center mb-8 geometric-pattern pt-6">
           <h1 className="arabic text-3xl my-4 font-['UthmanicHafs'] text-center w-full dir-rtl">{surah.name}</h1>
           <h2 className="text-xl font-medium text-quran-primary">
