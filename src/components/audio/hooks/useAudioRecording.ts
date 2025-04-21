@@ -35,10 +35,11 @@ export const useAudioRecording = (displayLanguage: "english" | "french") => {
       console.log("Microphone access granted, stream created");
       streamRef.current = stream;
       
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
-        ? 'audio/webm' 
-        : MediaRecorder.isTypeSupported('audio/mp3') 
-          ? 'audio/mp3' 
+      // Prioritize MP3 format first, then WebM, then fallback to WAV
+      const mimeType = MediaRecorder.isTypeSupported('audio/mp3') 
+        ? 'audio/mp3' 
+        : MediaRecorder.isTypeSupported('audio/webm') 
+          ? 'audio/webm' 
           : 'audio/wav';
       
       console.log(`Using mime type: ${mimeType}`);

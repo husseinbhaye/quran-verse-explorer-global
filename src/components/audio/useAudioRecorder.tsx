@@ -158,15 +158,26 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     }
 
     try {
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp3';
+      // Get the MIME type that was actually used during recording
+      const mimeType = mediaRecorderRef.current?.mimeType || 
+        (MediaRecorder.isTypeSupported('audio/mp3') ? 'audio/mp3' : 'audio/webm');
+      
       const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-      console.log("Saving audio blob, size:", audioBlob.size, "bytes");
+      console.log("Saving audio blob, size:", audioBlob.size, "bytes, type:", mimeType);
+
+      // Determine the correct file extension based on the MIME type
+      let fileExtension = 'wav'; // Default fallback
+      if (mimeType.includes('mp3')) {
+        fileExtension = 'mp3';
+      } else if (mimeType.includes('webm')) {
+        fileExtension = 'webm';
+      }
 
       const url = URL.createObjectURL(audioBlob);
       const a = document.createElement("a");
       a.style.display = "none";
       a.href = url;
-      a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.${mimeType === 'audio/webm' ? 'webm' : 'mp3'}`;
+      a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.${fileExtension}`;
       document.body.appendChild(a);
       a.click();
 
