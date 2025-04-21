@@ -34,25 +34,43 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   }, []);
 
   const startRecording = async () => {
-    audioChunksRef.current = [];
-    setRecordingAvailable(false);
-
     try {
+      // Reset audio chunks
+      audioChunksRef.current = [];
+      setRecordingAvailable(false);
+      
+      // Stop any existing media stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+
       // Request microphone access with specific constraints for better quality
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          sampleRate: 44100,
+          channelCount: 2,
         }
       });
+      
+      console.log("Microphone access granted, stream created");
       
       // Store the stream for cleanup
       streamRef.current = stream;
       
-      // Create a new MediaRecorder with a higher bitrate for better quality
+      // Create a new MediaRecorder with optimal settings
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') 
+        ? 'audio/webm' 
+        : MediaRecorder.isTypeSupported('audio/mp3') 
+          ? 'audio/mp3' 
+          : 'audio/wav';
+      
+      console.log(`Using mime type: ${mimeType}`);
+      
       mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp3',
+        mimeType: mimeType,
         audioBitsPerSecond: 128000
       });
 
@@ -60,6 +78,8 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
           console.log("Audio data chunk received:", event.data.size, "bytes");
+        } else {
+          console.warn("Received empty audio data chunk");
         }
       });
 
@@ -67,37 +87,42 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         console.log("MediaRecorder stopped, total chunks:", audioChunksRef.current.length);
         
         if (audioChunksRef.current.length > 0) {
-          const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp3';
           const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
           console.log("Audio blob created, size:", audioBlob.size, "bytes");
           
-          const audioUrl = URL.createObjectURL(audioBlob);
-          if (audioRef.current) {
-            audioRef.current.src = audioUrl;
-            setRecordingAvailable(true);
-            console.log("Audio URL created and assigned to audio element");
+          if (audioBlob.size > 0) {
+            const audioUrl = URL.createObjectURL(audioBlob);
+            if (audioRef.current) {
+              audioRef.current.src = audioUrl;
+              audioRef.current.load(); // Explicitly load the audio
+              console.log("Audio URL created and assigned to audio element:", audioUrl);
+              setRecordingAvailable(true);
+            }
+          } else {
+            console.warn("Created audio blob is empty");
+            showRecordingError();
           }
         } else {
           console.warn("No audio data collected during recording");
-          toast({
-            title: displayLanguage === "english" ? "Recording issue" : "Problème d'enregistrement",
-            description:
-              displayLanguage === "english"
-                ? "No audio data was captured. Please check your microphone."
-                : "Aucune donnée audio n'a été capturée. Veuillez vérifier votre microphone.",
-            variant: "destructive",
-          });
+          showRecordingError();
         }
         
         // Stop all audio tracks after recording
         if (streamRef.current) {
           const tracks = streamRef.current.getAudioTracks();
           tracks.forEach((track) => track.stop());
+          console.log("Audio tracks stopped");
         }
       });
 
-      // Set a timeslice to capture data more frequently
+      mediaRecorderRef.current.addEventListener("error", (event) => {
+        console.error("MediaRecorder error:", event);
+        showRecordingError();
+      });
+
+      // Start recording
       mediaRecorderRef.current.start(1000); // Collect data every second
+      console.log("MediaRecorder started");
       setIsRecording(true);
 
       toast({
@@ -119,6 +144,17 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
       });
     }
   };
+  
+  const showRecordingError = () => {
+    toast({
+      title: displayLanguage === "english" ? "Recording issue" : "Problème d'enregistrement",
+      description:
+        displayLanguage === "english"
+          ? "No audio data was captured. Please check your microphone."
+          : "Aucune donnée audio n'a été capturée. Veuillez vérifier votre microphone.",
+      variant: "destructive",
+    });
+  };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
@@ -139,10 +175,56 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   const playRecording = () => {
     if (audioRef.current && recordingAvailable) {
       console.log("Playing audio recording...");
-      audioRef.current.play().catch(err => {
-        console.error("Error playing audio:", err);
+      
+      // Add event listeners to better track playback state
+      audioRef.current.onplay = () => {
+        console.log("Audio playback started");
+        setIsPlaying(true);
+      };
+      
+      audioRef.current.onended = () => {
+        console.log("Audio playback ended");
+        setIsPlaying(false);
+      };
+      
+      audioRef.current.onerror = (e) => {
+        console.error("Audio playback error:", e);
+        setIsPlaying(false);
+        toast({
+          title: displayLanguage === "english" ? "Playback error" : "Erreur de lecture",
+          description: displayLanguage === "english"
+            ? "Unable to play the recording"
+            : "Impossible de lire l'enregistrement",
+          variant: "destructive",
+        });
+      };
+      
+      // Ensure the audio is loaded before playing
+      audioRef.current.load();
+      const playPromise = audioRef.current.play();
+      
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.error("Error playing audio:", err);
+          setIsPlaying(false);
+          toast({
+            title: displayLanguage === "english" ? "Playback error" : "Erreur de lecture",
+            description: displayLanguage === "english"
+              ? "Unable to play the recording"
+              : "Impossible de lire l'enregistrement",
+            variant: "destructive",
+          });
+        });
+      }
+    } else {
+      console.warn("No audio recording available to play");
+      toast({
+        title: displayLanguage === "english" ? "No recording" : "Pas d'enregistrement",
+        description: displayLanguage === "english"
+          ? "There is no recording to play"
+          : "Il n'y a pas d'enregistrement à lire",
+        variant: "destructive",
       });
-      setIsPlaying(true);
     }
   };
 
@@ -172,57 +254,27 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
       const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
       console.log("Saving audio blob, size:", audioBlob.size, "bytes");
 
-      // File System Access API if available
-      if ("showSaveFilePicker" in window) {
-        const options = {
-          suggestedName: `quran_recitation_${new Date().toISOString().slice(0, 10)}.${mimeType === 'audio/webm' ? 'webm' : 'mp3'}`,
-          types: [
-            {
-              description: mimeType === 'audio/webm' ? "WebM Audio" : "MP3 Audio",
-              accept: { [mimeType]: [mimeType === 'audio/webm' ? [".webm"] : [".mp3"]] },
-            },
-          ],
-        };
-        try {
-          // @ts-ignore
-          const fileHandle = await window.showSaveFilePicker(options);
-          const writable = await fileHandle.createWritable();
-          await writable.write(audioBlob);
-          await writable.close();
+      // Use direct download approach as showSaveFilePicker may have issues in iframes
+      const url = URL.createObjectURL(audioBlob);
+      const a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.${mimeType === 'audio/webm' ? 'webm' : 'mp3'}`;
+      document.body.appendChild(a);
+      a.click();
 
-          toast({
-            title: displayLanguage === "english" ? "Recording saved" : "Enregistrement sauvegardé",
-            description:
-              displayLanguage === "english"
-                ? "Your recording has been saved"
-                : "Votre enregistrement a été sauvegardé",
-          });
-        } catch (err) {
-          if ((err as Error).name !== "AbortError") throw err;
-        }
-      } else {
-        // Download fallback
-        const url = URL.createObjectURL(audioBlob);
-        const a = document.createElement("a");
-        a.style.display = "none";
-        a.href = url;
-        a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.${mimeType === 'audio/webm' ? 'webm' : 'mp3'}`;
-        document.body.appendChild(a);
-        a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 100);
 
-        setTimeout(() => {
-          document.body.removeChild(a);
-          window.URL.revokeObjectURL(url);
-        }, 100);
-
-        toast({
-          title: displayLanguage === "english" ? "Recording downloaded" : "Enregistrement téléchargé",
-          description:
-            displayLanguage === "english"
-              ? "Your recording has been downloaded"
-              : "Votre enregistrement a été téléchargé",
-        });
-      }
+      toast({
+        title: displayLanguage === "english" ? "Recording downloaded" : "Enregistrement téléchargé",
+        description:
+          displayLanguage === "english"
+            ? "Your recording has been downloaded"
+            : "Votre enregistrement a été téléchargé",
+      });
     } catch (error) {
       console.error("Error saving recording:", error);
       toast({
