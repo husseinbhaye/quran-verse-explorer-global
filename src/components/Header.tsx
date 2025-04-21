@@ -87,16 +87,9 @@ const Header = ({ onSearch }: HeaderProps) => {
           </a>
         </nav>
       </div>
-      
-      <div className="container mx-auto mt-2 bg-quran-secondary/20 py-2 border-y border-quran-secondary/30">
-        <div className="marquee-container">
-          <p className="marquee-content">
-            DONATE TO EEMAAN FOUNDATION MAURITIUS: MCB BANK ACCOUNT: 000451030435 - (IBAN: MU25MCBL0944000451030435000MUR) - Zakat, Lillah, Sadaqah Jaariyah.
-          </p>
-        </div>
-      </div>
     </header>
   );
 };
 
 export default Header;
+
