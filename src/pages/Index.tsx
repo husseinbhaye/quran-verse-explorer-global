@@ -15,7 +15,7 @@ const Index = () => {
   const [showSidebarMobile, setShowSidebarMobile] = useState(false);
 
   const isMobile = useIsMobile();
-  
+
   const { 
     surahs, 
     loading, 
@@ -45,7 +45,7 @@ const Index = () => {
   const selectedSurahData = selectedSurah ? surahs.find(s => s.id === selectedSurah) || null : null;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col w-full">
       <Header onSearch={handleSearch} />
 
       <div className="flex-1 flex flex-col md:flex-row relative w-full">
@@ -62,18 +62,21 @@ const Index = () => {
           onCloseMobile={() => setShowSidebarMobile(false)}
         />
 
-        <MainContent 
-          selectedSurah={selectedSurahData}
-          ayahs={ayahs}
-          englishTranslations={englishTranslations}
-          frenchTranslations={frenchTranslations}
-          loading={loading}
-          showBothTranslations={showBothTranslations}
-          displayLanguage={displayLanguage}
-          setDisplayLanguage={setDisplayLanguage}
-          setShowBothTranslations={setShowBothTranslations}
-          onSelectAyah={goToAyah}
-        />
+        {/* Main content: always takes max width */}
+        <main className="flex-1 w-full max-w-full min-w-0">
+          <MainContent 
+            selectedSurah={selectedSurahData}
+            ayahs={ayahs}
+            englishTranslations={englishTranslations}
+            frenchTranslations={frenchTranslations}
+            loading={loading}
+            showBothTranslations={showBothTranslations}
+            displayLanguage={displayLanguage}
+            setDisplayLanguage={setDisplayLanguage}
+            setShowBothTranslations={setShowBothTranslations}
+            onSelectAyah={goToAyah}
+          />
+        </main>
       </div>
 
       {showSearchResults && (
