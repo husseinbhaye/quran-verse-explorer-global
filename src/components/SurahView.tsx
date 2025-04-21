@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
@@ -92,6 +93,14 @@ const SurahView = ({
       <div>
         {/* Center aligned all header text */}
         <div className="mb-8 geometric-pattern pt-6 flex flex-col items-center text-center">
+          {/* Move TextSizeControl ABOVE Bismillah */}
+          <div className="mb-2">
+            <TextSizeControl 
+              textSize={textSize} 
+              setTextSize={setTextSize}
+            />
+          </div>
+
           <h1 className={`arabic my-4 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize}`}>
             {surah.name}
           </h1>
@@ -106,13 +115,7 @@ const SurahView = ({
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
 
-          {/* Text size control below Bismillah */}
-          <div className="mt-2">
-            <TextSizeControl 
-              textSize={textSize} 
-              setTextSize={setTextSize}
-            />
-          </div>
+          {/* Removed old TextSizeControl below Bismillah */}
         </div>
 
         <div className="space-y-4">
@@ -143,3 +146,4 @@ const SurahView = ({
 };
 
 export default SurahView;
+
