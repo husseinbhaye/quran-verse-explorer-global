@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UseAudioRecorderProps } from "./types/audio";
@@ -6,6 +5,7 @@ import { getToastMessage } from "./utils/toastMessages";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useAudioPlayback } from "./hooks/useAudioPlayback";
 import { useRecordingState } from "./hooks/useRecordingState";
+import { saveRecording as saveRecordingUtil } from "./utils/saveRecording";
 
 export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   const { toast } = useToast();
@@ -152,56 +152,11 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
   };
 
   const saveRecording = async () => {
-    if (!audioState.recordingAvailable || audioChunksRef.current.length === 0) {
-      handleNoRecording();
-      return;
-    }
-
-    try {
-      // Get the MIME type that was actually used during recording
-      const mimeType = mediaRecorderRef.current?.mimeType || 
-        (MediaRecorder.isTypeSupported('audio/mp3') ? 'audio/mp3' : 'audio/webm');
-      
-      const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
-      console.log("Saving audio blob, size:", audioBlob.size, "bytes, type:", mimeType);
-
-      // Determine the correct file extension based on the MIME type
-      let fileExtension = 'wav'; // Default fallback
-      if (mimeType.includes('mp3')) {
-        fileExtension = 'mp3';
-      } else if (mimeType.includes('webm')) {
-        fileExtension = 'webm';
-      }
-
-      const url = URL.createObjectURL(audioBlob);
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = `quran_recitation_${new Date().toISOString().slice(0, 10)}.${fileExtension}`;
-      document.body.appendChild(a);
-      a.click();
-
-      setTimeout(() => {
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-      }, 100);
-
-      toast({
-        title: displayLanguage === "english" ? "Recording downloaded" : "Enregistrement téléchargé",
-        description: displayLanguage === "english"
-          ? "Your recording has been downloaded"
-          : "Votre enregistrement a été téléchargé",
-      });
-    } catch (error) {
-      console.error("Error saving recording:", error);
-      toast({
-        title: displayLanguage === "english" ? "Error" : "Erreur",
-        description: displayLanguage === "english"
-          ? "Failed to save recording"
-          : "Échec de la sauvegarde de l'enregistrement",
-        variant: "destructive",
-      });
-    }
+    await saveRecordingUtil(
+      audioChunksRef.current,
+      mediaRecorderRef.current,
+      displayLanguage
+    );
   };
 
   return {
