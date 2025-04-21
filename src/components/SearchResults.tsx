@@ -36,7 +36,7 @@ const SearchResults = ({
   showBothTranslations
 }: SearchResultsProps) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 5;
+  const resultsPerPage = 4; // UPDATED FROM 5 TO 4
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   
   const totalPages = Math.ceil(results.length / resultsPerPage);
@@ -191,3 +191,4 @@ const SearchResults = ({
 };
 
 export default SearchResults;
+
