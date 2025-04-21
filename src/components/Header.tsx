@@ -1,20 +1,36 @@
 
-import React from 'react';
-import { Moon, Sun, Search } from 'lucide-react';
+import React, { useState } from 'react';
+import { Filter, Search } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from './ui/dropdown-menu';
+import { commonThemes, ThemeOption } from '../services/themeService';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
+  onThemeSelect?: (themeId: string) => void;
+  displayLanguage?: 'english' | 'french';
 }
 
-const Header = ({ onSearch }: HeaderProps) => {
-  const [searchQuery, setSearchQuery] = React.useState('');
+const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english' }: HeaderProps) => {
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       onSearch(searchQuery);
+    }
+  };
+
+  const handleThemeSelect = (themeId: string) => {
+    if (onThemeSelect) {
+      onThemeSelect(themeId);
     }
   };
 
@@ -40,21 +56,48 @@ const Header = ({ onSearch }: HeaderProps) => {
           </div>
         </div>
         
-        <form onSubmit={handleSubmit} className="flex w-full md:w-1/2 space-x-2">
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search the Quran..."
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
-          />
-          <Button 
-            type="submit" 
-            variant="secondary"
-            className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
-          >
-            <Search size={18} />
-          </Button>
-        </form>
+        <div className="flex w-full md:w-auto gap-2 justify-center md:justify-end">
+          <form onSubmit={handleSubmit} className="flex w-full md:w-auto space-x-2">
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={displayLanguage === 'english' ? "Search the Quran..." : "Rechercher dans le Coran..."}
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+            />
+            <Button 
+              type="submit" 
+              variant="secondary"
+              className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
+            >
+              <Search size={18} />
+            </Button>
+          </form>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="secondary"
+                className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
+                aria-label={displayLanguage === 'english' ? "Filter by theme" : "Filtrer par thème"}
+              >
+                <Filter size={18} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 bg-white/95 shadow-lg backdrop-blur-sm border border-quran-primary/20">
+              <DropdownMenuGroup>
+                {commonThemes.map((theme) => (
+                  <DropdownMenuItem 
+                    key={theme.id}
+                    onClick={() => handleThemeSelect(theme.id)}
+                    className="cursor-pointer hover:bg-quran-primary/10"
+                  >
+                    {displayLanguage === 'english' ? theme.label.english : theme.label.french}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
       
       <div className="container mx-auto mt-4">
@@ -92,4 +135,3 @@ const Header = ({ onSearch }: HeaderProps) => {
 };
 
 export default Header;
-

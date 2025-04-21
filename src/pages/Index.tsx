@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import Header from '../components/Header';
 import SurahList from '../components/SurahList';
@@ -7,13 +8,25 @@ import { useQuranData } from '../hooks/useQuranData';
 import { useQuranSearch } from '../hooks/useQuranSearch';
 import SidebarToggleButton from '../components/SidebarToggleButton';
 import { useIsMobile } from '../hooks/use-mobile';
+import { fetchVersesByTheme } from '../services/themeService';
+import { useToast } from '@/components/ui/use-toast';
+import { Ayah, Translation } from '../types/quran';
 
 const Index = () => {
   const [displayLanguage, setDisplayLanguage] = React.useState<'english' | 'french'>('english');
   const [showBothTranslations, setShowBothTranslations] = React.useState(false);
   const [showSidebarMobile, setShowSidebarMobile] = React.useState(false);
   const [textSize, setTextSize] = React.useState<"sm" | "base" | "lg" | "xl">("base");
+  const [themeResults, setThemeResults] = useState<{
+    theme: string;
+    results: Ayah[];
+    translations: {
+      english: Record<number, Translation>;
+      french: Record<number, Translation>;
+    }
+  } | null>(null);
 
+  const { toast } = useToast();
   const isMobile = useIsMobile();
 
   const { 
@@ -40,12 +53,75 @@ const Index = () => {
   const handleSelectSurah = (surahId: number) => {
     setSelectedSurah(surahId);
     if (isMobile) setShowSidebarMobile(false);
+    // Close theme results when selecting a surah
+    setThemeResults(null);
   };
 
   const handleSetTextSize = useCallback((size: "sm" | "base" | "lg" | "xl") => {
     console.log("Index: Setting text size to:", size);
     setTextSize(size);
   }, []);
+
+  const handleThemeSelect = async (themeId: string) => {
+    try {
+      // Close search results if open
+      if (showSearchResults) {
+        closeSearch();
+      }
+      
+      // Show loading toast
+      toast({
+        title: displayLanguage === 'english' ? 'Loading theme verses' : 'Chargement des versets thématiques',
+        description: displayLanguage === 'english' ? 'Please wait...' : 'Veuillez patienter...',
+      });
+      
+      // Fetch verses for the selected theme
+      const results = await fetchVersesByTheme(themeId, displayLanguage);
+      
+      // Create translation lookup maps (similar to search results)
+      const englishMap: Record<number, Translation> = {};
+      
+      results.forEach(ayah => {
+        englishMap[ayah.number] = {
+          text: ayah.text,
+          ayah: ayah.number,
+          language: 'english'
+        };
+      });
+      
+      // Store theme results
+      setThemeResults({
+        theme: themeId,
+        results,
+        translations: {
+          english: englishMap,
+          french: englishMap // Using English translations for French too (can be enhanced later)
+        }
+      });
+      
+      // Success toast
+      toast({
+        title: displayLanguage === 'english' ? 'Theme verses loaded' : 'Versets thématiques chargés',
+        description: displayLanguage === 'english' 
+          ? `Found ${results.length} verses related to this theme` 
+          : `Trouvé ${results.length} versets liés à ce thème`,
+      });
+      
+    } catch (error) {
+      console.error('Error loading theme verses:', error);
+      toast({
+        title: displayLanguage === 'english' ? 'Error' : 'Erreur',
+        description: displayLanguage === 'english'
+          ? 'Failed to load themed verses'
+          : 'Échec du chargement des versets thématiques',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const closeThemeResults = () => {
+    setThemeResults(null);
+  };
 
   React.useEffect(() => {
     console.log("Current text size in Index:", textSize);
@@ -55,7 +131,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
-      <Header onSearch={handleSearch} />
+      <Header 
+        onSearch={handleSearch} 
+        onThemeSelect={handleThemeSelect}
+        displayLanguage={displayLanguage}
+      />
 
       <div className="flex-1 flex flex-col md:flex-row relative w-full">
         {/* Sidebar toggle for mobile */}
@@ -98,6 +178,21 @@ const Index = () => {
           englishTranslations={searchTranslations.english}
           frenchTranslations={searchTranslations.french}
           onClose={closeSearch}
+          displayLanguage={displayLanguage}
+          showBothTranslations={showBothTranslations}
+        />
+      )}
+      
+      {themeResults && (
+        <SearchResults 
+          results={themeResults.results}
+          loading={false}
+          searchQuery={displayLanguage === 'english' 
+            ? `Theme: ${themeResults.theme}`
+            : `Thème: ${themeResults.theme}`}
+          englishTranslations={themeResults.translations.english}
+          frenchTranslations={themeResults.translations.french}
+          onClose={closeThemeResults}
           displayLanguage={displayLanguage}
           showBothTranslations={showBothTranslations}
         />
