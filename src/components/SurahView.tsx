@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
@@ -66,7 +67,7 @@ const SurahView = ({
   console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations`);
 
   return (
-    <div className="flex-1 p-4 md:p-6 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
+    <div className="flex-1 p-2 md:p-4 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8 geometric-pattern pt-6">
           <h1 className="arabic text-3xl my-4 font-['UthmanicHafs'] text-center w-full dir-rtl">{surah.name}</h1>

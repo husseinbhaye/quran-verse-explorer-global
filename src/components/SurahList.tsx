@@ -9,43 +9,106 @@ interface SurahListProps {
   selectedSurah: number | null;
   onSelectSurah: (surahId: number) => void;
   displayLanguage: 'english' | 'french';
+  showMobile?: boolean; // NEW
+  onCloseMobile?: () => void; // NEW
 }
 
-const SurahList = ({ surahs, selectedSurah, onSelectSurah, displayLanguage }: SurahListProps) => {
+const SurahList = ({
+  surahs,
+  selectedSurah,
+  onSelectSurah,
+  displayLanguage,
+  showMobile = false,
+  onCloseMobile,
+}: SurahListProps) => {
+  // Mobile overlay for small screens
   return (
-    <aside className="w-full md:w-64 bg-card border-r sticky top-0 h-screen">
-      <div className="p-4 border-b">
-        <h2 className="text-xl font-semibold">
-          {displayLanguage === 'english' ? 'Chapters (Surahs)' : 'Chapitres (Sourates)'}
-        </h2>
-      </div>
-      <ScrollArea className="h-[calc(100vh-5rem)]">
-        <div className="p-2">
-          {surahs.map((surah) => (
-            <Button
-              key={surah.id}
-              variant="ghost"
-              className={`w-full justify-between mb-1 ${
-                selectedSurah === surah.id
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : ''
-              }`}
-              onClick={() => onSelectSurah(surah.id)}
-            >
-              <span className="flex items-center">
-                <span className="w-6 h-6 flex items-center justify-center rounded-full bg-quran-primary/10 text-xs mr-2">
-                  {surah.id}
-                </span>
-                <span className="text-left">
-                  {displayLanguage === 'english' ? surah.englishName : surah.frenchName}
-                </span>
-              </span>
-              <span className="arabic text-xs opacity-80">{surah.name}</span>
-            </Button>
-          ))}
+    <>
+      {/* Desktop sidebar */}
+      <aside className="w-full md:w-64 bg-card border-r sticky top-0 h-screen hidden md:flex flex-col z-10">
+        <div className="p-4 border-b">
+          <h2 className="text-xl font-semibold">
+            {displayLanguage === 'english' ? 'Chapters (Surahs)' : 'Chapitres (Sourates)'}
+          </h2>
         </div>
-      </ScrollArea>
-    </aside>
+        <ScrollArea className="h-[calc(100vh-5rem)]">
+          <div className="p-2">
+            {surahs.map((surah) => (
+              <Button
+                key={surah.id}
+                variant="ghost"
+                className={`w-full justify-between mb-1 ${
+                  selectedSurah === surah.id
+                    ? 'bg-primary/10 text-primary font-medium'
+                    : ''
+                }`}
+                onClick={() => onSelectSurah(surah.id)}
+              >
+                <span className="flex items-center">
+                  <span className="w-6 h-6 flex items-center justify-center rounded-full bg-quran-primary/10 text-xs mr-2">
+                    {surah.id}
+                  </span>
+                  <span className="text-left">
+                    {displayLanguage === 'english' ? surah.englishName : surah.frenchName}
+                  </span>
+                </span>
+                <span className="arabic text-xs opacity-80">{surah.name}</span>
+              </Button>
+            ))}
+          </div>
+        </ScrollArea>
+      </aside>
+      {/* Mobile overlay */}
+      {showMobile && (
+        <div className="fixed top-0 left-0 w-full h-full bg-black/40 z-40 md:hidden flex">
+          <aside className="w-4/5 max-w-xs bg-card border-r shadow-lg h-full flex flex-col z-50 animate-in slide-in-from-left fill-mode-forwards">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-semibold">
+                {displayLanguage === 'english' ? 'Chapters (Surahs)' : 'Chapitres (Sourates)'}
+              </h2>
+              <button
+                className="ml-3 text-lg font-bold text-quran-primary"
+                aria-label="Close menu"
+                onClick={onCloseMobile}
+              >
+                ×
+              </button>
+            </div>
+            <ScrollArea className="flex-1">
+              <div className="p-2">
+                {surahs.map((surah) => (
+                  <Button
+                    key={surah.id}
+                    variant="ghost"
+                    className={`w-full justify-between mb-1 ${
+                      selectedSurah === surah.id
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : ''
+                    }`}
+                    onClick={() => {
+                      onSelectSurah(surah.id);
+                      onCloseMobile && onCloseMobile();
+                    }}
+                  >
+                    <span className="flex items-center">
+                      <span className="w-6 h-6 flex items-center justify-center rounded-full bg-quran-primary/10 text-xs mr-2">
+                        {surah.id}
+                      </span>
+                      <span className="text-left">
+                        {displayLanguage === 'english' ? surah.englishName : surah.frenchName}
+                      </span>
+                    </span>
+                    <span className="arabic text-xs opacity-80">{surah.name}</span>
+                  </Button>
+                ))}
+              </div>
+            </ScrollArea>
+          </aside>
+          {/* Closes when clicking outside the sidebar */}
+          <div className="flex-1" onClick={onCloseMobile} />
+        </div>
+      )}
+    </>
   );
 };
 

@@ -6,10 +6,15 @@ import SearchResults from '../components/SearchResults';
 import MainContent from '../components/MainContent';
 import { useQuranData } from '../hooks/useQuranData';
 import { useQuranSearch } from '../hooks/useQuranSearch';
+import SidebarToggleButton from '../components/SidebarToggleButton';
+import { useIsMobile } from '../hooks/use-mobile';
 
 const Index = () => {
   const [displayLanguage, setDisplayLanguage] = useState<'english' | 'french'>('english');
   const [showBothTranslations, setShowBothTranslations] = useState(false);
+  const [showSidebarMobile, setShowSidebarMobile] = useState(false);
+
+  const isMobile = useIsMobile();
   
   const { 
     surahs, 
@@ -34,6 +39,7 @@ const Index = () => {
 
   const handleSelectSurah = (surahId: number) => {
     setSelectedSurah(surahId);
+    if (isMobile) setShowSidebarMobile(false);
   };
 
   const selectedSurahData = selectedSurah ? surahs.find(s => s.id === selectedSurah) || null : null;
@@ -42,12 +48,18 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <Header onSearch={handleSearch} />
 
-      <div className="flex-1 flex flex-col md:flex-row relative">
+      <div className="flex-1 flex flex-col md:flex-row relative w-full">
+        {/* Sidebar toggle for mobile */}
+        {isMobile && (
+          <SidebarToggleButton onClick={() => setShowSidebarMobile(true)} />
+        )}
         <SurahList 
           surahs={surahs}
           selectedSurah={selectedSurah}
           onSelectSurah={handleSelectSurah}
           displayLanguage={displayLanguage}
+          showMobile={isMobile && showSidebarMobile}
+          onCloseMobile={() => setShowSidebarMobile(false)}
         />
 
         <MainContent 
