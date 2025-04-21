@@ -126,8 +126,8 @@ const SearchResults = ({
               </p>
             </div>
             
-            <div className="flex-1 overflow-hidden" ref={scrollAreaRef}>
-              <ScrollArea className="h-full">
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea className="h-[50vh]">
                 <div className="p-4 pt-2 space-y-4">
                   {displayedResults.map((ayah) => (
                     <AyahView
@@ -191,4 +191,3 @@ const SearchResults = ({
 };
 
 export default SearchResults;
-
