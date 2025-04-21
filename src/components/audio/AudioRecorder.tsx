@@ -1,9 +1,13 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '../ui/button';
-import { Mic, MicOff, Play, StopCircle, Download, Save } from 'lucide-react';
+import { Mic, MicOff, Play, StopCircle, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Separator } from '../ui/separator';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface AudioRecorderProps {
   displayLanguage: 'english' | 'french';
@@ -179,72 +183,91 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ displayLanguage }) => {
   };
 
   return (
-    <div className="my-6 p-4 bg-gray-50 rounded-md border border-gray-200 shadow-sm">
-      <h3 className="text-lg font-medium mb-2 text-center text-quran-primary">
-        {displayLanguage === 'english' ? 'Record Your Recitation' : 'Enregistrez Votre Récitation'}
-      </h3>
-      
-      <div className="flex flex-wrap justify-center gap-2 mt-3">
-        {!isRecording ? (
-          <Button 
-            onClick={startRecording} 
-            variant="outline" 
-            className="bg-white border-quran-primary text-quran-primary hover:bg-quran-primary/10"
-          >
-            <Mic className="mr-1" />
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          className={`text-white hover:text-quran-secondary hover:bg-transparent ${isRecording ? 'text-red-400' : ''}`}
+        >
+          {isRecording ? <MicOff size={16} className="mr-1" /> : <Mic size={16} className="mr-1" />}
+          <span>
             {displayLanguage === 'english' ? 'Record' : 'Enregistrer'}
-          </Button>
-        ) : (
-          <Button 
-            onClick={stopRecording} 
-            variant="outline" 
-            className="bg-red-50 border-red-500 text-red-500 hover:bg-red-100"
-          >
-            <MicOff className="mr-1" />
-            {displayLanguage === 'english' ? 'Stop Recording' : 'Arrêter l\'enregistrement'}
-          </Button>
-        )}
+          </span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-4">
+        <h4 className="font-medium mb-2 text-center text-quran-primary">
+          {displayLanguage === 'english' ? 'Record Your Recitation' : 'Enregistrez Votre Récitation'}
+        </h4>
         
-        {recordingAvailable && !isPlaying && (
-          <Button 
-            onClick={playRecording} 
-            variant="outline" 
-            className="bg-white border-green-600 text-green-600 hover:bg-green-50"
-          >
-            <Play className="mr-1" />
-            {displayLanguage === 'english' ? 'Play' : 'Lire'}
-          </Button>
-        )}
+        <div className="flex flex-wrap justify-center gap-2 mt-3">
+          {!isRecording ? (
+            <Button 
+              onClick={startRecording} 
+              variant="outline" 
+              size="sm"
+              className="bg-white border-quran-primary text-quran-primary hover:bg-quran-primary/10"
+            >
+              <Mic className="mr-1" size={16} />
+              {displayLanguage === 'english' ? 'Record' : 'Enregistrer'}
+            </Button>
+          ) : (
+            <Button 
+              onClick={stopRecording} 
+              variant="outline" 
+              size="sm"
+              className="bg-red-50 border-red-500 text-red-500 hover:bg-red-100"
+            >
+              <MicOff className="mr-1" size={16} />
+              {displayLanguage === 'english' ? 'Stop' : 'Arrêter'}
+            </Button>
+          )}
+          
+          {recordingAvailable && !isPlaying && (
+            <Button 
+              onClick={playRecording} 
+              variant="outline" 
+              size="sm"
+              className="bg-white border-green-600 text-green-600 hover:bg-green-50"
+            >
+              <Play className="mr-1" size={16} />
+              {displayLanguage === 'english' ? 'Play' : 'Lire'}
+            </Button>
+          )}
+          
+          {isPlaying && (
+            <Button 
+              onClick={stopPlayback} 
+              variant="outline" 
+              size="sm"
+              className="bg-white border-yellow-500 text-yellow-500 hover:bg-yellow-50"
+            >
+              <StopCircle className="mr-1" size={16} />
+              {displayLanguage === 'english' ? 'Stop' : 'Arrêter'}
+            </Button>
+          )}
+          
+          {recordingAvailable && (
+            <Button 
+              onClick={saveRecording} 
+              variant="outline" 
+              size="sm"
+              className="bg-white border-blue-500 text-blue-500 hover:bg-blue-50"
+            >
+              <Save className="mr-1" size={16} />
+              {displayLanguage === 'english' ? 'Save' : 'Sauvegarder'}
+            </Button>
+          )}
+        </div>
         
-        {isPlaying && (
-          <Button 
-            onClick={stopPlayback} 
-            variant="outline" 
-            className="bg-white border-yellow-500 text-yellow-500 hover:bg-yellow-50"
-          >
-            <StopCircle className="mr-1" />
-            {displayLanguage === 'english' ? 'Stop' : 'Arrêter'}
-          </Button>
-        )}
-        
-        {recordingAvailable && (
-          <Button 
-            onClick={saveRecording} 
-            variant="outline" 
-            className="bg-white border-blue-500 text-blue-500 hover:bg-blue-50"
-          >
-            <Save className="mr-1" />
-            {displayLanguage === 'english' ? 'Save Recording' : 'Sauvegarder l\'enregistrement'}
-          </Button>
-        )}
-      </div>
-      
-      <p className="text-sm text-gray-500 mt-3 text-center">
-        {displayLanguage === 'english' 
-          ? 'Record your own recitation and save it to your device.' 
-          : 'Enregistrez votre propre récitation et sauvegardez-la sur votre appareil.'}
-      </p>
-    </div>
+        <p className="text-xs text-gray-500 mt-3 text-center">
+          {displayLanguage === 'english' 
+            ? 'Record your own recitation and save it to your device.' 
+            : 'Enregistrez votre propre récitation et sauvegardez-la sur votre appareil.'}
+        </p>
+      </PopoverContent>
+    </Popover>
   );
 };
 

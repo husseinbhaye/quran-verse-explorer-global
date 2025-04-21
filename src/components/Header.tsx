@@ -10,7 +10,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from './ui/dropdown-menu';
-import { commonThemes, ThemeOption } from '../services/themeService';
+import { commonThemes } from '../services/themeService';
+import { AudioRecorder } from './audio';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -99,8 +100,9 @@ const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english' }: Header
           </DropdownMenu>
         </div>
       </div>
-      
-      <div className="container mx-auto mt-4">
+
+      <div className="container mx-auto mt-4 flex flex-wrap items-center justify-between">
+        {/* Navigation links */}
         <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
           <a 
             href="https://www.eemaanfoundation.org/" 
@@ -129,6 +131,22 @@ const Header = ({ onSearch, onThemeSelect, displayLanguage = 'english' }: Header
             Fatwa Series
           </a>
         </nav>
+
+        {/* Recorder positioned to the right */}
+        <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end">
+          <a 
+            href="#" 
+            className="text-white hover:text-quran-secondary transition-colors flex items-center gap-2 mr-4"
+          >
+            <span className="hidden sm:inline">Bookmarks</span>
+          </a>
+          {/* Audio recorder component */}
+          <div className="flex items-center pl-2 border-l border-white/30">
+            <AudioRecorder 
+              displayLanguage={displayLanguage} 
+            />
+          </div>
+        </div>
       </div>
     </header>
   );
