@@ -15,17 +15,21 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
 
   const increase = () => {
     if (currentIdx < SIZES.length - 1) {
-      console.log("Increasing size to:", SIZES[currentIdx + 1]);
-      setTextSize(SIZES[currentIdx + 1]);
+      const newSize = SIZES[currentIdx + 1];
+      console.log("Increasing size to:", newSize);
+      setTextSize(newSize);
     }
   };
   
   const decrease = () => {
     if (currentIdx > 0) {
-      console.log("Decreasing size to:", SIZES[currentIdx - 1]);
-      setTextSize(SIZES[currentIdx - 1]);
+      const newSize = SIZES[currentIdx - 1];
+      console.log("Decreasing size to:", newSize);
+      setTextSize(newSize);
     }
   };
+
+  console.log("TextSizeControl rendered with current size:", textSize, "at index:", currentIdx);
 
   return (
     <div className="flex items-center gap-2">
@@ -33,7 +37,7 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
         variant="outline"
         size="icon"
         onClick={decrease}
-        disabled={textSize === "sm"}
+        disabled={currentIdx === 0}
         aria-label="Decrease text size"
         className="text-quran-primary hover:bg-quran-primary/10"
       >
@@ -46,7 +50,7 @@ const TextSizeControl: React.FC<TextSizeControlProps> = ({ textSize, setTextSize
         variant="outline"
         size="icon"
         onClick={increase}
-        disabled={textSize === "xl"}
+        disabled={currentIdx === SIZES.length - 1}
         aria-label="Increase text size"
         className="text-quran-primary hover:bg-quran-primary/10"
       >

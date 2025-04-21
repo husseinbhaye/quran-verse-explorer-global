@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Header from '../components/Header';
 import SurahList from '../components/SurahList';
 import SearchResults from '../components/SearchResults';
@@ -43,10 +43,14 @@ const Index = () => {
     if (isMobile) setShowSidebarMobile(false);
   };
 
-  const handleSetTextSize = (size: "sm" | "base" | "lg" | "xl") => {
-    console.log("Setting text size to:", size);
+  const handleSetTextSize = useCallback((size: "sm" | "base" | "lg" | "xl") => {
+    console.log("Index: Setting text size to:", size);
     setTextSize(size);
-  };
+  }, []);
+
+  React.useEffect(() => {
+    console.log("Current text size in Index:", textSize);
+  }, [textSize]);
 
   const selectedSurahData = selectedSurah ? surahs.find(s => s.id === selectedSurah) || null : null;
 

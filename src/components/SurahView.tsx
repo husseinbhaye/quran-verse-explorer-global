@@ -25,7 +25,7 @@ const SurahView = ({
   loading,
   showBothTranslations,
   displayLanguage,
-  textSize = "base",
+  textSize,
   setTextSize
 }: SurahViewProps) => {
   useEffect(() => {
@@ -67,6 +67,8 @@ const SurahView = ({
     );
   }
 
+  console.log("SurahView rendering with textSize:", textSize);
+
   const surahNameSize = {
     sm: "text-xl",
     base: "text-3xl",
@@ -105,9 +107,15 @@ const SurahView = ({
             بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
           </p>
 
-          {/* Text size control relocated below Bismillah */}
+          {/* Text size control below Bismillah */}
           <div className="mt-2">
-            <TextSizeControl textSize={textSize} setTextSize={setTextSize} />
+            <TextSizeControl 
+              textSize={textSize} 
+              setTextSize={(size) => {
+                console.log("SurahView: Setting text size to:", size);
+                setTextSize(size);
+              }} 
+            />
           </div>
         </div>
 
