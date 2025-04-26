@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import AudioPlayer from './audio';
-import NoteDialog from './NoteDialog';
 import BookmarkButton from './BookmarkButton';
 
 interface AyahViewProps {
@@ -46,7 +46,6 @@ const AyahView = ({
         {ayah.text}
       </p>
 
-      {/* Primary translation based on selected language */}
       {displayLanguage === 'english' && englishTranslation && (
         <p className={`text-gray-800 dark:text-gray-200 mb-2 ${translationSize}`}>
           {englishTranslation.text}
@@ -59,7 +58,6 @@ const AyahView = ({
         </p>
       )}
       
-      {/* Secondary translation if showing both is enabled */}
       {showBoth && displayLanguage === 'english' && frenchTranslation && (
         <p className={`text-gray-600 dark:text-gray-400 text-sm italic mt-2 ${translationSize}`}>
           {frenchTranslation.text}
@@ -77,19 +75,11 @@ const AyahView = ({
         <span>Ayah #{ayah.number}</span>
       </div>
       
-      {/* Audio player and interactive controls */}
       <div className="mt-4 border-t pt-3">
         <AudioPlayer surahId={ayah.surah} ayahId={ayah.numberInSurah} />
       </div>
       
-      {/* Action buttons */}
       <div className="flex items-center gap-2 mt-4">
-        <NoteDialog 
-          surahId={ayah.surah} 
-          ayahNumber={ayah.number} 
-          displayLanguage={displayLanguage}
-        />
-        <NoteDialog displayLanguage={displayLanguage} />
         <BookmarkButton 
           ayah={ayah} 
           surahName={surahName}
