@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import AudioPlayer from './audio';
@@ -84,12 +83,13 @@ const AyahView = ({
       </div>
       
       {/* Action buttons */}
-      <div className="flex items-center justify-between mt-4">
+      <div className="flex items-center gap-2 mt-4">
         <NoteDialog 
           surahId={ayah.surah} 
           ayahNumber={ayah.number} 
           displayLanguage={displayLanguage}
         />
+        <NoteDialog displayLanguage={displayLanguage} />
         <BookmarkButton 
           ayah={ayah} 
           surahName={surahName}
