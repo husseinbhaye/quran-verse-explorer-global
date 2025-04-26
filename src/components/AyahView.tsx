@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import AudioPlayer from './audio';
 import BookmarkButton from './BookmarkButton';
+import TextEditor from './TextEditor';
 
 interface AyahViewProps {
   ayah: Ayah;
@@ -80,6 +80,7 @@ const AyahView = ({
       </div>
       
       <div className="flex items-center gap-2 mt-4">
+        <TextEditor displayLanguage={displayLanguage} />
         <BookmarkButton 
           ayah={ayah} 
           surahName={surahName}
