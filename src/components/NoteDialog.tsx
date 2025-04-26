@@ -15,9 +15,11 @@ import { useToast } from '@/hooks/use-toast';
 
 interface NoteDialogProps {
   displayLanguage: 'english' | 'french';
+  surahId?: number;
+  ayahNumber?: number;
 }
 
-const NoteDialog = ({ displayLanguage }: NoteDialogProps) => {
+const NoteDialog = ({ displayLanguage, surahId, ayahNumber }: NoteDialogProps) => {
   const [text, setText] = React.useState('');
   const { toast } = useToast();
 
