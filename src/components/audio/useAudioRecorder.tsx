@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { UseAudioRecorderProps } from "./types/audio";
@@ -45,25 +46,46 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     try {
       const { stream, mimeType } = await initializeRecording();
       
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: mimeType,
-        audioBitsPerSecond: 128000
-      });
+      // Create MediaRecorder with appropriate options based on browser support
+      try {
+        // Try with specified mime type first
+        mediaRecorderRef.current = new MediaRecorder(stream, {
+          mimeType: mimeType,
+          audioBitsPerSecond: 128000
+        });
+        console.log(`MediaRecorder created with mime type: ${mimeType}`);
+      } catch (err) {
+        console.warn(`Failed to create MediaRecorder with ${mimeType}, trying default options`, err);
+        // Fallback to default options if the specified options failed
+        mediaRecorderRef.current = new MediaRecorder(stream);
+        console.log("MediaRecorder created with default options");
+      }
 
       mediaRecorderRef.current.addEventListener("dataavailable", (event) => {
         if (event.data.size > 0) {
           audioChunksRef.current.push(event.data);
-          console.log("Audio data chunk received:", event.data.size, "bytes");
+          console.log("Audio data chunk received:", event.data.size, "bytes, type:", event.data.type);
         } else {
           console.warn("Received empty audio data chunk");
         }
+      });
+
+      mediaRecorderRef.current.addEventListener("start", () => {
+        console.log("MediaRecorder started successfully");
+      });
+
+      mediaRecorderRef.current.addEventListener("error", (event) => {
+        console.error("MediaRecorder error:", event);
+        showRecordingError();
       });
 
       mediaRecorderRef.current.addEventListener("stop", () => {
         console.log("MediaRecorder stopped, total chunks:", audioChunksRef.current.length);
         
         if (audioChunksRef.current.length > 0) {
-          const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+          const audioBlob = new Blob(audioChunksRef.current, { 
+            type: mediaRecorderRef.current?.mimeType || mimeType 
+          });
           console.log("Audio blob created, size:", audioBlob.size, "bytes");
           
           if (audioBlob.size > 0) {
@@ -90,7 +112,8 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         }
       });
 
-      mediaRecorderRef.current.start(1000);
+      // Set a longer timeslice to give more time for data to be collected
+      mediaRecorderRef.current.start(500);
       console.log("MediaRecorder started");
       startRecordingState();
 
