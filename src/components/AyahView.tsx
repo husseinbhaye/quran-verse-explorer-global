@@ -24,10 +24,10 @@ const AyahView = ({
   textSize = "base"
 }: AyahViewProps) => {
   const arabicSize = {
-    sm: "text-lg",
-    base: "text-2xl",
-    lg: "text-3xl",
-    xl: "text-4xl"
+    sm: "text-xl",
+    base: "text-3xl",
+    lg: "text-4xl",
+    xl: "text-5xl"
   }[textSize];
   
   const translationSize = {
@@ -38,9 +38,9 @@ const AyahView = ({
   }[textSize];
 
   return (
-    <div className="bg-white dark:bg-card rounded-lg p-4 shadow-sm border">
+    <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm border">
       <p 
-        className={`arabic text-right leading-loose mb-4 ${arabicSize}`} 
+        className={`arabic text-right leading-relaxed mb-6 ${arabicSize}`} 
         dir="rtl"
       >
         {ayah.text}

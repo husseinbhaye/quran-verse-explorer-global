@@ -106,15 +106,40 @@
   }
 }
 
-/* Arabic font settings */
-.arabic {
-  font-family: "UthmanicHafs", "Scheherazade New", "Amiri", serif !important;
-  line-height: 2;
-  letter-spacing: 0.5px;
+/* Add Me Quran font */
+@font-face {
+  font-family: 'me_quran';
+  src: url('https://cdn.jsdelivr.net/gh/nafezly/me_quran_font@master/me_quran.woff2') format('woff2');
   font-weight: normal;
-  color: #333;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Update Quranic Font - KFGQPC Uthman Taha Naskh */
+@font-face {
+  font-family: 'UthmanicHafs';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('https://cdn.jsdelivr.net/gh/mustafaalmansur/quranic-fonts@main/KFGQPC%20Uthman%20Taha%20Naskh/UthmanicHafs.woff2') format('woff2');
+}
+
+/* Enhanced Arabic text settings */
+.arabic {
+  font-family: "UthmanicHafs", "me_quran", "Scheherazade New", "Amiri", serif !important;
+  line-height: 2.5;
+  letter-spacing: 0.3px;
+  font-weight: normal;
+  color: #1a1a1a;
   text-align: justify;
-  padding: 1rem 0;
+  padding: 1.5rem 0;
+  font-feature-settings: "rclt" 1, "rlig" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.dark .arabic {
+  color: #e1e1e1;
 }
 
 /* Pattern background */
