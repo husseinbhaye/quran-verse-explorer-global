@@ -14,18 +14,33 @@ export const saveRecording = async (
   }
 
   try {
-    const mimeType = mediaRecorder?.mimeType || 
-      (MediaRecorder.isTypeSupported('audio/mp3') ? 'audio/mp3' : 'audio/webm');
+    // Get mime type from recorder but fallback to a widely supported format
+    let mimeType = mediaRecorder?.mimeType || '';
+    let fileExtension = '';
+    
+    // Map the mime type to appropriate extension and ensure compatibility
+    if (mimeType.includes('mp3') || mimeType.includes('mpeg')) {
+      fileExtension = 'mp3';
+      mimeType = 'audio/mp3';
+    } else if (mimeType.includes('wav')) {
+      fileExtension = 'wav';
+      mimeType = 'audio/wav'; 
+    } else if (mimeType.includes('aac')) {
+      fileExtension = 'aac';
+      mimeType = 'audio/aac';
+    } else if (mimeType.includes('ogg')) {
+      fileExtension = 'ogg';
+      mimeType = 'audio/ogg';
+    } else {
+      // Default to mp3 as it's widely supported for playback
+      fileExtension = 'mp3';
+      mimeType = 'audio/mp3';
+    }
+    
+    console.log(`Saving audio as ${fileExtension} with mime type: ${mimeType}`);
     
     const audioBlob = new Blob(audioChunks, { type: mimeType });
     console.log("Saving audio blob, size:", audioBlob.size, "bytes, type:", mimeType);
-
-    let fileExtension = 'wav';
-    if (mimeType.includes('mp3')) {
-      fileExtension = 'mp3';
-    } else if (mimeType.includes('webm')) {
-      fileExtension = 'webm';
-    }
 
     const url = URL.createObjectURL(audioBlob);
     const a = document.createElement("a");

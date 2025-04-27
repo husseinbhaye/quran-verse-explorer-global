@@ -46,19 +46,24 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     try {
       const { stream, mimeType } = await initializeRecording();
       
-      // Create MediaRecorder with appropriate options based on browser support
+      // Create MediaRecorder with appropriate options for better platform compatibility
       try {
-        // Try with specified mime type first
-        mediaRecorderRef.current = new MediaRecorder(stream, {
-          mimeType: mimeType,
-          audioBitsPerSecond: 128000
-        });
-        console.log(`MediaRecorder created with mime type: ${mimeType}`);
+        // Try with specified mime type if available
+        if (mimeType) {
+          mediaRecorderRef.current = new MediaRecorder(stream, {
+            mimeType: mimeType,
+            audioBitsPerSecond: 128000
+          });
+          console.log(`MediaRecorder created with mime type: ${mimeType}`);
+        } else {
+          // Fallback to default options
+          mediaRecorderRef.current = new MediaRecorder(stream);
+          console.log("MediaRecorder created with default options");
+        }
       } catch (err) {
-        console.warn(`Failed to create MediaRecorder with ${mimeType}, trying default options`, err);
-        // Fallback to default options if the specified options failed
+        console.warn(`Failed to create MediaRecorder with specified options, trying default`, err);
         mediaRecorderRef.current = new MediaRecorder(stream);
-        console.log("MediaRecorder created with default options");
+        console.log("MediaRecorder created with default options after fallback");
       }
 
       mediaRecorderRef.current.addEventListener("dataavailable", (event) => {
@@ -72,6 +77,7 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
 
       mediaRecorderRef.current.addEventListener("start", () => {
         console.log("MediaRecorder started successfully");
+        audioChunksRef.current = []; // Clear previous chunks on new recording
       });
 
       mediaRecorderRef.current.addEventListener("error", (event) => {
@@ -83,10 +89,11 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         console.log("MediaRecorder stopped, total chunks:", audioChunksRef.current.length);
         
         if (audioChunksRef.current.length > 0) {
-          const audioBlob = new Blob(audioChunksRef.current, { 
-            type: mediaRecorderRef.current?.mimeType || mimeType 
-          });
-          console.log("Audio blob created, size:", audioBlob.size, "bytes");
+          // Determine the most appropriate mime type based on what was recorded
+          const actualMimeType = mediaRecorderRef.current?.mimeType || mimeType || 'audio/mp3';
+          
+          const audioBlob = new Blob(audioChunksRef.current, { type: actualMimeType });
+          console.log("Audio blob created, size:", audioBlob.size, "bytes, type:", actualMimeType);
           
           if (audioBlob.size > 0) {
             const audioUrl = URL.createObjectURL(audioBlob);
@@ -112,8 +119,8 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
         }
       });
 
-      // Set a longer timeslice to give more time for data to be collected
-      mediaRecorderRef.current.start(500);
+      // Use smaller timeslices for more responsive data collection
+      mediaRecorderRef.current.start(200); // More frequent data collection
       console.log("MediaRecorder started");
       startRecordingState();
 
@@ -192,4 +199,4 @@ export function useAudioRecorder({ displayLanguage }: UseAudioRecorderProps) {
     stopPlayback,
     saveRecording,
   };
-}
+};

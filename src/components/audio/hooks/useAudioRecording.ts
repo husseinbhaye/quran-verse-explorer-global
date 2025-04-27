@@ -23,19 +23,16 @@ export const useAudioRecording = (displayLanguage: "english" | "french") => {
       }
 
       // Request audio with different constraints
-      // Some desktop browsers need different settings
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true // Use simple constraint first for maximum compatibility
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       }).catch(async () => {
-        // If simple constraint fails, try with more specific settings
-        console.log("Simple audio constraints failed, trying with specific settings");
-        return navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        });
+        // If specific settings fail, try with simple constraints
+        console.log("Specific audio constraints failed, trying with simple settings");
+        return navigator.mediaDevices.getUserMedia({ audio: true });
       });
       
       console.log("Microphone access granted, stream created");
@@ -50,23 +47,28 @@ export const useAudioRecording = (displayLanguage: "english" | "french") => {
       console.log(`Audio tracks available: ${audioTracks.length}`);
       console.log("Audio track settings:", audioTracks[0].getSettings());
       
-      // Determine supported mime types with platform-specific fallbacks
-      let mimeType = 'audio/webm'; // Default - works on many desktop browsers
+      // Determine supported mime types with better desktop compatibility
+      // Try different formats in order of preference and compatibility
+      let mimeType = '';
+      const preferredTypes = [
+        'audio/mp3',
+        'audio/wav', 
+        'audio/mpeg',
+        'audio/aac',
+        'audio/ogg',
+        'audio/webm'
+      ];
       
-      if (MediaRecorder.isTypeSupported('audio/mp3')) {
-        mimeType = 'audio/mp3';
-        console.log("Using MP3 format");
-      } else if (MediaRecorder.isTypeSupported('audio/webm')) {
-        mimeType = 'audio/webm';
-        console.log("Using WebM format");
-      } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
-        mimeType = 'audio/ogg';
-        console.log("Using OGG format");
-      } else if (MediaRecorder.isTypeSupported('audio/wav')) {
-        mimeType = 'audio/wav';
-        console.log("Using WAV format");
-      } else {
-        console.log("No specific mime type supported, using browser default");
+      for (const type of preferredTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          console.log(`Using ${type} format`);
+          break;
+        }
+      }
+      
+      if (!mimeType) {
+        console.log("No preferred mime types supported, using browser default");
       }
       
       return { stream, mimeType };
