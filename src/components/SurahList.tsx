@@ -28,23 +28,31 @@ const SurahList = ({
   const handleVerseSelect = (verse: number) => {
     console.log('Selected verse:', verse);
     if (selectedSurah) {
-      const element = document.getElementById(`ayah-${selectedSurah}-${verse}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-        // Add a brief highlight effect
-        element.classList.add('highlight-ayah');
-        setTimeout(() => {
-          element.classList.remove('highlight-ayah');
-        }, 2000);
-      } else {
-        console.log('Element not found:', `ayah-${selectedSurah}-${verse}`);
-      }
+      // Add a small delay to ensure the DOM is fully rendered
+      setTimeout(() => {
+        const element = document.getElementById(`ayah-${selectedSurah}-${verse}`);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          // Add a brief highlight effect
+          element.classList.add('highlight-ayah');
+          setTimeout(() => {
+            element.classList.remove('highlight-ayah');
+          }, 2000);
+        } else {
+          console.log('Element not found:', `ayah-${selectedSurah}-${verse}`);
+        }
+      }, 100);
     }
   };
 
   const handleSubjectSelect = (subject: string) => {
     console.log('Selected subject:', subject);
-    // This will be implemented when the theme/subject filtering API is ready
+    // Here we would implement the actual theme/subject filtering
+    // This implementation will be added when the API is ready
+    // For now, we'll just show what happens when a subject is selected
+    alert(displayLanguage === 'english' 
+      ? `Selected subject: ${subject}. Subject filtering will be implemented soon.` 
+      : `Sujet sélectionné: ${subject}. Le filtrage par sujet sera implémenté bientôt.`);
   };
 
   // Mobile overlay for small screens

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,182 +6,136 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 142.1 76.2% 36.3%;
-    --primary-foreground: 355.7 100% 97.3%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 142.1 76.2% 36.3%;
-    --radius: 0.75rem;
-    --quran-primary: hsl(140, 70%, 30%);
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+    --quran-primary: 22 82% 45%;
+    --quran-secondary: 120 38% 42%;
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
-    --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 142.1 70.6% 45.3%;
-    --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 0 0% 98%;
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142.4 71.8% 29.2%;
-    --quran-primary: hsl(140, 60%, 40%);
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.5% 48%;
+    --quran-primary: 22 82% 60%;
+    --quran-secondary: 120 38% 52%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  .highlight-ayah {
+    animation: highlight 2s ease;
+  }
+
+  @keyframes highlight {
+    0% { background-color: rgba(var(--quran-primary), 0.1); }
+    70% { background-color: rgba(var(--quran-primary), 0.1); }
+    100% { background-color: transparent; }
   }
 }
 
-/* latin */
-@font-face {
-  font-family: 'Amiri';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/amiri/v19/J7aRnpd8q0v2RpBdlfNwfPY6jn-n.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* arabic */
-@font-face {
-  font-family: 'Amiri';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/amiri/v19/J7aRnpd8q0v2RpBdlfNwfa6jn-n.woff2) format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
-}
-/* arabic */
-@font-face {
-  font-family: 'Scheherazade New';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/scheherazadenew/v1/4iC26LY_4J6Fo9k5LdO4WvdqFOXDbjpSBqc_.woff2) format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
-}
-
-/* Updated Quranic Font - Uthmanic Hafs V2 */
-@font-face {
-  font-family: 'UthmanicHafs';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/islamicdesign/open-source-quran-designs@latest/fonts/uthmanic-hafs/UthmanicHafs-v2.woff2') format('woff2');
-  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE80-FEFC;
-}
-
-/* Highlight effect for navigated ayah */
-.highlight-ayah {
-  animation: highlight-pulse 2s ease-in-out;
-}
-
-@keyframes highlight-pulse {
-  from {
-    box-shadow: 0 0 0 0 rgba(var(--quran-primary), 0.4);
+@layer utilities {
+  .dir-rtl {
+    direction: rtl;
   }
-  70% {
-    box-shadow: 0 0 0 10px rgba(var(--quran-primary), 0);
+  
+  .arabic {
+    font-family: 'UthmanicHafs', 'Traditional Arabic', serif;
   }
-  to {
-    box-shadow: 0 0 0 0 rgba(var(--quran-primary), 0);
+
+  .pattern-bg {
+    background-color: #f8fafc;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b98036' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .dark .pattern-bg {
+    background-color: #0f172a; 
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b98036' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .geometric-pattern {
+    background-color: rgba(255, 255, 255, 0.5);
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b98036' fill-opacity='0.08' fill-rule='evenodd'%3E%3Cpath d='M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  .dark .geometric-pattern {
+    background-color: rgba(15, 23, 42, 0.5);
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b98036' fill-opacity='0.12' fill-rule='evenodd'%3E%3Cpath d='M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* Create a scrolling effect when using scroll-smooth class */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  /* Additional padding for scroll targets to account for header */
+  .scroll-mt-24 {
+    scroll-margin-top: 6rem;
   }
 }
 
-/* Add Me Quran font */
-@font-face {
-  font-family: 'me_quran';
-  src: url('https://cdn.jsdelivr.net/gh/nafezly/me_quran_font@master/me_quran.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+/* Additional CSS for transitions and animations */
+.animate-in {
+  animation-duration: 300ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 
-/* Update Quranic Font - KFGQPC Uthman Taha Naskh */
-@font-face {
-  font-family: 'UthmanicHafs';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url('https://cdn.jsdelivr.net/gh/mustafaalmansur/quranic-fonts@main/KFGQPC%20Uthman%20Taha%20Naskh/UthmanicHafs.woff2') format('woff2');
+.slide-in-from-left {
+  animation-name: slideInFromLeft;
 }
 
-/* Enhanced Arabic text settings with smoother rendering */
-.arabic {
-  font-family: "UthmanicHafs", "me_quran", "Scheherazade New", "Amiri", serif !important;
-  line-height: 2.5;
-  letter-spacing: 0.3px;
-  font-weight: normal;
-  color: #1a1a1a;
-  text-align: justify;
-  padding: 1.5rem 0;
-  font-feature-settings: "rclt" 1, "rlig" 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transition: color 0.3s ease;
+@keyframes slideInFromLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
 }
 
-.dark .arabic {
-  color: #e1e1e1;
+.fill-mode-forwards {
+  animation-fill-mode: forwards;
 }
 
-/* Pattern background with subtle animation */
-.pattern-bg {
-  background-color: #fcfcfc;
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23e5f7ee' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  position: relative;
-  overflow: hidden;
-}
-
-/* Geometric pattern for Surah headers */
-.geometric-pattern {
-  position: relative;
-  overflow: hidden;
-  animation: patternFade 0.5s ease-in;
-}
-
-.geometric-pattern::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23046c4e' fill-opacity='1'%3E%3Cpath fill-rule='evenodd' d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h2l-2 2V0zm0 4l4-4h2l-6 6V4zm0 4l8-8h2L40 10V8zm0 4L52 0h2L40 14v-2zm0 4L56 0h2L40 18v-2zm0 4L60 0h2L40 22v-2zm0 4L64 0h2L40 26v-2zm0 4L68 0h2L40 30v-2zm0 4L72 0h2L40 34v-2zm0 4L76 0h2L40 38v-2zm0 4L80 0v2L42 40h-2zm4 0L80 4v2L46 40h-2zm4 0L80 8v2L50 40h-2zm4 0l28-28v2L54 40h-2zm4 0l24-24v2L58 40h-2zm4 0l20-20v2L62 40h-2zm4 0l16-16v2L66 40h-2zm4 0l12-12v2L70 40h-2zm4 0l8-8v2l-6 6h-2zm4 0l4-4v2l-2 2h-2z'/%3E%3C/g%3E%3C/svg%3E");
-  transition: opacity 0.3s ease;
-}
-
-.geometric-pattern:hover::before {
-  opacity: 0.08;
-}
-
-@keyframes patternFade {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+/* For wider screens */
+@media (min-width: 768px) {
+  .pattern-bg {
+    background-attachment: fixed;
   }
 }

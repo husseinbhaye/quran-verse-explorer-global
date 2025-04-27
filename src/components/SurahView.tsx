@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import AyahView from './AyahView';
@@ -116,17 +117,19 @@ const SurahView = ({
             const englishTranslation = displayLanguage === 'english' ? primaryTranslation : secondaryTranslation;
             const frenchTranslation = displayLanguage === 'french' ? primaryTranslation : secondaryTranslation;
 
+            // Add a specific ID for each ayah that can be targeted by the verse selector
             return (
-              <AyahView
-                key={ayah.number}
-                ayah={ayah}
-                englishTranslation={englishTranslation}
-                frenchTranslation={frenchTranslation}
-                showBoth={showBothTranslations}
-                surahName={surahName}
-                displayLanguage={displayLanguage}
-                textSize={textSize}
-              />
+              <div key={ayah.number} id={`ayah-${surah.id}-${ayah.number}`} className="scroll-mt-24">
+                <AyahView
+                  ayah={ayah}
+                  englishTranslation={englishTranslation}
+                  frenchTranslation={frenchTranslation}
+                  showBoth={showBothTranslations}
+                  surahName={surahName}
+                  displayLanguage={displayLanguage}
+                  textSize={textSize}
+                />
+              </div>
             );
           })}
         </div>
