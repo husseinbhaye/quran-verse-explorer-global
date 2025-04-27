@@ -33,12 +33,16 @@ const subjects = {
 };
 
 const SubjectFilter = ({ onSelectSubject, displayLanguage }: SubjectFilterProps) => {
+  const handleValueChange = (value: string) => {
+    onSelectSubject(value);
+  };
+  
   return (
-    <Select onValueChange={onSelectSubject}>
+    <Select onValueChange={handleValueChange}>
       <SelectTrigger className="w-full bg-background/50 backdrop-blur-sm">
         <SelectValue placeholder={displayLanguage === 'english' ? 'Filter by subject' : 'Filtrer par sujet'} />
       </SelectTrigger>
-      <SelectContent className="bg-background/95 backdrop-blur-sm">
+      <SelectContent className="bg-background/80 backdrop-blur-sm border-[0.5px] border-quran-primary/30">
         {subjects[displayLanguage].map((subject) => (
           <SelectItem key={subject.id} value={subject.id}>
             {subject.label}

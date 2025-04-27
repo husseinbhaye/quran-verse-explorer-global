@@ -26,15 +26,25 @@ const SurahList = ({
   const selectedSurahData = selectedSurah ? surahs.find(s => s.id === selectedSurah) : null;
 
   const handleVerseSelect = (verse: number) => {
+    console.log('Selected verse:', verse);
     if (selectedSurah) {
       const element = document.getElementById(`ayah-${selectedSurah}-${verse}`);
-      element?.scrollIntoView({ behavior: 'smooth' });
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        // Add a brief highlight effect
+        element.classList.add('highlight-ayah');
+        setTimeout(() => {
+          element.classList.remove('highlight-ayah');
+        }, 2000);
+      } else {
+        console.log('Element not found:', `ayah-${selectedSurah}-${verse}`);
+      }
     }
   };
 
   const handleSubjectSelect = (subject: string) => {
-    // This will be implemented when the theme/subject filtering API is ready
     console.log('Selected subject:', subject);
+    // This will be implemented when the theme/subject filtering API is ready
   };
 
   // Mobile overlay for small screens

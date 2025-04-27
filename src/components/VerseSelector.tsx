@@ -16,13 +16,20 @@ interface VerseSelectorProps {
 
 const VerseSelector = ({ totalVerses, onSelectVerse, displayLanguage }: VerseSelectorProps) => {
   if (!totalVerses) return null;
+  
+  const handleValueChange = (value: string) => {
+    const verseNumber = parseInt(value, 10);
+    if (!isNaN(verseNumber)) {
+      onSelectVerse(verseNumber);
+    }
+  };
 
   return (
-    <Select onValueChange={(value) => onSelectVerse(Number(value))}>
+    <Select onValueChange={handleValueChange}>
       <SelectTrigger className="w-full bg-background/50 backdrop-blur-sm">
         <SelectValue placeholder={displayLanguage === 'english' ? 'Select verse' : 'Sélectionner un verset'} />
       </SelectTrigger>
-      <SelectContent className="max-h-[300px] bg-background/95 backdrop-blur-sm">
+      <SelectContent className="max-h-[300px] bg-background/80 backdrop-blur-sm border-[0.5px] border-quran-primary/30">
         {Array.from({ length: totalVerses }, (_, i) => i + 1).map((verse) => (
           <SelectItem key={verse} value={verse.toString()}>
             {displayLanguage === 'english' ? `Verse ${verse}` : `Verset ${verse}`}
