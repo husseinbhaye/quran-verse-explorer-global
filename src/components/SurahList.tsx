@@ -3,14 +3,16 @@ import React from 'react';
 import { Surah } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
+import VerseSelector from './VerseSelector';
+import SubjectFilter from './SubjectFilter';
 
 interface SurahListProps {
   surahs: Surah[];
   selectedSurah: number | null;
   onSelectSurah: (surahId: number) => void;
   displayLanguage: 'english' | 'french';
-  showMobile?: boolean; // NEW
-  onCloseMobile?: () => void; // NEW
+  showMobile?: boolean;
+  onCloseMobile?: () => void;
 }
 
 const SurahList = ({
@@ -21,6 +23,20 @@ const SurahList = ({
   showMobile = false,
   onCloseMobile,
 }: SurahListProps) => {
+  const selectedSurahData = selectedSurah ? surahs.find(s => s.id === selectedSurah) : null;
+
+  const handleVerseSelect = (verse: number) => {
+    if (selectedSurah) {
+      const element = document.getElementById(`ayah-${selectedSurah}-${verse}`);
+      element?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleSubjectSelect = (subject: string) => {
+    // This will be implemented when the theme/subject filtering API is ready
+    console.log('Selected subject:', subject);
+  };
+
   // Mobile overlay for small screens
   return (
     <>
@@ -31,7 +47,20 @@ const SurahList = ({
             {displayLanguage === 'english' ? 'Chapters (Surahs)' : 'Chapitres (Sourates)'}
           </h2>
         </div>
-        <ScrollArea className="h-[calc(100vh-5rem)]">
+        
+        <div className="p-3 space-y-3 border-b">
+          <VerseSelector
+            totalVerses={selectedSurahData?.numberOfAyahs || 0}
+            onSelectVerse={handleVerseSelect}
+            displayLanguage={displayLanguage}
+          />
+          <SubjectFilter
+            onSelectSubject={handleSubjectSelect}
+            displayLanguage={displayLanguage}
+          />
+        </div>
+
+        <ScrollArea className="h-[calc(100vh-10rem)]">
           <div className="p-2">
             {surahs.map((surah) => (
               <Button
@@ -58,6 +87,7 @@ const SurahList = ({
           </div>
         </ScrollArea>
       </aside>
+      
       {/* Mobile overlay */}
       {showMobile && (
         <div className="fixed top-0 left-0 w-full h-full bg-black/40 z-40 md:hidden flex">
@@ -74,6 +104,19 @@ const SurahList = ({
                 ×
               </button>
             </div>
+
+            <div className="p-3 space-y-3 border-b">
+              <VerseSelector
+                totalVerses={selectedSurahData?.numberOfAyahs || 0}
+                onSelectVerse={handleVerseSelect}
+                displayLanguage={displayLanguage}
+              />
+              <SubjectFilter
+                onSelectSubject={handleSubjectSelect}
+                displayLanguage={displayLanguage}
+              />
+            </div>
+
             <ScrollArea className="flex-1">
               <div className="p-2">
                 {surahs.map((surah) => (
