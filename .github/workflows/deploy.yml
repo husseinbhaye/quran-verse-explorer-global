@@ -39,13 +39,55 @@ jobs:
           echo '' >> dist/.htaccess
           echo '# Cache Control' >> dist/.htaccess
           echo '<IfModule mod_headers.c>' >> dist/.htaccess
-          echo '  # Disable caching for all files' >> dist/.htaccess
-          echo '  <FilesMatch "\.(html|htm|js|json|css|txt|svg|png|jpg|jpeg|gif|ico|xml|woff|woff2|ttf|eot|otf)$">' >> dist/.htaccess
+          echo '  # Disable caching for HTML and JSON files' >> dist/.htaccess
+          echo '  <FilesMatch "\.(html|htm|json)$">' >> dist/.htaccess
           echo '    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"' >> dist/.htaccess
           echo '    Header set Pragma "no-cache"' >> dist/.htaccess
           echo '    Header set Expires "0"' >> dist/.htaccess
           echo '  </FilesMatch>' >> dist/.htaccess
+          echo '  # Allow caching of assets but with versioned URLs' >> dist/.htaccess
+          echo '  <FilesMatch ".(js|css|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|otf)$">' >> dist/.htaccess
+          echo '    Header set Cache-Control "max-age=31536000, immutable"' >> dist/.htaccess
+          echo '  </FilesMatch>' >> dist/.htaccess
           echo '</IfModule>' >> dist/.htaccess
+
+      # Create clear-cache script
+      - name: Create clear-cache script
+        run: |
+          echo "<!DOCTYPE html>" > dist/clear-cache.html
+          echo "<html lang=\"en\">" >> dist/clear-cache.html
+          echo "<head>" >> dist/clear-cache.html
+          echo "  <meta charset=\"UTF-8\">" >> dist/clear-cache.html
+          echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" >> dist/clear-cache.html
+          echo "  <title>Cache Cleared - Eemaan Foundation</title>" >> dist/clear-cache.html
+          echo "  <script>" >> dist/clear-cache.html
+          echo "    // Clear all caches" >> dist/clear-cache.html
+          echo "    function clearCache() {" >> dist/clear-cache.html
+          echo "      localStorage.clear();" >> dist/clear-cache.html
+          echo "      sessionStorage.clear();" >> dist/clear-cache.html
+          echo "      if (window.caches) {" >> dist/clear-cache.html
+          echo "        caches.keys().then(names => {" >> dist/clear-cache.html
+          echo "          names.forEach(name => {" >> dist/clear-cache.html
+          echo "            caches.delete(name);" >> dist/clear-cache.html
+          echo "          });" >> dist/clear-cache.html
+          echo "        });" >> dist/clear-cache.html
+          echo "      }" >> dist/clear-cache.html
+          echo "      document.getElementById('status').textContent = 'Cache cleared! Redirecting to home page...';" >> dist/clear-cache.html
+          echo "      setTimeout(() => { window.location.href = '/' + '?nocache=' + Date.now(); }, 2000);" >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "  </script>" >> dist/clear-cache.html
+          echo "</head>" >> dist/clear-cache.html
+          echo "<body style=\"font-family:Arial,sans-serif;text-align:center;padding-top:50px;\">" >> dist/clear-cache.html
+          echo "  <h1>Eemaan Foundation Quran Explorer</h1>" >> dist/clear-cache.html
+          echo "  <h2>Cache Clearing Tool</h2>" >> dist/clear-cache.html
+          echo "  <p>Click the button below to clear your browser cache for this website:</p>" >> dist/clear-cache.html
+          echo "  <button onclick=\"clearCache()\" style=\"padding:10px 20px;font-size:16px;cursor:pointer;\">" >> dist/clear-cache.html
+          echo "    Clear Cache & Reload" >> dist/clear-cache.html
+          echo "  </button>" >> dist/clear-cache.html
+          echo "  <p id=\"status\"></p>" >> dist/clear-cache.html
+          echo "  <p><small>Build timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")</small></p>" >> dist/clear-cache.html
+          echo "</body>" >> dist/clear-cache.html
+          echo "</html>" >> dist/clear-cache.html
 
       - name: List build output
         run: |
@@ -53,35 +95,11 @@ jobs:
           ls -la dist/
           echo "=== End of listing ==="
 
-      - name: Debug connection
-        run: |
-          echo "Attempting to connect to server..."
-          echo "Host: ${{ secrets.FTP_HOST }}"
-          echo "Username: ${{ secrets.FTP_USERNAME }}"
-          echo "Protocol: SFTP with port 22"
-          echo "Remote path: /public_html/Quran/"
-
-      # Create a more detailed deployment marker with clear visibility
-      - name: Create deployment marker
-        run: |
-          if [ ! -f dist/deployment-marker.txt ]; then
-            echo "MANUAL DEPLOYMENT MARKER - DO NOT DELETE" > dist/deployment-marker.txt
-            echo "Deployment timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> dist/deployment-marker.txt
-            echo "GitHub run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
-            echo "Commit: ${{ github.sha }}" >> dist/deployment-marker.txt
-            echo "Build time: $(date +%s)" >> dist/deployment-marker.txt
-            echo "Created manual deployment marker:"
-            cat dist/deployment-marker.txt
-          else
-            echo "Using existing deployment marker:"
-            cat dist/deployment-marker.txt
-          fi
-
-      # Add a version.json file for client-side cache busting
-      - name: Create version file
+      # Create a version.json file with timestamp if not already created by Vite
+      - name: Ensure version.json exists
         run: |
           if [ ! -f dist/version.json ]; then
-            echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"runId\":\"${{ github.run_id }}\"}" > dist/version.json
+            echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$(date +%s),\"runId\":\"${{ github.run_id }}\"}" > dist/version.json
             echo "Created version.json:"
             cat dist/version.json
           else
@@ -92,7 +110,7 @@ jobs:
       # Create a test.html file to verify deployment
       - name: Create test HTML file
         run: |
-          echo "<html><head><title>Deployment Test</title></head><body><h1>Deployment Test</h1><p>Deployed at $(date -u +"%Y-%m-%dT%H:%M:%SZ")</p><p>GitHub Run: ${{ github.run_id }}</p></body></html>" > dist/test.html
+          echo "<html><head><title>Deployment Test</title></head><body><h1>Deployment Test</h1><p>Deployed at $(date -u +"%Y-%m-%dT%H:%M:%SZ")</p><p>GitHub Run: ${{ github.run_id }}</p><p>Build: $(date +%s)</p></body></html>" > dist/test.html
           echo "Created test.html"
 
       - name: Deploy via SFTP
@@ -111,8 +129,8 @@ jobs:
         run: |
           echo "Deployment completed at $(date)"
           echo "Check these URLs to verify deployment:"
-          echo "1. Main site: https://YOUR_DOMAIN/Quran/"
-          echo "2. Deployment marker: https://YOUR_DOMAIN/Quran/deployment-marker.txt"
-          echo "3. Version file: https://YOUR_DOMAIN/Quran/version.json"
-          echo "4. Test page: https://YOUR_DOMAIN/Quran/test.html"
-          echo "If you still don't see changes, try clearing your browser cache or using an incognito window"
+          echo "1. Main site: https://quran.eemaanfoundation.com/"
+          echo "2. Clear cache tool: https://quran.eemaanfoundation.com/clear-cache.html"
+          echo "3. Version file: https://quran.eemaanfoundation.com/version.json"
+          echo "4. Test page: https://quran.eemaanfoundation.com/test.html"
+          echo "If you still don't see changes, access the clear-cache.html page to force a refresh"

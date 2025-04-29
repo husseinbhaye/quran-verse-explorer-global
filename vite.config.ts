@@ -37,9 +37,10 @@ export default defineConfig(({ mode }) => {
     build: {
       rollupOptions: {
         output: {
-          entryFileNames: `assets/[name]-[hash].js`,
-          chunkFileNames: `assets/[name]-[hash].js`,
-          assetFileNames: `assets/[name]-[hash].[ext]`
+          // Add timestamp to all filenames for cache busting
+          entryFileNames: `assets/[name]-${buildTimestamp}-[hash].js`,
+          chunkFileNames: `assets/[name]-${buildTimestamp}-[hash].js`,
+          assetFileNames: `assets/[name]-${buildTimestamp}-[hash].[ext]`
         }
       },
       manifest: true,
@@ -50,7 +51,14 @@ export default defineConfig(({ mode }) => {
       {
         name: 'html-transform',
         transformIndexHtml(html: string): string {
-          return html;
+          // Add cache-busting meta tags
+          return html.replace(
+            '</head>',
+            `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+            <meta http-equiv="Pragma" content="no-cache" />
+            <meta http-equiv="Expires" content="0" />
+            </head>`
+          );
         }
       }
     ].filter(Boolean),
