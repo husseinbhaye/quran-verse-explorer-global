@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search, RefreshCw } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { 
@@ -13,6 +14,7 @@ import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
 import TextSizeControl from './TextSizeControl';
 import BookmarksDrawer from './BookmarksDrawer';
+import { toast } from 'sonner';
 
 interface HeaderProps {
   onSearch: (query: string) => void;
@@ -44,6 +46,21 @@ const Header = ({
     if (onThemeSelect) {
       onThemeSelect(themeId);
     }
+  };
+
+  const clearCacheAndReload = () => {
+    // Clear localStorage
+    localStorage.clear();
+    // Clear sessionStorage
+    sessionStorage.clear();
+    // Show toast notification
+    toast.info(displayLanguage === 'english' ? 'Clearing cache and reloading...' : 'Effacement du cache et rechargement...');
+    
+    // Short timeout to allow toast to display before reload
+    setTimeout(() => {
+      // Force reload from server without using cache
+      window.location.href = window.location.href.split('?')[0] + '?fresh=' + Date.now();
+    }, 1000);
   };
 
   return (
@@ -84,6 +101,15 @@ const Header = ({
               <Search size={18} />
             </Button>
           </form>
+          
+          <Button 
+            variant="secondary"
+            className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
+            onClick={clearCacheAndReload}
+            title={displayLanguage === 'english' ? "Clear cache and reload" : "Effacer le cache et recharger"}
+          >
+            <RefreshCw size={18} />
+          </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
