@@ -15,7 +15,7 @@ if (sessionStorage.getItem('last_load')) {
   if (now - lastLoad > 3600000) {
     console.log("Forcing refresh for new version...");
     sessionStorage.setItem('last_load', now.toString());
-    window.location.reload(true);
+    window.location.reload();
   } else {
     sessionStorage.setItem('last_load', now.toString());
   }
@@ -48,7 +48,7 @@ fetch(`/deployment-marker.txt${cacheBuster}`)
       if (lastKnownDeployment && lastKnownDeployment !== timestamp) {
         console.log("New deployment detected, forcing refresh...");
         localStorage.setItem('last_deployment', timestamp);
-        window.location.reload(true);
+        window.location.reload();
       } else {
         localStorage.setItem('last_deployment', timestamp);
       }
