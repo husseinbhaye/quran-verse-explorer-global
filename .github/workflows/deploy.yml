@@ -384,74 +384,76 @@ jobs:
             cat dist/version.json
           fi
 
-      # Enhanced server directory inspection
-      - name: Debug server environment
+      # Server path discovery with comprehensive approach
+      - name: Discover server web paths
         uses: appleboy/ssh-action@v0.1.10
+        id: discover_paths
         with:
           host: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           script: |
-            echo "===== SERVER DIAGNOSTICS ====="
+            echo "=== SERVER PATH DISCOVERY ==="
+            echo "Checking common web root directories..."
+            
+            # Clear any previous paths file
+            rm -f ~/webpath.txt
+            
+            # Check home directory contents
             echo "Home directory: $HOME"
-            echo "Current user: $(whoami)"
-            echo "Current directory: $(pwd)"
-            echo "Directory structure:"
+            echo "Listing directories in home:"
             ls -la ~
-            echo "------------------------------"
-            echo "Checking www or public_html directories:"
-            for dir in www public_html public web httpdocs htdocs; do
+            
+            # List of common web directories to check
+            POSSIBLE_DIRS="public_html www web httpdocs htdocs public www/html public_www"
+            
+            # Try to find and test usable directories
+            for dir in $POSSIBLE_DIRS; do
               if [ -d ~/$dir ]; then
-                echo "Found ~/$dir directory!"
-                echo "Contents of ~/$dir:"
-                ls -la ~/$dir
+                echo "Found ~/$dir directory"
+                
+                # Try to create a test directory
+                mkdir -p ~/$dir/testquran 2>/dev/null
+                
+                if [ -d ~/$dir/testquran ]; then
+                  echo "SUCCESS: Can write to ~/$dir/testquran"
+                  echo "~/$dir/Quran" > ~/webpath.txt
+                  # Create a test file
+                  echo "Test" > ~/$dir/testquran/test.txt
+                  # Clean up test directory
+                  rm -rf ~/$dir/testquran
+                  break
+                else
+                  echo "FAIL: Cannot write to ~/$dir"
+                fi
               fi
             done
-            echo "------------------------------"
-            echo "Creating deployment directory:"
-            mkdir -p ~/public_html/Quran || echo "Failed to create directory"
             
-            # If public_html creation failed, try to find an alternative directory
-            if [ ! -d ~/public_html/Quran ]; then
-              echo "Attempting to find alternative deployment directory..."
+            # If no path found yet, look for any writable directory
+            if [ ! -f ~/webpath.txt ]; then
+              echo "No standard web path found with write permissions"
+              echo "Checking for any writable directory..."
               
-              # Check if www directory exists
-              if [ -d ~/www ]; then
-                echo "Found www directory, trying to use it instead"
-                mkdir -p ~/www/Quran
-                if [ -d ~/www/Quran ]; then
-                  echo "SUCCESS: Created ~/www/Quran directory for deployment"
-                  # Save this information for later steps
-                  echo "DEPLOY_PATH=~/www/Quran" > ~/deploy_path.txt
-                fi
-              else
-                echo "Checking for other possible web directories..."
-                for alt_dir in httpdocs htdocs public web; do
-                  if [ -d ~/$alt_dir ]; then
-                    echo "Found ~/$alt_dir directory, trying to use it"
-                    mkdir -p ~/$alt_dir/Quran
-                    if [ -d ~/$alt_dir/Quran ]; then
-                      echo "SUCCESS: Created ~/$alt_dir/Quran directory for deployment"
-                      echo "DEPLOY_PATH=~/$alt_dir/Quran" > ~/deploy_path.txt
-                      break
-                    fi
-                  fi
-                done
+              # Try direct home directory
+              mkdir -p ~/Quran 2>/dev/null
+              if [ -d ~/Quran ]; then
+                echo "SUCCESS: Can write to ~/Quran"
+                echo "~/Quran" > ~/webpath.txt
               fi
-            else
-              echo "SUCCESS: Created or confirmed ~/public_html/Quran directory"
-              echo "DEPLOY_PATH=~/public_html/Quran" > ~/deploy_path.txt
             fi
             
-            # Print the final deployment path if found
-            if [ -f ~/deploy_path.txt ]; then
-              echo "Final deployment path: $(cat ~/deploy_path.txt)"
+            # Output the final path or an error
+            if [ -f ~/webpath.txt ]; then
+              echo "DEPLOY PATH FOUND: $(cat ~/webpath.txt)"
+              echo "Path will be used for deployment"
             else
-              echo "WARNING: Could not determine deployment path!"
+              echo "ERROR: No writable path found for deployment"
+              echo "Please contact your hosting provider"
+              exit 1
             fi
 
-      # Get deployment path from previous step
+      # Get the deployment path
       - name: Get deployment path
         uses: appleboy/ssh-action@v0.1.10
         id: get_path
@@ -461,62 +463,88 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           script: |
-            if [ -f ~/deploy_path.txt ]; then
-              cat ~/deploy_path.txt
+            if [ -f ~/webpath.txt ]; then
+              cat ~/webpath.txt
             else
-              echo "DEPLOY_PATH=~/public_html/Quran"
+              echo "ERROR: No deployment path found"
+              exit 1
             fi
+          script_stop: true
 
-      # Try to deploy using main server path
-      - name: Deploy files using SCP to public_html
+      # Deploy to the discovered path (or home/Quran as last resort)
+      - name: Deploy to server using SCP with dynamic path
         uses: appleboy/scp-action@v0.1.4
-        continue-on-error: true
-        id: deploy_main
         with:
           host: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           source: "dist/*"
-          target: "~/public_html/Quran"
+          # Use ~/Quran as a fallback path if discovery fails
+          target: "~/Quran"
           strip_components: 1
-          
-      # Try alternative deployment paths if main fails
-      - name: Deploy files to alternative www path
-        uses: appleboy/scp-action@v0.1.4
-        if: steps.deploy_main.outcome == 'failure'
-        continue-on-error: true
-        id: deploy_alt1
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          source: "dist/*"
-          target: "~/www/Quran"
-          strip_components: 1
+          overwrite: true
 
-      # Try other common web root paths
-      - name: Deploy files to alternative httpdocs path
-        uses: appleboy/scp-action@v0.1.4
-        if: steps.deploy_main.outcome == 'failure' && steps.deploy_alt1.outcome == 'failure'
-        continue-on-error: true
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          source: "dist/*"
-          target: "~/httpdocs/Quran"
-          strip_components: 1
-
-      # Post-deployment verification
+      # Verify deployment
       - name: Verify deployment
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            echo "=== DEPLOYMENT VERIFICATION ==="
+            
+            # Determine the actual deployment path
+            if [ -f ~/webpath.txt ]; then
+              DEPLOY_PATH=$(cat ~/webpath.txt)
+            else
+              DEPLOY_PATH=~/Quran
+            fi
+            
+            echo "Checking files in $DEPLOY_PATH:"
+            ls -la $DEPLOY_PATH
+            
+            # Check for critical files
+            if [ -f "$DEPLOY_PATH/index.html" ]; then
+              echo "✅ index.html exists"
+            else
+              echo "❌ index.html is missing!"
+            fi
+            
+            if [ -f "$DEPLOY_PATH/version.json" ]; then
+              echo "✅ version.json exists:"
+              cat "$DEPLOY_PATH/version.json"
+            else
+              echo "❌ version.json is missing!"
+            fi
+            
+            if [ -f "$DEPLOY_PATH/test.html" ]; then
+              echo "✅ test.html exists"
+            else
+              echo "❌ test.html is missing!"
+            fi
+            
+            # Check permissions
+            echo "File permissions:"
+            ls -l "$DEPLOY_PATH/index.html" 2>/dev/null || echo "Cannot access index.html"
+            
+            # Create a simple deployment marker
+            echo "Deployment completed at $(date)" > "$DEPLOY_PATH/deployment-marker.txt"
+            echo "GitHub Run: ${{ github.run_id }}" >> "$DEPLOY_PATH/deployment-marker.txt"
+            echo "✅ Created deployment marker"
+
+      - name: Deployment summary
         run: |
-          echo "Deployment completed at $(date)"
-          echo "Check these URLs to verify deployment:"
-          echo "1. Main site: https://quran.eemaanfoundation.com/"
-          echo "2. Clear cache tool: https://quran.eemaanfoundation.com/clear-cache.html"
-          echo "3. Version file: https://quran.eemaanfoundation.com/version.json"
-          echo "4. Test page: https://quran.eemaanfoundation.com/test.html"
-          echo "If you still don't see changes, access the clear-cache.html page to force a refresh"
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "Deployment completed at $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify your website is accessible" >> $GITHUB_STEP_SUMMARY
+          echo "2. Check that the following pages work:" >> $GITHUB_STEP_SUMMARY
+          echo "   - Main site" >> $GITHUB_STEP_SUMMARY
+          echo "   - /clear-cache.html - Use this to clear old caches" >> $GITHUB_STEP_SUMMARY
+          echo "   - /test.html - Verify server connectivity" >> $GITHUB_STEP_SUMMARY
+          echo "   - /version.json - Check build version" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "If you encounter issues, try accessing the /clear-cache.html page first" >> $GITHUB_STEP_SUMMARY

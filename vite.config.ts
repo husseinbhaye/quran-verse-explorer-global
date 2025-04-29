@@ -37,6 +37,7 @@ export default defineConfig(({ mode }) => {
       port: 8080,
     },
     build: {
+      // Ensure file names include timestamps for aggressive cache busting
       rollupOptions: {
         output: {
           // Add timestamp to all filenames for cache busting
