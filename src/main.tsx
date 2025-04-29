@@ -13,7 +13,7 @@ sessionStorage.setItem('last_load', Date.now().toString());
 // Function to force refresh the page
 const forceRefresh = () => {
   console.log('Forcing page refresh due to new version');
-  window.location.reload(true); // Force reload from server, not cache
+  window.location.reload();  // Removed the 'true' parameter as it's not expected in TypeScript
 };
 
 // More aggressive check for version updates (every 30 seconds in production)
