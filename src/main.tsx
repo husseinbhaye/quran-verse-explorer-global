@@ -56,11 +56,9 @@ if (import.meta.env.PROD) {
     }
   };
   
-  // Check immediately and then every 30 seconds (more frequent checks)
-  setTimeout(() => {
-    checkForUpdates();
-    setInterval(checkForUpdates, 30 * 1000);
-  }, 2000); // Wait 2 seconds before first check to ensure page is loaded
+  // More frequent checks and immediate check on load
+  checkForUpdates(); // Run immediately when the app loads
+  setInterval(checkForUpdates, 15 * 1000); // Check every 15 seconds (more frequent)
 }
 
 // Mount the React application
