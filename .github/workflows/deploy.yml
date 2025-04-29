@@ -1,4 +1,3 @@
-
 name: Build & Deploy to Web Server via SFTP
 
 on:
@@ -384,8 +383,8 @@ jobs:
             cat dist/version.json
           fi
 
-      # First check if the directory already exists
-      - name: Check directory existence
+      # First check if the directory exists and create it if needed
+      - name: Check and create Quran directory
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.FTP_HOST }}
@@ -395,8 +394,10 @@ jobs:
           script: |
             if [ ! -d ~/public_html/Quran ]; then
               mkdir -p ~/public_html/Quran
+              echo "Created directory ~/public_html/Quran"
+            else
+              echo "Directory ~/public_html/Quran already exists"
             fi
-            echo "Directory checked"
 
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
@@ -418,4 +419,4 @@ jobs:
           echo "2. Clear cache tool: https://quran.eemaanfoundation.com/clear-cache.html"
           echo "3. Version file: https://quran.eemaanfoundation.com/version.json"
           echo "4. Test page: https://quran.eemaanfoundation.com/test.html"
-          echo "If you still don't see changes, access the clear-cache.html page to force a refresh"
+          echo "If you still don't see changes, access the clear-cache.html page to force a refresh
