@@ -1,5 +1,5 @@
 
-name: Build & Deploy to Web Server via FTP
+name: Build & Deploy to Web Server via SFTP
 
 on:
   push:
@@ -43,21 +43,19 @@ jobs:
           ls -la dist/
           echo "=== End of listing ==="
 
-      - name: Debug FTP connection
+      - name: Debug connection
         run: |
-          echo "Attempting to connect to FTP server..."
+          echo "Attempting to connect to server..."
           echo "Host: ${{ secrets.FTP_HOST }}"
+          echo "Protocol: SFTP"
 
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      - name: Deploy via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
+          server: ${{ secrets.FTP_HOST }}
+          port: 22
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist/
-          server-dir: '/public_html/Quran/'
-          dry-run: false
-          dangerous-clean-slate: true
-          log-level: verbose
-          timeout: 120000
-
+          local_path: './dist/*'
+          remote_path: '/public_html/Quran/'
+          sftpArgs: '-o StrictHostKeyChecking=no'
