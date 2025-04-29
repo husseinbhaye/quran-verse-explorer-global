@@ -451,7 +451,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           source: "dist/*"
-          target: "~/Quran"
+          target: "Quran"
           strip_components: 1
           overwrite: true
 
