@@ -450,7 +450,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           source: "dist/*"
-          # Note: We use a remote_path variable to reference the location of deployment
           target: "~/Quran"
           strip_components: 1
           overwrite: true
