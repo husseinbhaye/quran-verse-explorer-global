@@ -25,22 +25,23 @@ jobs:
       - name: Build production bundle
         run: npm run build
         
-      # Add an optional step to create .htaccess for Apache servers
+      # Create .htaccess file for SPA routing
       - name: Create .htaccess file for SPA routing
         run: |
-          cat > dist/.htaccess << 'EOF'
-          <IfModule mod_rewrite.c>
-            RewriteEngine On
-            RewriteBase /
-            RewriteRule ^index\.html$ - [L]
-            RewriteCond %{REQUEST_FILENAME} !-f
-            RewriteCond %{REQUEST_FILENAME} !-d
-            RewriteRule . /index.html [L]
-          </IfModule>
-          EOF
+          echo '<IfModule mod_rewrite.c>' > dist/.htaccess
+          echo '  RewriteEngine On' >> dist/.htaccess
+          echo '  RewriteBase /' >> dist/.htaccess
+          echo '  RewriteRule ^index\.html$ - [L]' >> dist/.htaccess
+          echo '  RewriteCond %{REQUEST_FILENAME} !-f' >> dist/.htaccess
+          echo '  RewriteCond %{REQUEST_FILENAME} !-d' >> dist/.htaccess
+          echo '  RewriteRule . /index.html [L]' >> dist/.htaccess
+          echo '</IfModule>' >> dist/.htaccess
 
       - name: List build output
-        run: ls -la dist/
+        run: |
+          echo "=== Listing build output ==="
+          ls -la dist/
+          echo "=== End of listing ==="
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4
