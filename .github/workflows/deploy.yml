@@ -51,6 +51,13 @@ jobs:
           echo "Protocol: SFTP with port 22"
           echo "Remote path: /public_html/Quran/"
 
+      # Add a step to create a marker file to verify deployment
+      - name: Create deployment marker
+        run: |
+          echo "Deployment timestamp: $(date)" > dist/deployment-marker.txt
+          echo "GitHub run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
+          echo "Commit: ${{ github.sha }}" >> dist/deployment-marker.txt
+
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -59,5 +66,12 @@ jobs:
           port: 22
           password: ${{ secrets.FTP_PASSWORD }}
           local_path: './dist/*'
-          remote_path: '/public_html/Quran'
+          remote_path: '/public_html/Quran/'
           sftpArgs: '-o StrictHostKeyChecking=no -v'
+          
+      # Add a step to verify if files were deployed
+      - name: Verify deployment
+        run: |
+          echo "Deployment completed at $(date)"
+          echo "Check your website for updates and look for the deployment-marker.txt file"
+          echo "If you still don't see changes, try clearing your browser cache or using an incognito window"
