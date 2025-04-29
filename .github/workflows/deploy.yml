@@ -57,8 +57,154 @@ jobs:
           echo '  php_value session.cache_limiter "nocache"' >> dist/.htaccess
           echo '</IfModule>' >> dist/.htaccess
 
-      # Create improved clear-cache script with more information and better UI
-      - name: Create enhanced clear-cache script
+      # Create test.html file
+      - name: Create test HTML file
+        run: |
+          echo "<!DOCTYPE html>" > dist/test.html
+          echo "<html lang=\"en\">" >> dist/test.html
+          echo "<head>" >> dist/test.html
+          echo "  <meta charset=\"UTF-8\">" >> dist/test.html
+          echo "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">" >> dist/test.html
+          echo "  <meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" />" >> dist/test.html
+          echo "  <meta http-equiv=\"Pragma\" content=\"no-cache\" />" >> dist/test.html
+          echo "  <meta http-equiv=\"Expires\" content=\"0\" />" >> dist/test.html
+          echo "  <title>Eemaan Foundation Test Page</title>" >> dist/test.html
+          echo "  <style>" >> dist/test.html
+          echo "    body {" >> dist/test.html
+          echo "      font-family: Arial, sans-serif;" >> dist/test.html
+          echo "      max-width: 800px;" >> dist/test.html
+          echo "      margin: 0 auto;" >> dist/test.html
+          echo "      padding: 20px;" >> dist/test.html
+          echo "      line-height: 1.6;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    .success {" >> dist/test.html
+          echo "      background-color: #d4edda;" >> dist/test.html
+          echo "      border-color: #c3e6cb;" >> dist/test.html
+          echo "      color: #155724;" >> dist/test.html
+          echo "      padding: 15px;" >> dist/test.html
+          echo "      margin-bottom: 20px;" >> dist/test.html
+          echo "      border-radius: 4px;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    .info {" >> dist/test.html
+          echo "      background-color: #cce5ff;" >> dist/test.html
+          echo "      border-color: #b8daff;" >> dist/test.html
+          echo "      color: #004085;" >> dist/test.html
+          echo "      padding: 15px;" >> dist/test.html
+          echo "      margin-bottom: 20px;" >> dist/test.html
+          echo "      border-radius: 4px;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    table {" >> dist/test.html
+          echo "      width: 100%;" >> dist/test.html
+          echo "      border-collapse: collapse;" >> dist/test.html
+          echo "      margin: 20px 0;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    th, td {" >> dist/test.html
+          echo "      border: 1px solid #ddd;" >> dist/test.html
+          echo "      padding: 8px;" >> dist/test.html
+          echo "      text-align: left;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    th {" >> dist/test.html
+          echo "      background-color: #f2f2f2;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    button {" >> dist/test.html
+          echo "      background-color: #4CAF50;" >> dist/test.html
+          echo "      color: white;" >> dist/test.html
+          echo "      padding: 10px 15px;" >> dist/test.html
+          echo "      border: none;" >> dist/test.html
+          echo "      border-radius: 4px;" >> dist/test.html
+          echo "      cursor: pointer;" >> dist/test.html
+          echo "      font-size: 16px;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "    button:hover {" >> dist/test.html
+          echo "      background-color: #45a049;" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "  </style>" >> dist/test.html
+          echo "</head>" >> dist/test.html
+          echo "<body>" >> dist/test.html
+          echo "  <h1>Eemaan Foundation Quran Explorer</h1>" >> dist/test.html
+          echo "  <h2>Deployment Test Page</h2>" >> dist/test.html
+          echo "  " >> dist/test.html
+          echo "  <div class=\"success\">" >> dist/test.html
+          echo "    <strong>Success!</strong> If you can see this page, the web server is functioning correctly." >> dist/test.html
+          echo "  </div>" >> dist/test.html
+          echo "  " >> dist/test.html
+          echo "  <div class=\"info\">" >> dist/test.html
+          echo "    <strong>Last Deployment:</strong> <span id=\"deployTime\"></span>" >> dist/test.html
+          echo "  </div>" >> dist/test.html
+          echo "  " >> dist/test.html
+          echo "  <h3>System Information</h3>" >> dist/test.html
+          echo "  <table>" >> dist/test.html
+          echo "    <tr>" >> dist/test.html
+          echo "      <th>Information</th>" >> dist/test.html
+          echo "      <th>Value</th>" >> dist/test.html
+          echo "    </tr>" >> dist/test.html
+          echo "    <tr>" >> dist/test.html
+          echo "      <td>Deployment Timestamp</td>" >> dist/test.html
+          echo "      <td id=\"timestamp\"></td>" >> dist/test.html
+          echo "    </tr>" >> dist/test.html
+          echo "    <tr>" >> dist/test.html
+          echo "      <td>Browser</td>" >> dist/test.html
+          echo "      <td id=\"browser\"></td>" >> dist/test.html
+          echo "    </tr>" >> dist/test.html
+          echo "    <tr>" >> dist/test.html
+          echo "      <td>Current Time</td>" >> dist/test.html
+          echo "      <td id=\"currentTime\"></td>" >> dist/test.html
+          echo "    </tr>" >> dist/test.html
+          echo "    <tr>" >> dist/test.html
+          echo "      <td>Cache Status</td>" >> dist/test.html
+          echo "      <td id=\"cacheStatus\">Checking...</td>" >> dist/test.html
+          echo "    </tr>" >> dist/test.html
+          echo "  </table>" >> dist/test.html
+          echo "" >> dist/test.html
+          echo "  <h3>Actions</h3>" >> dist/test.html
+          echo "  <p>" >> dist/test.html
+          echo "    <button onclick=\"clearCacheAndRedirect()\">Clear Cache and Go to Homepage</button>" >> dist/test.html
+          echo "  </p>" >> dist/test.html
+          echo "" >> dist/test.html
+          echo "  <script>" >> dist/test.html
+          echo "    // Set current time" >> dist/test.html
+          echo "    document.getElementById('currentTime').textContent = new Date().toLocaleString();" >> dist/test.html
+          echo "    " >> dist/test.html
+          echo "    // Set browser info" >> dist/test.html
+          echo "    document.getElementById('browser').textContent = navigator.userAgent;" >> dist/test.html
+          echo "    " >> dist/test.html
+          echo "    // Get deployment timestamp" >> dist/test.html
+          echo "    fetch('/version.json?nocache=' + Date.now())" >> dist/test.html
+          echo "      .then(response => {" >> dist/test.html
+          echo "        if (!response.ok) {" >> dist/test.html
+          echo "          throw new Error('Version file not found');" >> dist/test.html
+          echo "        }" >> dist/test.html
+          echo "        return response.json();" >> dist/test.html
+          echo "      })" >> dist/test.html
+          echo "      .then(data => {" >> dist/test.html
+          echo "        document.getElementById('timestamp').textContent = data.timestamp;" >> dist/test.html
+          echo "        document.getElementById('deployTime').textContent = new Date(data.buildTime).toLocaleString();" >> dist/test.html
+          echo "        " >> dist/test.html
+          echo "        // Check if cache is fresh" >> dist/test.html
+          echo "        const storedBuild = localStorage.getItem('app_build_timestamp');" >> dist/test.html
+          echo "        if (storedBuild && storedBuild === data.timestamp.toString()) {" >> dist/test.html
+          echo "          document.getElementById('cacheStatus').textContent = 'Using fresh cache';" >> dist/test.html
+          echo "        } else {" >> dist/test.html
+          echo "          document.getElementById('cacheStatus').textContent = 'Cache outdated or not set';" >> dist/test.html
+          echo "        }" >> dist/test.html
+          echo "      })" >> dist/test.html
+          echo "      .catch(error => {" >> dist/test.html
+          echo "        document.getElementById('timestamp').textContent = 'Error: ' + error.message;" >> dist/test.html
+          echo "      });" >> dist/test.html
+          echo "      " >> dist/test.html
+          echo "    // Function to clear cache and redirect" >> dist/test.html
+          echo "    function clearCacheAndRedirect() {" >> dist/test.html
+          echo "      localStorage.clear();" >> dist/test.html
+          echo "      sessionStorage.clear();" >> dist/test.html
+          echo "      alert('Cache cleared. Redirecting to homepage...');" >> dist/test.html
+          echo "      window.location.href = '/?fresh=' + Date.now();" >> dist/test.html
+          echo "    }" >> dist/test.html
+          echo "  </script>" >> dist/test.html
+          echo "</body>" >> dist/test.html
+          echo "</html>" >> dist/test.html
+
+      # Create clear-cache.html file
+      - name: Create clear-cache.html file 
         run: |
           echo "<!DOCTYPE html>" > dist/clear-cache.html
           echo "<html lang=\"en\">" >> dist/clear-cache.html
@@ -70,71 +216,69 @@ jobs:
           echo "  <meta http-equiv=\"Expires\" content=\"0\" />" >> dist/clear-cache.html
           echo "  <title>Cache Management - Eemaan Foundation</title>" >> dist/clear-cache.html
           echo "  <style>" >> dist/clear-cache.html
-          echo "    body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }" >> dist/clear-cache.html
-          echo "    h1 { color: #2c3e50; }" >> dist/clear-cache.html
-          echo "    button { background: #3498db; color: white; border: none; padding: 12px 24px; font-size: 16px; cursor: pointer; border-radius: 4px; }" >> dist/clear-cache.html
-          echo "    button:hover { background: #2980b9; }" >> dist/clear-cache.html
-          echo "    .status { padding: 12px; margin: 12px 0; border-radius: 4px; display: none; }" >> dist/clear-cache.html
-          echo "    .success { background: #d4edda; color: #155724; }" >> dist/clear-cache.html
-          echo "    .info { background: #d1ecf1; color: #0c5460; }" >> dist/clear-cache.html
-          echo "    .steps { background: #f8f9fa; padding: 15px; border-radius: 4px; }" >> dist/clear-cache.html
+          echo "    body { " >> dist/clear-cache.html
+          echo "      font-family: Arial, sans-serif; " >> dist/clear-cache.html
+          echo "      line-height: 1.6; " >> dist/clear-cache.html
+          echo "      max-width: 800px; " >> dist/clear-cache.html
+          echo "      margin: 0 auto; " >> dist/clear-cache.html
+          echo "      padding: 20px; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    h1, h2 { " >> dist/clear-cache.html
+          echo "      color: #2c3e50; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    button { " >> dist/clear-cache.html
+          echo "      background: #3498db; " >> dist/clear-cache.html
+          echo "      color: white; " >> dist/clear-cache.html
+          echo "      border: none; " >> dist/clear-cache.html
+          echo "      padding: 12px 24px; " >> dist/clear-cache.html
+          echo "      font-size: 16px; " >> dist/clear-cache.html
+          echo "      cursor: pointer; " >> dist/clear-cache.html
+          echo "      border-radius: 4px; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    button:hover { " >> dist/clear-cache.html
+          echo "      background: #2980b9; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    .status { " >> dist/clear-cache.html
+          echo "      padding: 12px; " >> dist/clear-cache.html
+          echo "      margin: 12px 0; " >> dist/clear-cache.html
+          echo "      border-radius: 4px; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    .success { " >> dist/clear-cache.html
+          echo "      background: #d4edda; " >> dist/clear-cache.html
+          echo "      color: #155724; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    .info { " >> dist/clear-cache.html
+          echo "      background: #d1ecf1; " >> dist/clear-cache.html
+          echo "      color: #0c5460; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    .steps { " >> dist/clear-cache.html
+          echo "      background: #f8f9fa; " >> dist/clear-cache.html
+          echo "      padding: 15px; " >> dist/clear-cache.html
+          echo "      border-radius: 4px; " >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    .loader {" >> dist/clear-cache.html
+          echo "      border: 5px solid #f3f3f3;" >> dist/clear-cache.html
+          echo "      border-radius: 50%;" >> dist/clear-cache.html
+          echo "      border-top: 5px solid #3498db;" >> dist/clear-cache.html
+          echo "      width: 30px;" >> dist/clear-cache.html
+          echo "      height: 30px;" >> dist/clear-cache.html
+          echo "      animation: spin 1s linear infinite;" >> dist/clear-cache.html
+          echo "      display: inline-block;" >> dist/clear-cache.html
+          echo "      margin-right: 10px;" >> dist/clear-cache.html
+          echo "      vertical-align: middle;" >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    @keyframes spin {" >> dist/clear-cache.html
+          echo "      0% { transform: rotate(0deg); }" >> dist/clear-cache.html
+          echo "      100% { transform: rotate(360deg); }" >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
           echo "  </style>" >> dist/clear-cache.html
-          echo "  <script>" >> dist/clear-cache.html
-          echo "    // Get build information" >> dist/clear-cache.html
-          echo "    async function getBuildInfo() {" >> dist/clear-cache.html
-          echo "      try {" >> dist/clear-cache.html
-          echo "        const response = await fetch('/version.json?t=' + Date.now());" >> dist/clear-cache.html
-          echo "        if (response.ok) {" >> dist/clear-cache.html
-          echo "          const data = await response.json();" >> dist/clear-cache.html
-          echo "          document.getElementById('buildInfo').textContent = 'Current build: ' + new Date(data.buildTime).toLocaleString() + ' (Timestamp: ' + data.timestamp + ')';" >> dist/clear-cache.html
-          echo "          return data;" >> dist/clear-cache.html
-          echo "        }" >> dist/clear-cache.html
-          echo "      } catch (e) {" >> dist/clear-cache.html
-          echo "        console.error('Error fetching build info:', e);" >> dist/clear-cache.html
-          echo "      }" >> dist/clear-cache.html
-          echo "      return null;" >> dist/clear-cache.html
-          echo "    }" >> dist/clear-cache.html
-          echo "    // Clear all caches" >> dist/clear-cache.html
-          echo "    async function clearCache() {" >> dist/clear-cache.html
-          echo "      const status = document.getElementById('status');" >> dist/clear-cache.html
-          echo "      status.className = 'status info';" >> dist/clear-cache.html
-          echo "      status.style.display = 'block';" >> dist/clear-cache.html
-          echo "      status.innerHTML = '<strong>Clearing cache...</strong>';" >> dist/clear-cache.html
-          echo "      // Clear localStorage" >> dist/clear-cache.html
-          echo "      localStorage.clear();" >> dist/clear-cache.html
-          echo "      // Clear sessionStorage" >> dist/clear-cache.html
-          echo "      sessionStorage.clear();" >> dist/clear-cache.html
-          echo "      // Get latest build info" >> dist/clear-cache.html
-          echo "      const buildInfo = await getBuildInfo();" >> dist/clear-cache.html
-          echo "      if (buildInfo) {" >> dist/clear-cache.html
-          echo "        localStorage.setItem('app_build_timestamp', buildInfo.timestamp.toString());" >> dist/clear-cache.html
-          echo "      }" >> dist/clear-cache.html
-          echo "      // Clear browser cache via Cache API" >> dist/clear-cache.html
-          echo "      if (window.caches) {" >> dist/clear-cache.html
-          echo "        try {" >> dist/clear-cache.html
-          echo "          const keys = await caches.keys();" >> dist/clear-cache.html
-          echo "          await Promise.all(keys.map(key => caches.delete(key)));" >> dist/clear-cache.html
-          echo "          status.innerHTML += '<br>Browser cache API cleared.';" >> dist/clear-cache.html
-          echo "        } catch (e) {" >> dist/clear-cache.html
-          echo "          console.error('Error clearing Cache API:', e);" >> dist/clear-cache.html
-          echo "        }" >> dist/clear-cache.html
-          echo "      }" >> dist/clear-cache.html
-          echo "      // Success message" >> dist/clear-cache.html
-          echo "      status.className = 'status success';" >> dist/clear-cache.html
-          echo "      status.innerHTML = '<strong>Success!</strong> Cache has been cleared. Redirecting to home page in 3 seconds...';" >> dist/clear-cache.html
-          echo "      // Redirect with timestamp to bypass any remaining cache" >> dist/clear-cache.html
-          echo "      setTimeout(() => { window.location.href = '/?fresh=' + Date.now(); }, 3000);" >> dist/clear-cache.html
-          echo "    }" >> dist/clear-cache.html
-          echo "    // Initialize" >> dist/clear-cache.html
-          echo "    window.onload = () => {" >> dist/clear-cache.html
-          echo "      getBuildInfo();" >> dist/clear-cache.html
-          echo "    };" >> dist/clear-cache.html
-          echo "  </script>" >> dist/clear-cache.html
           echo "</head>" >> dist/clear-cache.html
           echo "<body>" >> dist/clear-cache.html
           echo "  <h1>Eemaan Foundation Quran Explorer</h1>" >> dist/clear-cache.html
           echo "  <h2>Cache Management Tool</h2>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
           echo "  <p id=\"buildInfo\">Loading build information...</p>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
           echo "  <div class=\"steps\">" >> dist/clear-cache.html
           echo "    <h3>If you're experiencing issues with the website not updating:</h3>" >> dist/clear-cache.html
           echo "    <ol>" >> dist/clear-cache.html
@@ -144,24 +288,89 @@ jobs:
           echo "      <li>As a last resort, clear your entire browser cache from your browser settings</li>" >> dist/clear-cache.html
           echo "    </ol>" >> dist/clear-cache.html
           echo "  </div>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
           echo "  <p><button onclick=\"clearCache()\">Clear Cache & Reload</button></p>" >> dist/clear-cache.html
-          echo "  <div id=\"status\" class=\"status\"></div>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
+          echo "  <div id=\"status\" class=\"status info\" style=\"display: none;\"></div>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
           echo "  <hr>" >> dist/clear-cache.html
-          echo "  <p><small>Build time: $(date -u +\"%Y-%m-%dT%H:%M:%SZ\") | Run ID: ${{ github.run_id }}</small></p>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
+          echo "  <h3>Advanced Troubleshooting</h3>" >> dist/clear-cache.html
+          echo "  <p>If you continue to see outdated content:</p>" >> dist/clear-cache.html
+          echo "  <ol>" >> dist/clear-cache.html
+          echo "    <li>Try the <a href=\"/test.html\">test page</a> to verify server connectivity and deployment status</li>" >> dist/clear-cache.html
+          echo "    <li>Check if the <a href=\"/version.json\" target=\"_blank\">version file</a> is accessible</li>" >> dist/clear-cache.html
+          echo "    <li>Try accessing the site using a different browser</li>" >> dist/clear-cache.html
+          echo "    <li>If using a corporate network, contact your IT department as they may have caching proxies</li>" >> dist/clear-cache.html
+          echo "  </ol>" >> dist/clear-cache.html
+          echo "  " >> dist/clear-cache.html
+          echo "  <script>" >> dist/clear-cache.html
+          echo "    // Get build information" >> dist/clear-cache.html
+          echo "    async function getBuildInfo() {" >> dist/clear-cache.html
+          echo "      try {" >> dist/clear-cache.html
+          echo "        const response = await fetch('/version.json?t=' + Date.now());" >> dist/clear-cache.html
+          echo "        if (response.ok) {" >> dist/clear-cache.html
+          echo "          const data = await response.json();" >> dist/clear-cache.html
+          echo "          document.getElementById('buildInfo').textContent = 'Current build: ' + " >> dist/clear-cache.html
+          echo "            new Date(data.buildTime).toLocaleString() + ' (Timestamp: ' + data.timestamp + ')';" >> dist/clear-cache.html
+          echo "          return data;" >> dist/clear-cache.html
+          echo "        }" >> dist/clear-cache.html
+          echo "      } catch (e) {" >> dist/clear-cache.html
+          echo "        console.error('Error fetching build info:', e);" >> dist/clear-cache.html
+          echo "        document.getElementById('buildInfo').textContent = 'Error loading build information. Server may be unavailable.';" >> dist/clear-cache.html
+          echo "      }" >> dist/clear-cache.html
+          echo "      return null;" >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    " >> dist/clear-cache.html
+          echo "    // Clear all caches" >> dist/clear-cache.html
+          echo "    async function clearCache() {" >> dist/clear-cache.html
+          echo "      const status = document.getElementById('status');" >> dist/clear-cache.html
+          echo "      status.innerHTML = '<div class=\"loader\"></div> <strong>Clearing cache...</strong>';" >> dist/clear-cache.html
+          echo "      status.className = 'status info';" >> dist/clear-cache.html
+          echo "      status.style.display = 'block';" >> dist/clear-cache.html
+          echo "      " >> dist/clear-cache.html
+          echo "      // Clear localStorage" >> dist/clear-cache.html
+          echo "      localStorage.clear();" >> dist/clear-cache.html
+          echo "      " >> dist/clear-cache.html
+          echo "      // Clear sessionStorage" >> dist/clear-cache.html
+          echo "      sessionStorage.clear();" >> dist/clear-cache.html
+          echo "      " >> dist/clear-cache.html
+          echo "      // Get latest build info" >> dist/clear-cache.html
+          echo "      const buildInfo = await getBuildInfo();" >> dist/clear-cache.html
+          echo "      if (buildInfo) {" >> dist/clear-cache.html
+          echo "        localStorage.setItem('app_build_timestamp', buildInfo.timestamp.toString());" >> dist/clear-cache.html
+          echo "        status.innerHTML += '<br>Updated to latest build timestamp: ' + buildInfo.timestamp;" >> dist/clear-cache.html
+          echo "      }" >> dist/clear-cache.html
+          echo "      " >> dist/clear-cache.html
+          echo "      // Clear browser cache via Cache API" >> dist/clear-cache.html
+          echo "      if (window.caches) {" >> dist/clear-cache.html
+          echo "        try {" >> dist/clear-cache.html
+          echo "          const keys = await caches.keys();" >> dist/clear-cache.html
+          echo "          await Promise.all(keys.map(key => caches.delete(key)));" >> dist/clear-cache.html
+          echo "          status.innerHTML += '<br>Browser cache API cleared successfully.';" >> dist/clear-cache.html
+          echo "        } catch (e) {" >> dist/clear-cache.html
+          echo "          console.error('Error clearing Cache API:', e);" >> dist/clear-cache.html
+          echo "          status.innerHTML += '<br>Error clearing browser cache API: ' + e.message;" >> dist/clear-cache.html
+          echo "        }" >> dist/clear-cache.html
+          echo "      }" >> dist/clear-cache.html
+          echo "      " >> dist/clear-cache.html
+          echo "      // Success message" >> dist/clear-cache.html
+          echo "      status.className = 'status success';" >> dist/clear-cache.html
+          echo "      status.innerHTML = '<strong>Success!</strong> Cache has been cleared. Redirecting to home page in 3 seconds...';" >> dist/clear-cache.html
+          echo "      " >> dist/clear-cache.html
+          echo "      // Redirect with timestamp to bypass any remaining cache" >> dist/clear-cache.html
+          echo "      setTimeout(() => {" >> dist/clear-cache.html
+          echo "        window.location.href = '/?fresh=' + Date.now();" >> dist/clear-cache.html
+          echo "      }, 3000);" >> dist/clear-cache.html
+          echo "    }" >> dist/clear-cache.html
+          echo "    " >> dist/clear-cache.html
+          echo "    // Initialize" >> dist/clear-cache.html
+          echo "    window.onload = () => {" >> dist/clear-cache.html
+          echo "      getBuildInfo();" >> dist/clear-cache.html
+          echo "    };" >> dist/clear-cache.html
+          echo "  </script>" >> dist/clear-cache.html
           echo "</body>" >> dist/clear-cache.html
           echo "</html>" >> dist/clear-cache.html
-
-      # Create a test.html file to verify deployment
-      - name: Create test HTML file
-        run: |
-          echo "<html><head><title>Deployment Test</title><meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store, must-revalidate\" /><meta http-equiv=\"Pragma\" content=\"no-cache\" /><meta http-equiv=\"Expires\" content=\"0\" /></head><body><h1>Deployment Test</h1><p>Deployed at $(date -u +"%Y-%m-%dT%H:%M:%SZ")</p><p>GitHub Run: ${{ github.run_id }}</p><p>Build: $(date +%s)</p></body></html>" > dist/test.html
-          echo "Created test.html"
-
-      - name: List build output
-        run: |
-          echo "=== Listing build output ==="
-          ls -la dist/
-          echo "=== End of listing ==="
 
       # Create a version.json file with timestamp if not already created by Vite
       - name: Ensure version.json exists
@@ -175,6 +384,20 @@ jobs:
             cat dist/version.json
           fi
 
+      # First check if the directory already exists
+      - name: Check directory existence
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            if [ ! -d ~/public_html/Quran ]; then
+              mkdir -p ~/public_html/Quran
+            fi
+            echo "Directory checked"
+
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
@@ -183,7 +406,7 @@ jobs:
           port: 22
           password: ${{ secrets.FTP_PASSWORD }}
           local_path: './dist/*'
-          remote_path: '/public_html/Quran/'
+          remote_path: './public_html/Quran/'
           sftpArgs: '-o StrictHostKeyChecking=no -v'
           
       # Add a step to verify if files were deployed
