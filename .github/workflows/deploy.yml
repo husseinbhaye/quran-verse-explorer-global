@@ -61,18 +61,29 @@ jobs:
           echo "Protocol: SFTP with port 22"
           echo "Remote path: /public_html/Quran/"
 
-      # Create a more detailed deployment marker
+      # Create a more detailed deployment marker with clear visibility
       - name: Create deployment marker
         run: |
-          echo "Deployment timestamp: $(date)" > dist/deployment-marker.txt
+          echo "DEPLOYMENT MARKER - DO NOT DELETE" > dist/deployment-marker.txt
+          echo "Deployment timestamp: $(date)" >> dist/deployment-marker.txt
           echo "GitHub run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
           echo "Commit: ${{ github.sha }}" >> dist/deployment-marker.txt
           echo "Build time: $(date +%s)" >> dist/deployment-marker.txt
+          echo "Created deployment marker:"
+          cat dist/deployment-marker.txt
 
       # Add a version.json file for client-side cache busting
       - name: Create version file
         run: |
           echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date +%s)\"}" > dist/version.json
+          echo "Created version.json:"
+          cat dist/version.json
+
+      # Create a test.html file to verify deployment
+      - name: Create test HTML file
+        run: |
+          echo "<html><body><h1>Deployment Test</h1><p>Deployed at $(date)</p></body></html>" > dist/test.html
+          echo "Created test.html"
 
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
@@ -89,7 +100,9 @@ jobs:
       - name: Verify deployment
         run: |
           echo "Deployment completed at $(date)"
-          echo "Check your website for updates and look for the deployment-marker.txt file"
+          echo "Check these URLs to verify deployment:"
+          echo "1. Main site: https://YOUR_DOMAIN/Quran/"
+          echo "2. Deployment marker: https://YOUR_DOMAIN/Quran/deployment-marker.txt"
+          echo "3. Version file: https://YOUR_DOMAIN/Quran/version.json"
+          echo "4. Test page: https://YOUR_DOMAIN/Quran/test.html"
           echo "If you still don't see changes, try clearing your browser cache or using an incognito window"
-          echo "You can also verify by checking https://YOUR_DOMAIN/Quran/version.json"
-

@@ -13,7 +13,8 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <meta name="version" content="v1.0.<?php echo time(); ?>" />
+    <!-- Adding random version parameter to force cache refresh -->
+    <meta name="version" content="v1.1.0_%%TIMESTAMP%%" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
@@ -29,12 +30,21 @@
     <meta name="twitter:title" content="Quran Explorer - Eemaan Foundation" />
     <meta name="twitter:description" content="Explore the Holy Quran with Arabic text and translations in English and French" />
     <meta name="twitter:image" content="https://quran.eemaanfoundation.com/opengraph-image.png" />
+    
+    <!-- Prevent browser caching -->
+    <script>
+      // Add timestamp to break cache
+      document.querySelector('meta[name="version"]').setAttribute(
+        'content', 
+        document.querySelector('meta[name="version"]').getAttribute('content').replace('%%TIMESTAMP%%', new Date().getTime())
+      );
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx?v=<?php echo time(); ?>"></script>
+    <script type="module" src="/src/main.tsx?v=123456"></script>
   </body>
 </html>
