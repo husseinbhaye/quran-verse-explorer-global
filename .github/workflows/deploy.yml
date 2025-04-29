@@ -40,7 +40,7 @@ jobs:
           echo '# Cache Control' >> dist/.htaccess
           echo '<IfModule mod_headers.c>' >> dist/.htaccess
           echo '  # Disable caching for all files' >> dist/.htaccess
-          echo '  <FilesMatch "\\.(html|htm|js|json|css)$">' >> dist/.htaccess
+          echo '  <FilesMatch "\.(html|htm|js|json|css|txt|svg|png|jpg|jpeg|gif|ico|xml|woff|woff2|ttf|eot|otf)$">' >> dist/.htaccess
           echo '    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"' >> dist/.htaccess
           echo '    Header set Pragma "no-cache"' >> dist/.htaccess
           echo '    Header set Expires "0"' >> dist/.htaccess
@@ -64,25 +64,35 @@ jobs:
       # Create a more detailed deployment marker with clear visibility
       - name: Create deployment marker
         run: |
-          echo "DEPLOYMENT MARKER - DO NOT DELETE" > dist/deployment-marker.txt
-          echo "Deployment timestamp: $(date)" >> dist/deployment-marker.txt
-          echo "GitHub run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
-          echo "Commit: ${{ github.sha }}" >> dist/deployment-marker.txt
-          echo "Build time: $(date +%s)" >> dist/deployment-marker.txt
-          echo "Created deployment marker:"
-          cat dist/deployment-marker.txt
+          if [ ! -f dist/deployment-marker.txt ]; then
+            echo "MANUAL DEPLOYMENT MARKER - DO NOT DELETE" > dist/deployment-marker.txt
+            echo "Deployment timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> dist/deployment-marker.txt
+            echo "GitHub run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
+            echo "Commit: ${{ github.sha }}" >> dist/deployment-marker.txt
+            echo "Build time: $(date +%s)" >> dist/deployment-marker.txt
+            echo "Created manual deployment marker:"
+            cat dist/deployment-marker.txt
+          else
+            echo "Using existing deployment marker:"
+            cat dist/deployment-marker.txt
+          fi
 
       # Add a version.json file for client-side cache busting
       - name: Create version file
         run: |
-          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date +%s)\"}" > dist/version.json
-          echo "Created version.json:"
-          cat dist/version.json
+          if [ ! -f dist/version.json ]; then
+            echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"runId\":\"${{ github.run_id }}\"}" > dist/version.json
+            echo "Created version.json:"
+            cat dist/version.json
+          else
+            echo "Using existing version.json:"
+            cat dist/version.json
+          fi
 
       # Create a test.html file to verify deployment
       - name: Create test HTML file
         run: |
-          echo "<html><body><h1>Deployment Test</h1><p>Deployed at $(date)</p></body></html>" > dist/test.html
+          echo "<html><head><title>Deployment Test</title></head><body><h1>Deployment Test</h1><p>Deployed at $(date -u +"%Y-%m-%dT%H:%M:%SZ")</p><p>GitHub Run: ${{ github.run_id }}</p></body></html>" > dist/test.html
           echo "Created test.html"
 
       - name: Deploy via SFTP
