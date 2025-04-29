@@ -1,5 +1,4 @@
-
-name: Build & Deploy to Web Server via SCP
+name: Build & Deploy to Web Server
 
 on:
   push:
@@ -50,11 +49,6 @@ jobs:
           echo '  <FilesMatch ".(js|css|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|otf)$">' >> dist/.htaccess
           echo '    Header set Cache-Control "public, max-age=31536000, immutable"' >> dist/.htaccess
           echo '  </FilesMatch>' >> dist/.htaccess
-          echo '</IfModule>' >> dist/.htaccess
-          echo '' >> dist/.htaccess
-          echo '# PHP settings' >> dist/.htaccess
-          echo '<IfModule mod_php7.c>' >> dist/.htaccess
-          echo '  php_value session.cache_limiter "nocache"' >> dist/.htaccess
           echo '</IfModule>' >> dist/.htaccess
 
       # Create test.html file
@@ -384,95 +378,71 @@ jobs:
             cat dist/version.json
           fi
 
-      # Server path discovery with comprehensive approach
-      - name: Discover server web paths
-        uses: appleboy/ssh-action@v0.1.10
-        id: discover_paths
+      # First, SSH to server to identify the correct path
+      - name: Server discovery and deployment preparation
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           script: |
-            echo "=== SERVER PATH DISCOVERY ==="
-            echo "Checking common web root directories..."
-            
-            # Clear any previous paths file
-            rm -f ~/webpath.txt
-            
-            # Check home directory contents
+            echo "=== SERVER ENVIRONMENT DISCOVERY ==="
             echo "Home directory: $HOME"
-            echo "Listing directories in home:"
-            ls -la ~
+            echo "Current user: $(whoami)"
             
-            # List of common web directories to check
-            POSSIBLE_DIRS="public_html www web httpdocs htdocs public www/html public_www"
+            # List all writeable directories
+            echo "=== LISTING DIRECTORIES WITH WRITE ACCESS ==="
+            find ~ -type d -maxdepth 2 -perm -u+w -exec ls -ld {} \;
             
-            # Try to find and test usable directories
-            for dir in $POSSIBLE_DIRS; do
-              if [ -d ~/$dir ]; then
-                echo "Found ~/$dir directory"
-                
-                # Try to create a test directory
-                mkdir -p ~/$dir/testquran 2>/dev/null
-                
-                if [ -d ~/$dir/testquran ]; then
-                  echo "SUCCESS: Can write to ~/$dir/testquran"
-                  echo "~/$dir/Quran" > ~/webpath.txt
-                  # Create a test file
-                  echo "Test" > ~/$dir/testquran/test.txt
-                  # Clean up test directory
-                  rm -rf ~/$dir/testquran
-                  break
+            # Check common web root locations relative to home
+            echo "=== CHECKING COMMON WEB DIRECTORIES ==="
+            WEBDIRS=("public_html" "www" "httpdocs" "htdocs" "public" "web" "html")
+            for dir in "${WEBDIRS[@]}"; do
+              if [ -d "$HOME/$dir" ]; then
+                echo "Found $HOME/$dir - checking permissions"
+                if [ -w "$HOME/$dir" ]; then
+                  echo "SUCCESS: $HOME/$dir is writeable"
+                  mkdir -p "$HOME/$dir/Quran" 2>/dev/null
+                  if [ $? -eq 0 ]; then
+                    echo "CONFIRMED: Can create directory at $HOME/$dir/Quran"
+                    # Create an empty file to confirm write access
+                    echo "Path verified on $(date)" > "$HOME/$dir/Quran/path_verified.txt"
+                    echo "DEPLOY_PATH=$HOME/$dir/Quran" > "$HOME/deploy_path.txt"
+                    break
+                  fi
                 else
-                  echo "FAIL: Cannot write to ~/$dir"
+                  echo "ERROR: $HOME/$dir exists but is not writeable"
                 fi
               fi
             done
             
-            # If no path found yet, look for any writable directory
-            if [ ! -f ~/webpath.txt ]; then
-              echo "No standard web path found with write permissions"
-              echo "Checking for any writable directory..."
-              
-              # Try direct home directory
-              mkdir -p ~/Quran 2>/dev/null
-              if [ -d ~/Quran ]; then
-                echo "SUCCESS: Can write to ~/Quran"
-                echo "~/Quran" > ~/webpath.txt
+            # If we couldn't find a standard web directory, try to find any writeable directory
+            if [ ! -f "$HOME/deploy_path.txt" ]; then
+              echo "WARNING: No standard web directory found with write permissions"
+              echo "Creating fallback directory in home"
+              mkdir -p "$HOME/Quran" 2>/dev/null
+              if [ $? -eq 0 ]; then
+                echo "FALLBACK: Created $HOME/Quran"
+                echo "DEPLOY_PATH=$HOME/Quran" > "$HOME/deploy_path.txt"
+              else
+                echo "CRITICAL ERROR: Cannot create any deployment directory"
+                exit 1
               fi
             fi
             
-            # Output the final path or an error
-            if [ -f ~/webpath.txt ]; then
-              echo "DEPLOY PATH FOUND: $(cat ~/webpath.txt)"
-              echo "Path will be used for deployment"
+            # Output the final path
+            if [ -f "$HOME/deploy_path.txt" ]; then
+              echo "=== DEPLOYMENT TARGET ==="
+              cat "$HOME/deploy_path.txt"
+              echo "=== END DEPLOYMENT TARGET ==="
             else
-              echo "ERROR: No writable path found for deployment"
-              echo "Please contact your hosting provider"
+              echo "FATAL ERROR: No deployment path could be determined"
               exit 1
             fi
 
-      # Get the deployment path
-      - name: Get deployment path
-        uses: appleboy/ssh-action@v0.1.10
-        id: get_path
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          script: |
-            if [ -f ~/webpath.txt ]; then
-              cat ~/webpath.txt
-            else
-              echo "ERROR: No deployment path found"
-              exit 1
-            fi
-          script_stop: true
-
-      # Deploy to the discovered path (or home/Quran as last resort)
-      - name: Deploy to server using SCP with dynamic path
+      # Deploy using the discovered path
+      - name: Deploy files to server
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.FTP_HOST }}
@@ -480,14 +450,14 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           source: "dist/*"
-          # Use ~/Quran as a fallback path if discovery fails
+          # Note: We use a remote_path variable to reference the location of deployment
           target: "~/Quran"
           strip_components: 1
           overwrite: true
 
       # Verify deployment
       - name: Verify deployment
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -496,44 +466,38 @@ jobs:
           script: |
             echo "=== DEPLOYMENT VERIFICATION ==="
             
-            # Determine the actual deployment path
-            if [ -f ~/webpath.txt ]; then
-              DEPLOY_PATH=$(cat ~/webpath.txt)
-            else
-              DEPLOY_PATH=~/Quran
+            # Get the deployment path
+            DEPLOY_PATH="$HOME/Quran"
+            if [ -f "$HOME/deploy_path.txt" ]; then
+              DEPLOY_PATH=$(grep DEPLOY_PATH "$HOME/deploy_path.txt" | cut -d= -f2)
             fi
             
-            echo "Checking files in $DEPLOY_PATH:"
-            ls -la $DEPLOY_PATH
+            echo "Checking deployment at: $DEPLOY_PATH"
+            
+            # Check if directory exists
+            if [ ! -d "$DEPLOY_PATH" ]; then
+              echo "ERROR: Deployment directory does not exist!"
+              exit 1
+            fi
             
             # Check for critical files
-            if [ -f "$DEPLOY_PATH/index.html" ]; then
-              echo "✅ index.html exists"
-            else
-              echo "❌ index.html is missing!"
-            fi
+            echo "Checking for critical files:"
+            for file in index.html version.json test.html clear-cache.html; do
+              if [ -f "$DEPLOY_PATH/$file" ]; then
+                echo "✅ $file exists"
+              else
+                echo "❌ $file is missing!"
+              fi
+            done
             
-            if [ -f "$DEPLOY_PATH/version.json" ]; then
-              echo "✅ version.json exists:"
-              cat "$DEPLOY_PATH/version.json"
-            else
-              echo "❌ version.json is missing!"
-            fi
-            
-            if [ -f "$DEPLOY_PATH/test.html" ]; then
-              echo "✅ test.html exists"
-            else
-              echo "❌ test.html is missing!"
-            fi
-            
-            # Check permissions
-            echo "File permissions:"
-            ls -l "$DEPLOY_PATH/index.html" 2>/dev/null || echo "Cannot access index.html"
-            
-            # Create a simple deployment marker
+            # Create a deployment marker for debugging
             echo "Deployment completed at $(date)" > "$DEPLOY_PATH/deployment-marker.txt"
-            echo "GitHub Run: ${{ github.run_id }}" >> "$DEPLOY_PATH/deployment-marker.txt"
-            echo "✅ Created deployment marker"
+            echo "GitHub Run ID: ${{ github.run_id }}" >> "$DEPLOY_PATH/deployment-marker.txt"
+            
+            echo "Listing directory contents:"
+            ls -la "$DEPLOY_PATH" | head -20
+            
+            echo "Deployment verification complete."
 
       - name: Deployment summary
         run: |
