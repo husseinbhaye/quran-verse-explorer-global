@@ -13,15 +13,23 @@ sessionStorage.setItem('last_load', Date.now().toString());
 // Function to force refresh the page
 const forceRefresh = () => {
   console.log('Forcing page refresh due to new version');
-  window.location.reload();
+  window.location.reload(true); // Force reload from server, not cache
 };
 
-// Check for version updates every 2 minutes in production
+// More aggressive check for version updates (every 30 seconds in production)
 if (import.meta.env.PROD) {
   const checkForUpdates = async () => {
     try {
       // Add cache busting parameter to prevent cached responses
-      const response = await fetch(`/version.json?nocache=${Date.now()}`);
+      const response = await fetch(`/version.json?nocache=${Date.now()}`, {
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+        cache: 'no-store'
+      });
+      
       if (response.ok) {
         const data = await response.json();
         const lastBuild = data.timestamp;
@@ -48,10 +56,10 @@ if (import.meta.env.PROD) {
     }
   };
   
-  // Check immediately and then every 2 minutes
+  // Check immediately and then every 30 seconds (more frequent checks)
   setTimeout(() => {
     checkForUpdates();
-    setInterval(checkForUpdates, 2 * 60 * 1000);
+    setInterval(checkForUpdates, 30 * 1000);
   }, 2000); // Wait 2 seconds before first check to ensure page is loaded
 }
 

@@ -24,6 +24,9 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
+        env:
+          # Add timestamp to ensure unique builds
+          BUILD_TIMESTAMP: ${{ github.run_number }}-${{ github.run_id }}-${{ github.sha }}-${{ github.event.repository.updated_at }}
         
       - name: Generate deployment files
         uses: ./.github/actions/generate-deployment-files
@@ -47,6 +50,14 @@ jobs:
         with:
           name: dist-files
           path: dist/
+
+      # Force timestamp to be updated for cache invalidation
+      - name: Update version timestamp
+        run: |
+          CURRENT_TIME=$(date +%s)
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\"}" > dist/version.json
+          echo "Version file updated with timestamp: $CURRENT_TIME"
+          cat dist/version.json
 
       - name: Deploy files to server
         uses: appleboy/scp-action@v0.1.4

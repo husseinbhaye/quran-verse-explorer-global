@@ -33,9 +33,15 @@ runs:
             fi
           done
           
-          # Create a deployment marker for debugging
+          # Force clear server-side caches if any
+          echo "Touching files to ensure freshness..."
+          touch public_html/Quran/index.html
+          touch public_html/Quran/version.json
+          
+          # Create a deployment marker with current time to force cache invalidation
           echo "Deployment completed at $(date)" > public_html/Quran/deployment-marker.txt
           echo "GitHub Run ID: ${{ github.run_id }}" >> public_html/Quran/deployment-marker.txt
+          echo "Timestamp: $(date +%s)" >> public_html/Quran/deployment-marker.txt
           
           echo "Listing directory contents:"
           ls -la public_html/Quran | head -20
