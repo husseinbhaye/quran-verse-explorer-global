@@ -1,5 +1,5 @@
 
-name: Build & Deploy to Web Server via SFTP
+name: Build & Deploy to Web Server via SCP
 
 on:
   push:
@@ -384,8 +384,8 @@ jobs:
             cat dist/version.json
           fi
 
-      # Fix the deployment to directly use the verified working directory 
-      - name: Verify SSH connection and deployment directory
+      # Enhanced server directory inspection
+      - name: Debug server environment
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.FTP_HOST }}
@@ -393,26 +393,85 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           script: |
-            echo "Checking directory structure..."
+            echo "===== SERVER DIAGNOSTICS ====="
+            echo "Home directory: $HOME"
+            echo "Current user: $(whoami)"
+            echo "Current directory: $(pwd)"
+            echo "Directory structure:"
             ls -la ~
-            echo "Checking public_html directory..."
-            ls -la ~/public_html || echo "public_html directory does not exist"
+            echo "------------------------------"
+            echo "Checking www or public_html directories:"
+            for dir in www public_html public web httpdocs htdocs; do
+              if [ -d ~/$dir ]; then
+                echo "Found ~/$dir directory!"
+                echo "Contents of ~/$dir:"
+                ls -la ~/$dir
+              fi
+            done
+            echo "------------------------------"
+            echo "Creating deployment directory:"
+            mkdir -p ~/public_html/Quran || echo "Failed to create directory"
             
-            if [ -d ~/public_html ]; then
-              echo "public_html exists, checking/creating Quran directory"
-              mkdir -p ~/public_html/Quran
-              echo "Directory setup complete"
+            # If public_html creation failed, try to find an alternative directory
+            if [ ! -d ~/public_html/Quran ]; then
+              echo "Attempting to find alternative deployment directory..."
+              
+              # Check if www directory exists
+              if [ -d ~/www ]; then
+                echo "Found www directory, trying to use it instead"
+                mkdir -p ~/www/Quran
+                if [ -d ~/www/Quran ]; then
+                  echo "SUCCESS: Created ~/www/Quran directory for deployment"
+                  # Save this information for later steps
+                  echo "DEPLOY_PATH=~/www/Quran" > ~/deploy_path.txt
+                fi
+              else
+                echo "Checking for other possible web directories..."
+                for alt_dir in httpdocs htdocs public web; do
+                  if [ -d ~/$alt_dir ]; then
+                    echo "Found ~/$alt_dir directory, trying to use it"
+                    mkdir -p ~/$alt_dir/Quran
+                    if [ -d ~/$alt_dir/Quran ]; then
+                      echo "SUCCESS: Created ~/$alt_dir/Quran directory for deployment"
+                      echo "DEPLOY_PATH=~/$alt_dir/Quran" > ~/deploy_path.txt
+                      break
+                    fi
+                  fi
+                done
+              fi
             else
-              echo "WARNING: public_html does not exist in home directory"
-              # Try to find where we can deploy
-              echo "Checking current directory structure:"
-              pwd
-              ls -la
+              echo "SUCCESS: Created or confirmed ~/public_html/Quran directory"
+              echo "DEPLOY_PATH=~/public_html/Quran" > ~/deploy_path.txt
+            fi
+            
+            # Print the final deployment path if found
+            if [ -f ~/deploy_path.txt ]; then
+              echo "Final deployment path: $(cat ~/deploy_path.txt)"
+            else
+              echo "WARNING: Could not determine deployment path!"
             fi
 
-      # Try alternative deployment approach
-      - name: Deploy files using scp
+      # Get deployment path from previous step
+      - name: Get deployment path
+        uses: appleboy/ssh-action@v0.1.10
+        id: get_path
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            if [ -f ~/deploy_path.txt ]; then
+              cat ~/deploy_path.txt
+            else
+              echo "DEPLOY_PATH=~/public_html/Quran"
+            fi
+
+      # Try to deploy using main server path
+      - name: Deploy files using SCP to public_html
         uses: appleboy/scp-action@v0.1.4
+        continue-on-error: true
+        id: deploy_main
         with:
           host: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -422,7 +481,36 @@ jobs:
           target: "~/public_html/Quran"
           strip_components: 1
           
-      # Add a step to verify if files were deployed
+      # Try alternative deployment paths if main fails
+      - name: Deploy files to alternative www path
+        uses: appleboy/scp-action@v0.1.4
+        if: steps.deploy_main.outcome == 'failure'
+        continue-on-error: true
+        id: deploy_alt1
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          source: "dist/*"
+          target: "~/www/Quran"
+          strip_components: 1
+
+      # Try other common web root paths
+      - name: Deploy files to alternative httpdocs path
+        uses: appleboy/scp-action@v0.1.4
+        if: steps.deploy_main.outcome == 'failure' && steps.deploy_alt1.outcome == 'failure'
+        continue-on-error: true
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          source: "dist/*"
+          target: "~/httpdocs/Quran"
+          strip_components: 1
+
+      # Post-deployment verification
       - name: Verify deployment
         run: |
           echo "Deployment completed at $(date)"
