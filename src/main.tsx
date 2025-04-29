@@ -3,18 +3,25 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Simple cache buster with unique timestamp
-const cacheBuster = `?v=${new Date().getTime()}`;
-console.log(`App initialized with cache buster: ${cacheBuster}`);
+// Generate a unique session identifier for this page load
+const sessionId = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+console.log(`App initialized with session ID: ${sessionId}`);
 
 // Store current session load time
-sessionStorage.setItem('last_load', new Date().getTime().toString());
+sessionStorage.setItem('last_load', Date.now().toString());
 
-// Check for version updates every 5 minutes in production
+// Function to force refresh the page
+const forceRefresh = () => {
+  console.log('Forcing page refresh due to new version');
+  window.location.reload();
+};
+
+// Check for version updates every 2 minutes in production
 if (import.meta.env.PROD) {
   const checkForUpdates = async () => {
     try {
-      const response = await fetch(`/version.json?t=${new Date().getTime()}`);
+      // Add cache busting parameter to prevent cached responses
+      const response = await fetch(`/version.json?nocache=${Date.now()}`);
       if (response.ok) {
         const data = await response.json();
         const lastBuild = data.timestamp;
@@ -23,22 +30,23 @@ if (import.meta.env.PROD) {
         const storedBuild = localStorage.getItem('app_build_timestamp');
         
         if (storedBuild && storedBuild !== lastBuild.toString()) {
-          console.log('New version detected, refreshing...');
+          console.log(`Version change detected: ${storedBuild} → ${lastBuild}`);
           localStorage.setItem('app_build_timestamp', lastBuild.toString());
-          window.location.reload();
+          forceRefresh();
         } else if (!storedBuild) {
           // First time, just store it
+          console.log('Initial version stored:', lastBuild);
           localStorage.setItem('app_build_timestamp', lastBuild.toString());
         }
       }
     } catch (e) {
-      console.log('Failed to check for updates:', e);
+      console.warn('Failed to check for updates:', e);
     }
   };
   
-  // Check immediately and then every 5 minutes
+  // Check immediately and then every 2 minutes (reduced from 5)
   checkForUpdates();
-  setInterval(checkForUpdates, 5 * 60 * 1000);
+  setInterval(checkForUpdates, 2 * 60 * 1000);
 }
 
 // Mount the React application
