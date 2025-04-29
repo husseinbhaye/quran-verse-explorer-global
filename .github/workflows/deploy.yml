@@ -25,8 +25,8 @@ jobs:
       - name: Build production bundle
         run: npm run build
         
-      # Create .htaccess file for SPA routing
-      - name: Create .htaccess file for SPA routing
+      # Create enhanced .htaccess file for SPA routing with stronger cache control
+      - name: Create .htaccess file for SPA routing with cache control
         run: |
           echo '<IfModule mod_rewrite.c>' > dist/.htaccess
           echo '  RewriteEngine On' >> dist/.htaccess
@@ -35,6 +35,16 @@ jobs:
           echo '  RewriteCond %{REQUEST_FILENAME} !-f' >> dist/.htaccess
           echo '  RewriteCond %{REQUEST_FILENAME} !-d' >> dist/.htaccess
           echo '  RewriteRule . /index.html [L]' >> dist/.htaccess
+          echo '</IfModule>' >> dist/.htaccess
+          echo '' >> dist/.htaccess
+          echo '# Cache Control' >> dist/.htaccess
+          echo '<IfModule mod_headers.c>' >> dist/.htaccess
+          echo '  # Disable caching for all files' >> dist/.htaccess
+          echo '  <FilesMatch "\\.(html|htm|js|json|css)$">' >> dist/.htaccess
+          echo '    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"' >> dist/.htaccess
+          echo '    Header set Pragma "no-cache"' >> dist/.htaccess
+          echo '    Header set Expires "0"' >> dist/.htaccess
+          echo '  </FilesMatch>' >> dist/.htaccess
           echo '</IfModule>' >> dist/.htaccess
 
       - name: List build output
@@ -51,12 +61,18 @@ jobs:
           echo "Protocol: SFTP with port 22"
           echo "Remote path: /public_html/Quran/"
 
-      # Add a step to create a marker file to verify deployment
+      # Create a more detailed deployment marker
       - name: Create deployment marker
         run: |
           echo "Deployment timestamp: $(date)" > dist/deployment-marker.txt
           echo "GitHub run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
           echo "Commit: ${{ github.sha }}" >> dist/deployment-marker.txt
+          echo "Build time: $(date +%s)" >> dist/deployment-marker.txt
+
+      # Add a version.json file for client-side cache busting
+      - name: Create version file
+        run: |
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date +%s)\"}" > dist/version.json
 
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
@@ -75,3 +91,5 @@ jobs:
           echo "Deployment completed at $(date)"
           echo "Check your website for updates and look for the deployment-marker.txt file"
           echo "If you still don't see changes, try clearing your browser cache or using an incognito window"
+          echo "You can also verify by checking https://YOUR_DOMAIN/Quran/version.json"
+
