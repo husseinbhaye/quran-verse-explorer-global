@@ -59,3 +59,4 @@ jobs:
           local_path: './dist/*'
           remote_path: '/public_html/Quran/'
           sftpArgs: '-o StrictHostKeyChecking=no'
+
