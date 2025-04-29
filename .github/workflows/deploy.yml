@@ -59,5 +59,5 @@ jobs:
           port: 22
           password: ${{ secrets.FTP_PASSWORD }}
           local_path: './dist/*'
-          remote_path: '/public_html/Quran/'
+          remote_path: '/public_html/Quran'
           sftpArgs: '-o StrictHostKeyChecking=no -v'
