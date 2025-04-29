@@ -1,0 +1,21 @@
+
+name: 'Deployment Summary'
+description: 'Creates a summary of the deployment status and next steps'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Generate deployment summary
+      shell: bash
+      run: |
+        echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "Deployment completed at $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+        echo "1. Verify your website is accessible" >> $GITHUB_STEP_SUMMARY
+        echo "2. Check that the following pages work:" >> $GITHUB_STEP_SUMMARY
+        echo "   - Main site" >> $GITHUB_STEP_SUMMARY
+        echo "   - /clear-cache.html - Use this to clear old caches" >> $GITHUB_STEP_SUMMARY
+        echo "   - /test.html - Verify server connectivity" >> $GITHUB_STEP_SUMMARY
+        echo "   - /version.json - Check build version" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "If you encounter issues, try accessing the /clear-cache.html page first" >> $GITHUB_STEP_SUMMARY

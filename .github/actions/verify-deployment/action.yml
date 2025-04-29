@@ -1,0 +1,43 @@
+
+name: 'Verify Deployment'
+description: 'Checks if the deployment was successful and files are accessible'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Verify deployment
+      shell: bash
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.FTP_HOST }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        port: 22
+        script: |
+          echo "=== DEPLOYMENT VERIFICATION ==="
+          echo "Checking deployment at: public_html/Quran"
+          
+          # Check if directory exists
+          if [ ! -d "public_html/Quran" ]; then
+            echo "ERROR: Deployment directory does not exist!"
+            exit 1
+          fi
+          
+          # Check for critical files
+          echo "Checking for critical files in public_html/Quran:"
+          for file in index.html version.json test.html clear-cache.html; do
+            if [ -f "public_html/Quran/$file" ]; then
+              echo "✅ $file exists"
+            else
+              echo "❌ $file is missing!"
+            fi
+          done
+          
+          # Create a deployment marker for debugging
+          echo "Deployment completed at $(date)" > public_html/Quran/deployment-marker.txt
+          echo "GitHub Run ID: ${{ github.run_id }}" >> public_html/Quran/deployment-marker.txt
+          
+          echo "Listing directory contents:"
+          ls -la public_html/Quran | head -20
+          
+          echo "Deployment verification complete."
