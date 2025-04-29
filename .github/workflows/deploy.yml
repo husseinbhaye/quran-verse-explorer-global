@@ -39,6 +39,9 @@ jobs:
           </IfModule>
           EOF
 
+      - name: List build output
+        run: ls -la dist/
+
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4
         with:
@@ -46,6 +49,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
-          server-dir: ${{ secrets.SERVER_DIR || '/public_html/' }}
+          server-dir: ${{ secrets.SERVER_DIR || '/public_html/quran/' }}
           dry-run: false
-          dangerous-clean-slate: ${{ secrets.CLEAN_DEPLOY || 'false' }}
+          dangerous-clean-slate: true
+          log-level: verbose
