@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' && componentTagger(),
     {
       name: 'html-transform',
-      transformIndexHtml(html) {
+      transformIndexHtml(html: string): string {
         return html.replace('?v=123456', `?v=${buildTimestamp}`);
       }
     }
