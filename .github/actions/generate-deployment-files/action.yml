@@ -1,6 +1,9 @@
-
 name: 'Generate Deployment Files'
 description: 'Creates necessary deployment files (.htaccess, test.html, clear-cache.html, version.json)'
+author: 'Your Name'
+branding:
+  icon: 'terminal'
+  color: 'green'
 
 runs:
   using: "composite"
@@ -99,15 +102,12 @@ runs:
 <body>
   <h1>Eemaan Foundation Quran Explorer</h1>
   <h2>Deployment Test Page</h2>
-  
   <div class="success">
     <strong>Success!</strong> If you can see this page, the web server is functioning correctly.
   </div>
-  
   <div class="info">
     <strong>Last Deployment:</strong> <span id="deployTime"></span>
   </div>
-  
   <h3>System Information</h3>
   <table>
     <tr>
@@ -131,19 +131,15 @@ runs:
       <td id="cacheStatus">Checking...</td>
     </tr>
   </table>
-
   <h3>Actions</h3>
   <p>
     <button onclick="clearCacheAndRedirect()">Clear Cache and Go to Homepage</button>
   </p>
-
   <script>
     // Set current time
     document.getElementById('currentTime').textContent = new Date().toLocaleString();
-    
     // Set browser info
     document.getElementById('browser').textContent = navigator.userAgent;
-    
     // Get deployment timestamp
     fetch('/version.json?nocache=' + Date.now())
       .then(response => {
@@ -155,7 +151,6 @@ runs:
       .then(data => {
         document.getElementById('timestamp').textContent = data.timestamp;
         document.getElementById('deployTime').textContent = new Date(data.buildTime).toLocaleString();
-        
         // Check if cache is fresh
         const storedBuild = localStorage.getItem('app_build_timestamp');
         if (storedBuild && storedBuild === data.timestamp.toString()) {
@@ -167,7 +162,6 @@ runs:
       .catch(error => {
         document.getElementById('timestamp').textContent = 'Error: ' + error.message;
       });
-      
     // Function to clear cache and redirect
     function clearCacheAndRedirect() {
       localStorage.clear();
@@ -254,9 +248,7 @@ EOF
 <body>
   <h1>Eemaan Foundation Quran Explorer</h1>
   <h2>Cache Management Tool</h2>
-  
   <p id="buildInfo">Loading build information...</p>
-  
   <div class="steps">
     <h3>If you're experiencing issues with the website not updating:</h3>
     <ol>
@@ -266,13 +258,9 @@ EOF
       <li>As a last resort, clear your entire browser cache from your browser settings</li>
     </ol>
   </div>
-  
   <p><button onclick="clearCache()">Clear Cache & Reload</button></p>
-  
   <div id="status" class="status info" style="display: none;"></div>
-  
   <hr>
-  
   <h3>Advanced Troubleshooting</h3>
   <p>If you continue to see outdated content:</p>
   <ol>
@@ -281,7 +269,6 @@ EOF
     <li>Try accessing the site using a different browser</li>
     <li>If using a corporate network, contact your IT department as they may have caching proxies</li>
   </ol>
-  
   <script>
     // Get build information
     async function getBuildInfo() {
@@ -299,27 +286,22 @@ EOF
       }
       return null;
     }
-    
     // Clear all caches
     async function clearCache() {
       const status = document.getElementById('status');
       status.innerHTML = '<div class="loader"></div> <strong>Clearing cache...</strong>';
       status.className = 'status info';
       status.style.display = 'block';
-      
       // Clear localStorage
       localStorage.clear();
-      
       // Clear sessionStorage
       sessionStorage.clear();
-      
       // Get latest build info
       const buildInfo = await getBuildInfo();
       if (buildInfo) {
         localStorage.setItem('app_build_timestamp', buildInfo.timestamp.toString());
         status.innerHTML += '<br>Updated to latest build timestamp: ' + buildInfo.timestamp;
       }
-      
       // Clear browser cache via Cache API
       if (window.caches) {
         try {
@@ -331,17 +313,14 @@ EOF
           status.innerHTML += '<br>Error clearing browser cache API: ' + e.message;
         }
       }
-      
       // Success message
       status.className = 'status success';
       status.innerHTML = '<strong>Success!</strong> Cache has been cleared. Redirecting to home page in 3 seconds...';
-      
       // Redirect with timestamp to bypass any remaining cache
       setTimeout(() => {
         window.location.href = '/?fresh=' + Date.now();
       }, 3000);
     }
-    
     // Initialize
     window.onload = () => {
       getBuildInfo();
