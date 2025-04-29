@@ -50,7 +50,7 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: dist/
-          server-dir: ${{ secrets.SERVER_DIR || '/public_html/quran/' }}
+          server-dir: ${{ secrets.SERVER_DIR || '/public_html/Quran/' }}
           dry-run: false
           dangerous-clean-slate: true
           log-level: verbose
