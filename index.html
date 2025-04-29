@@ -9,13 +9,6 @@
     <meta name="author" content="Eemaan Foundation Mauritius" />
     <meta name="keywords" content="quran, islam, holy book, arabic text, english translation, french translation, eemaan foundation" />
     
-    <!-- Enhanced Cache control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <!-- Adding random version parameter to force cache refresh -->
-    <meta name="version" content="v1.1.0_%%TIMESTAMP%%" />
-
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://quran.eemaanfoundation.com/" />
@@ -30,42 +23,12 @@
     <meta name="twitter:title" content="Quran Explorer - Eemaan Foundation" />
     <meta name="twitter:description" content="Explore the Holy Quran with Arabic text and translations in English and French" />
     <meta name="twitter:image" content="https://quran.eemaanfoundation.com/opengraph-image.png" />
-    
-    <!-- Prevent browser caching -->
-    <script>
-      // Add timestamp to break cache
-      document.querySelector('meta[name="version"]').setAttribute(
-        'content', 
-        document.querySelector('meta[name="version"]').getAttribute('content').replace('%%TIMESTAMP%%', new Date().getTime())
-      );
-
-      // Clear any existing caches
-      if (window.caches) {
-        caches.keys().then(function(names) {
-          for (let name of names) {
-            caches.delete(name);
-          }
-        });
-      }
-
-      // Force refresh if older version detected
-      if (sessionStorage.getItem('app_version')) {
-        const oldVersion = sessionStorage.getItem('app_version');
-        const newVersion = new Date().getTime().toString();
-        if (oldVersion !== newVersion) {
-          sessionStorage.setItem('app_version', newVersion);
-          location.reload(true);
-        }
-      } else {
-        sessionStorage.setItem('app_version', new Date().getTime().toString());
-      }
-    </script>
   </head>
 
   <body>
     <div id="root"></div>
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx?v=123456"></script>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
