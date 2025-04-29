@@ -37,16 +37,22 @@ if (import.meta.env.PROD) {
           // First time, just store it
           console.log('Initial version stored:', lastBuild);
           localStorage.setItem('app_build_timestamp', lastBuild.toString());
+        } else {
+          console.log('Using current version:', lastBuild);
         }
+      } else {
+        console.warn('Failed to check for updates - server returned:', response.status);
       }
     } catch (e) {
       console.warn('Failed to check for updates:', e);
     }
   };
   
-  // Check immediately and then every 2 minutes (reduced from 5)
-  checkForUpdates();
-  setInterval(checkForUpdates, 2 * 60 * 1000);
+  // Check immediately and then every 2 minutes
+  setTimeout(() => {
+    checkForUpdates();
+    setInterval(checkForUpdates, 2 * 60 * 1000);
+  }, 2000); // Wait 2 seconds before first check to ensure page is loaded
 }
 
 // Mount the React application

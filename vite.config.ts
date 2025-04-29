@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
       buildTime: new Date().toISOString(),
       timestamp: buildTimestamp,
       version: process.env.npm_package_version || '1.0.0',
+      commitSha: process.env.GITHUB_SHA || 'local',
+      buildId: process.env.GITHUB_RUN_ID || 'dev'
     };
     
     // Ensure the public directory exists
@@ -51,10 +53,11 @@ export default defineConfig(({ mode }) => {
       {
         name: 'html-transform',
         transformIndexHtml(html: string): string {
-          // Add cache-busting meta tags
+          // Add cache-busting meta tags and timestamp comment
           return html.replace(
             '</head>',
-            `<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+            `<!-- Build: ${buildTimestamp} -->
+            <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
             <meta http-equiv="Pragma" content="no-cache" />
             <meta http-equiv="Expires" content="0" />
             </head>`
