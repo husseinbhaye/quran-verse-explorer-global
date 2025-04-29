@@ -47,7 +47,9 @@ jobs:
         run: |
           echo "Attempting to connect to server..."
           echo "Host: ${{ secrets.FTP_HOST }}"
-          echo "Protocol: SFTP"
+          echo "Username: ${{ secrets.FTP_USERNAME }}"
+          echo "Protocol: SFTP with port 22"
+          echo "Remote path: /public_html/Quran/"
 
       - name: Deploy via SFTP
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
@@ -58,5 +60,4 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           local_path: './dist/*'
           remote_path: '/public_html/Quran/'
-          sftpArgs: '-o StrictHostKeyChecking=no'
-
+          sftpArgs: '-o StrictHostKeyChecking=no -v'
