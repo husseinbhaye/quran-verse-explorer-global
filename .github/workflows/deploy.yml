@@ -43,6 +43,11 @@ jobs:
           ls -la dist/
           echo "=== End of listing ==="
 
+      - name: Debug FTP connection
+        run: |
+          echo "Attempting to connect to FTP server..."
+          echo "Host: ${{ secrets.FTP_HOST }}"
+
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
@@ -54,3 +59,5 @@ jobs:
           dry-run: false
           dangerous-clean-slate: true
           log-level: verbose
+          timeout: 120000
+
