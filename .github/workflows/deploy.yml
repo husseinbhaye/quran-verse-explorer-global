@@ -1,4 +1,5 @@
-name: Build & Deploy to cPanel via FTP
+
+name: Build & Deploy to Web Server via FTP
 
 on:
   push:
@@ -16,12 +17,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Build production bundle
         run: npm run build
+        
+      # Add an optional step to create .htaccess for Apache servers
+      - name: Create .htaccess file for SPA routing
+        run: |
+          cat > dist/.htaccess << 'EOF'
+          <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteBase /
+            RewriteRule ^index\.html$ - [L]
+            RewriteCond %{REQUEST_FILENAME} !-f
+            RewriteCond %{REQUEST_FILENAME} !-d
+            RewriteRule . /index.html [L]
+          </IfModule>
+          EOF
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4
@@ -29,6 +45,7 @@ jobs:
           server: ${{ secrets.FTP_HOST }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: dist
-          server-dir: /public_html/alquran
+          local-dir: dist/
+          server-dir: ${{ secrets.SERVER_DIR || '/public_html/' }}
           dry-run: false
+          dangerous-clean-slate: ${{ secrets.CLEAN_DEPLOY || 'false' }}
