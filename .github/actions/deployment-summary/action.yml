@@ -10,8 +10,9 @@ runs:
       run: |
         echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
         echo "Deployment completed at $(date)" >> $GITHUB_STEP_SUMMARY
+        echo "Domain: ${{ env.DEPLOY_DOMAIN || 'eemaanfoundation.com' }}" >> $GITHUB_STEP_SUMMARY
         echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
-        echo "1. Verify your website is accessible" >> $GITHUB_STEP_SUMMARY
+        echo "1. Verify your website is accessible at https://${{ env.DEPLOY_DOMAIN || 'eemaanfoundation.com' }}" >> $GITHUB_STEP_SUMMARY
         echo "2. If you don't see your changes, clear cache using methods below:" >> $GITHUB_STEP_SUMMARY
         echo "   - Visit /clear-cache.html directly" >> $GITHUB_STEP_SUMMARY
         echo "   - Hard refresh browser (Ctrl+F5 or Cmd+Shift+R)" >> $GITHUB_STEP_SUMMARY

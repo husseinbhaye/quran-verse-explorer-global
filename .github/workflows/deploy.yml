@@ -5,6 +5,13 @@ on:
   push:
     branches:
       - main
+  # Allow manual workflow runs
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Domain to deploy to (defaults to primary domain)'
+        required: false
+        default: 'eemaanfoundation.com'
 
 jobs:
   build:
@@ -43,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SERVER_DIR: /public_html
+      DEPLOY_DOMAIN: ${{ github.event.inputs.domain || 'eemaanfoundation.com' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,7 +65,7 @@ jobs:
       - name: Update version timestamp
         run: |
           CURRENT_TIME=$(date +%s)
-          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\"}" > dist/version.json
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"domain\":\"${{ env.DEPLOY_DOMAIN }}\"}" > dist/version.json
           echo "Version file updated with timestamp: $CURRENT_TIME"
           cat dist/version.json
 
@@ -83,6 +91,7 @@ jobs:
           script: |
             echo "=== DEPLOYMENT VERIFICATION ==="
             echo "Checking deployment at: ${{ env.SERVER_DIR }}"
+            echo "Domain: ${{ env.DEPLOY_DOMAIN }}"
             
             # Check if directory exists
             if [ ! -d "${{ env.SERVER_DIR }}" ]; then
@@ -109,11 +118,23 @@ jobs:
             echo "Deployment completed at $(date)" > ${{ env.SERVER_DIR }}/deployment-marker.txt
             echo "GitHub Run ID: ${{ github.run_id }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
             echo "Timestamp: $(date +%s)" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
+            echo "Domain: ${{ env.DEPLOY_DOMAIN }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
             
             echo "Listing directory contents:"
             ls -la ${{ env.SERVER_DIR }} | head -20
+            
+            # Add domain-specific verification
+            echo "Verifying domain setup for ${{ env.DEPLOY_DOMAIN }}"
+            if [ -f "${{ env.SERVER_DIR }}/index.html" ]; then
+              echo "Adding domain information to index.html meta tags"
+              sed -i "s|<meta name=\"last-updated\" content=\".*\"|<meta name=\"last-updated\" content=\"$(date '+%Y-%m-%d')\" data-domain=\"${{ env.DEPLOY_DOMAIN }}\"|" ${{ env.SERVER_DIR }}/index.html
+            fi
             
             echo "Deployment verification complete."
 
       - name: Deployment summary
         uses: ./.github/actions/deployment-summary
+
+      - name: Domain update notification
+        run: |
+          echo "::notice title=Domain Update::Deployment completed to ${{ env.DEPLOY_DOMAIN }}. If DNS is properly configured, the site should be accessible at https://${{ env.DEPLOY_DOMAIN }} shortly."

@@ -11,6 +11,7 @@ runs:
         echo "=== DEPLOYMENT VERIFICATION ==="
         echo "Checking deployment at: ${{ github.repository }}"
         echo "Deployment directory: ${{ env.SERVER_DIR }}"
+        echo "Deployment domain: ${{ env.DEPLOY_DOMAIN || 'eemaanfoundation.com' }}"
         
         # Check critical files
         echo "Checking for critical files:"
