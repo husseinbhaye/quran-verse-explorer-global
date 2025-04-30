@@ -19,5 +19,15 @@ runs:
           echo "✅ $file should be deployed"
         done
         
+        # Check permissions on the directory
+        echo "Checking file ownership and permissions will occur during SSH connection"
+        
+        # Verbose output for debugging
+        echo "Deployment metadata:"
+        echo "  Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+        echo "  Run ID: ${{ github.run_id }}"
+        echo "  Actor: ${{ github.actor }}"
+        echo "  Repository: ${{ github.repository }}"
+        
         echo "Deployment verification complete locally."
         echo "Remote verification will occur during SSH connection."

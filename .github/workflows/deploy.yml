@@ -12,6 +12,11 @@ on:
         description: 'Domain to deploy to (defaults to primary domain)'
         required: false
         default: 'eemaanfoundation.com'
+      force_update:
+        description: 'Force complete update (ignores cache)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -19,6 +24,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch complete history for better versioning
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -33,7 +40,7 @@ jobs:
         run: npm run build
         env:
           # Add timestamp to ensure unique builds
-          BUILD_TIMESTAMP: ${{ github.run_number }}-${{ github.run_id }}-${{ github.sha }}-${{ github.event.repository.updated_at }}
+          BUILD_TIMESTAMP: ${{ github.run_number }}-${{ github.run_id }}-${{ github.sha }}-${{ github.event.repository.updated_at }}-${{ github.event.inputs.force_update == 'true' && 'forced' || '' }}
         
       - name: Generate deployment files
         uses: ./.github/actions/generate-deployment-files
@@ -51,6 +58,7 @@ jobs:
     env:
       SERVER_DIR: /public_html
       DEPLOY_DOMAIN: ${{ github.event.inputs.domain || 'eemaanfoundation.com' }}
+      FORCE_UPDATE: ${{ github.event.inputs.force_update == 'true' && 'true' || 'false' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,9 +73,24 @@ jobs:
       - name: Update version timestamp
         run: |
           CURRENT_TIME=$(date +%s)
-          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"domain\":\"${{ env.DEPLOY_DOMAIN }}\"}" > dist/version.json
-          echo "Version file updated with timestamp: $CURRENT_TIME"
+          DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"domain\":\"${{ env.DEPLOY_DOMAIN }}\",\"deployId\":\"$DEPLOY_ID\",\"forceUpdate\":\"${{ env.FORCE_UPDATE }}\"}" > dist/version.json
+          echo "Version file updated with timestamp: $CURRENT_TIME and deploy ID: $DEPLOY_ID"
           cat dist/version.json
+          # Create deploy ID file for easy identification
+          echo "$DEPLOY_ID" > dist/deploy-id.txt
+          echo "${{ github.sha }}" > dist/commit-id.txt
+
+      # Pre-deployment check - validates server connectivity
+      - name: Pre-deployment server check
+        run: |
+          echo "Testing server connectivity..."
+          if nc -z -w5 ${{ secrets.FTP_HOST }} 22; then
+            echo "✅ Server is reachable on SSH port"
+          else
+            echo "❌ ERROR: Cannot connect to server on SSH port!"
+            exit 1
+          fi
 
       - name: Deploy files to server via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -80,6 +103,7 @@ jobs:
           target: "${{ env.SERVER_DIR }}"
           strip_components: 1
           overwrite: true
+          timeout: 120s  # Extended timeout
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.0
@@ -104,10 +128,28 @@ jobs:
             for file in index.html version.json test.html clear-cache.html; do
               if [ -f "${{ env.SERVER_DIR }}/$file" ]; then
                 echo "✅ $file exists"
+                # Check file size to ensure it's not empty
+                size=$(stat -c%s "${{ env.SERVER_DIR }}/$file")
+                if [ "$size" -eq "0" ]; then
+                  echo "⚠️ WARNING: $file is empty (0 bytes)"
+                fi
+                # Check file permissions
+                permissions=$(stat -c "%a %U:%G" "${{ env.SERVER_DIR }}/$file")
+                echo "   → Permissions: $permissions"
               else
                 echo "❌ $file is missing!"
+                exit 1
               fi
             done
+            
+            # Check if we can read the version file
+            echo "Attempting to read version.json:"
+            if cat "${{ env.SERVER_DIR }}/version.json"; then
+              echo "✅ version.json is readable"
+            else
+              echo "❌ Cannot read version.json"
+              exit 1
+            fi
             
             # Force clear server-side caches if any
             echo "Touching files to ensure freshness..."
@@ -119,6 +161,27 @@ jobs:
             echo "GitHub Run ID: ${{ github.run_id }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
             echo "Timestamp: $(date +%s)" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
             echo "Domain: ${{ env.DEPLOY_DOMAIN }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
+            echo "Force update: ${{ env.FORCE_UPDATE }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
+            
+            # Check for web server configuration
+            echo "Checking web server configuration:"
+            if command -v apache2ctl >/dev/null 2>&1; then
+              echo "Apache detected - checking configuration"
+              if apache2ctl -t >/dev/null 2>&1; then
+                echo "✅ Apache configuration is valid"
+              else
+                echo "⚠️ WARNING: Apache configuration has errors"
+              fi
+            elif command -v nginx >/dev/null 2>&1; then
+              echo "Nginx detected - checking configuration"
+              if nginx -t >/dev/null 2>&1; then
+                echo "✅ Nginx configuration is valid"
+              else
+                echo "⚠️ WARNING: Nginx configuration has errors"
+              fi
+            else
+              echo "ℹ️ Could not detect web server type for configuration check"
+            fi
             
             echo "Listing directory contents:"
             ls -la ${{ env.SERVER_DIR }} | head -20
@@ -130,7 +193,32 @@ jobs:
               sed -i "s|<meta name=\"last-updated\" content=\".*\"|<meta name=\"last-updated\" content=\"$(date '+%Y-%m-%d')\" data-domain=\"${{ env.DEPLOY_DOMAIN }}\"|" ${{ env.SERVER_DIR }}/index.html
             fi
             
+            # Test HTTP connectivity if possible
+            if command -v curl >/dev/null 2>&1; then
+              echo "Testing HTTP connectivity:"
+              if curl -s --head --fail "http://${{ env.DEPLOY_DOMAIN }}/version.json" >/dev/null; then
+                echo "✅ HTTP connectivity test passed"
+              else
+                echo "⚠️ WARNING: HTTP connectivity test failed - domain may not be configured"
+              fi
+            fi
+            
             echo "Deployment verification complete."
+
+      # Try to perform an external accessibility check if possible
+      - name: External accessibility check
+        if: env.FORCE_UPDATE == 'true'
+        run: |
+          echo "Attempting external connectivity check..."
+          sleep 15  # Give servers time to process deployment
+          
+          if curl -s --head --fail "https://${{ env.DEPLOY_DOMAIN }}/version.json" > /dev/null; then
+            echo "✅ Site is externally accessible"
+            VERSION_CONTENT=$(curl -s "https://${{ env.DEPLOY_DOMAIN }}/version.json")
+            echo "Version content: $VERSION_CONTENT"
+          else
+            echo "⚠️ WARNING: Could not access site externally"
+          fi
 
       - name: Deployment summary
         uses: ./.github/actions/deployment-summary
