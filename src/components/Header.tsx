@@ -13,6 +13,7 @@ import {
 import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
 import TextSizeControl from './TextSizeControl';
+import BookmarksDrawer from './BookmarksDrawer';
 import { toast } from 'sonner';
 
 interface HeaderProps {
@@ -165,58 +166,11 @@ const Header = ({
         </nav>
 
         <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-4">
-          <div className="flex items-center">
-            <TextSizeControl
-              textSize={textSize}
-              setTextSize={setTextSize}
-            />
-            <form onSubmit={handleSubmit} className="flex space-x-2 mx-2">
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={displayLanguage === 'english' ? "Search..." : "Rechercher..."}
-                className="hidden md:flex bg-white/10 border-white/20 text-white placeholder:text-white/60 w-32"
-              />
-              <Button 
-                type="submit" 
-                variant="ghost"
-                className="text-white hover:text-quran-secondary hover:bg-transparent"
-              >
-                <Search size={16} />
-              </Button>
-            </form>
-            <Button 
-              variant="ghost"
-              className="text-white hover:text-quran-secondary hover:bg-transparent"
-              onClick={clearCacheAndReload}
-              title={displayLanguage === 'english' ? "Clear cache" : "Effacer le cache"}
-            >
-              <RefreshCw size={16} />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost"
-                  className="text-white hover:text-quran-secondary hover:bg-transparent"
-                  aria-label={displayLanguage === 'english' ? "Filter" : "Filtrer"}
-                >
-                  <Filter size={16} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-white/95 shadow-lg backdrop-blur-sm border border-quran-primary/20">
-                <DropdownMenuGroup>
-                  {commonThemes.map((theme) => (
-                    <DropdownMenuItem 
-                      key={theme.id}
-                      onClick={() => handleThemeSelect(theme.id)}
-                      className="cursor-pointer hover:bg-quran-primary/10"
-                    >
-                      {displayLanguage === 'english' ? theme.label.english : theme.label.french}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <BookmarksDrawer 
+            displayLanguage={displayLanguage} 
+            onSelectAyah={onSelectAyah || (() => {})}
+          />
+          <div className="flex items-center pl-2 border-l border-white/30">
             <AudioRecorder 
               displayLanguage={displayLanguage} 
             />
