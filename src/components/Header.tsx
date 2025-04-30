@@ -75,13 +75,10 @@ const Header = ({
             />
           </div>
           
-          <div className="flex flex-col">
-            <div className="text-quran-secondary font-bold text-4xl">
-              القرآن الكريم
-            </div>
-            <div className="text-white font-medium text-lg hidden md:block">
-              | Quran Explorer
-            </div>
+          <div className="flex flex-row items-center">
+            <span className="text-quran-secondary font-bold text-4xl ml-2">القرآن الكريم</span>
+            <span className="text-white mx-3 font-medium">|</span>
+            <span className="text-white font-medium text-lg">Quran Explorer</span>
           </div>
         </div>
         
