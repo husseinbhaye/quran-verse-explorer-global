@@ -24,8 +24,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch complete history for better versioning
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -39,11 +37,49 @@ jobs:
       - name: Build production bundle
         run: npm run build
         env:
-          # Add timestamp to ensure unique builds
-          BUILD_TIMESTAMP: ${{ github.run_number }}-${{ github.run_id }}-${{ github.sha }}-${{ github.event.repository.updated_at }}-${{ github.event.inputs.force_update == 'true' && 'forced' || '' }}
+          BUILD_TIMESTAMP: ${{ github.run_id }}-${{ github.sha }}
         
       - name: Generate deployment files
-        uses: ./.github/actions/generate-deployment-files
+        run: |
+          # Generate version.json file
+          CURRENT_TIME=$(date +%s)
+          DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"deployId\":\"$DEPLOY_ID\",\"buildNumber\":\"${{ github.run_number }}\"}" > dist/version.json
+          
+          # Generate .htaccess file
+          echo "<IfModule mod_rewrite.c>" > dist/.htaccess
+          echo "  RewriteEngine On" >> dist/.htaccess
+          echo "  RewriteBase /" >> dist/.htaccess
+          echo "  RewriteRule ^index\.html$ - [L]" >> dist/.htaccess
+          echo "  RewriteCond %{REQUEST_FILENAME} !-f" >> dist/.htaccess
+          echo "  RewriteCond %{REQUEST_FILENAME} !-d" >> dist/.htaccess
+          echo "  RewriteRule . /index.html [L]" >> dist/.htaccess
+          echo "</IfModule>" >> dist/.htaccess
+          echo "" >> dist/.htaccess
+          echo "# Cache Control" >> dist/.htaccess
+          echo "<IfModule mod_headers.c>" >> dist/.htaccess
+          echo "  # Disable caching for HTML, PHP, and JSON files" >> dist/.htaccess
+          echo "  <FilesMatch \"\.(html|htm|php|json)$\">" >> dist/.htaccess
+          echo "    Header set Cache-Control \"no-store, no-cache, must-revalidate\"" >> dist/.htaccess
+          echo "  </FilesMatch>" >> dist/.htaccess
+          echo "  # Allow caching of assets" >> dist/.htaccess
+          echo "  <FilesMatch \"\.(js|css|jpg|jpeg|png|gif|svg|woff|woff2|ttf)$\">" >> dist/.htaccess
+          echo "    Header set Cache-Control \"public, max-age=31536000, immutable\"" >> dist/.htaccess
+          echo "  </FilesMatch>" >> dist/.htaccess
+          echo "</IfModule>" >> dist/.htaccess
+          
+          # Create the test.html and clear-cache.html files
+          cp public/test.html dist/test.html
+          cp public/clear-cache.html dist/clear-cache.html
+          
+          # Create deployment marker
+          echo "Deployment completed at $(date)" > dist/deployment-marker.txt
+          echo "GitHub Run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
+          echo "Timestamp: $(date +%s)" >> dist/deployment-marker.txt
+          
+          # List files for verification
+          echo "Generated deployment files:"
+          ls -la dist/
           
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -58,39 +94,20 @@ jobs:
     env:
       SERVER_DIR: /public_html
       DEPLOY_DOMAIN: ${{ github.event.inputs.domain || 'eemaanfoundation.com' }}
-      FORCE_UPDATE: ${{ github.event.inputs.force_update == 'true' && 'true' || 'false' }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist-files
           path: dist/
 
-      # Force timestamp to be updated for cache invalidation
       - name: Update version timestamp
         run: |
           CURRENT_TIME=$(date +%s)
           DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
-          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"domain\":\"${{ env.DEPLOY_DOMAIN }}\",\"deployId\":\"$DEPLOY_ID\",\"forceUpdate\":\"${{ env.FORCE_UPDATE }}\"}" > dist/version.json
-          echo "Version file updated with timestamp: $CURRENT_TIME and deploy ID: $DEPLOY_ID"
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"domain\":\"${{ env.DEPLOY_DOMAIN }}\",\"deployId\":\"$DEPLOY_ID\"}" > dist/version.json
+          echo "Updated version.json with timestamp: $CURRENT_TIME"
           cat dist/version.json
-          # Create deploy ID file for easy identification
-          echo "$DEPLOY_ID" > dist/deploy-id.txt
-          echo "${{ github.sha }}" > dist/commit-id.txt
-
-      # Pre-deployment check - validates server connectivity
-      - name: Pre-deployment server check
-        run: |
-          echo "Testing server connectivity..."
-          if nc -z -w5 ${{ secrets.FTP_HOST }} 22; then
-            echo "✅ Server is reachable on SSH port"
-          else
-            echo "❌ ERROR: Cannot connect to server on SSH port!"
-            exit 1
-          fi
 
       - name: Deploy files to server via SCP
         uses: appleboy/scp-action@v0.1.4
@@ -103,7 +120,6 @@ jobs:
           target: "${{ env.SERVER_DIR }}"
           strip_components: 1
           overwrite: true
-          timeout: 120s  # Extended timeout
 
       - name: Verify deployment
         uses: appleboy/ssh-action@v1.0.0
@@ -117,112 +133,18 @@ jobs:
             echo "Checking deployment at: ${{ env.SERVER_DIR }}"
             echo "Domain: ${{ env.DEPLOY_DOMAIN }}"
             
-            # Check if directory exists
-            if [ ! -d "${{ env.SERVER_DIR }}" ]; then
-              echo "ERROR: Deployment directory does not exist!"
-              exit 1
-            fi
-            
             # Check for critical files
-            echo "Checking for critical files in ${{ env.SERVER_DIR }}:"
             for file in index.html version.json test.html clear-cache.html; do
               if [ -f "${{ env.SERVER_DIR }}/$file" ]; then
                 echo "✅ $file exists"
-                # Check file size to ensure it's not empty
-                size=$(stat -c%s "${{ env.SERVER_DIR }}/$file")
-                if [ "$size" -eq "0" ]; then
-                  echo "⚠️ WARNING: $file is empty (0 bytes)"
-                fi
-                # Check file permissions
-                permissions=$(stat -c "%a %U:%G" "${{ env.SERVER_DIR }}/$file")
-                echo "   → Permissions: $permissions"
               else
                 echo "❌ $file is missing!"
                 exit 1
               fi
             done
             
-            # Check if we can read the version file
-            echo "Attempting to read version.json:"
-            if cat "${{ env.SERVER_DIR }}/version.json"; then
-              echo "✅ version.json is readable"
-            else
-              echo "❌ Cannot read version.json"
-              exit 1
-            fi
-            
-            # Force clear server-side caches if any
-            echo "Touching files to ensure freshness..."
+            # Touch files to ensure freshness
             touch ${{ env.SERVER_DIR }}/index.html
             touch ${{ env.SERVER_DIR }}/version.json
             
-            # Create a deployment marker with current time to force cache invalidation
-            echo "Deployment completed at $(date)" > ${{ env.SERVER_DIR }}/deployment-marker.txt
-            echo "GitHub Run ID: ${{ github.run_id }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
-            echo "Timestamp: $(date +%s)" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
-            echo "Domain: ${{ env.DEPLOY_DOMAIN }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
-            echo "Force update: ${{ env.FORCE_UPDATE }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
-            
-            # Check for web server configuration
-            echo "Checking web server configuration:"
-            if command -v apache2ctl >/dev/null 2>&1; then
-              echo "Apache detected - checking configuration"
-              if apache2ctl -t >/dev/null 2>&1; then
-                echo "✅ Apache configuration is valid"
-              else
-                echo "⚠️ WARNING: Apache configuration has errors"
-              fi
-            elif command -v nginx >/dev/null 2>&1; then
-              echo "Nginx detected - checking configuration"
-              if nginx -t >/dev/null 2>&1; then
-                echo "✅ Nginx configuration is valid"
-              else
-                echo "⚠️ WARNING: Nginx configuration has errors"
-              fi
-            else
-              echo "ℹ️ Could not detect web server type for configuration check"
-            fi
-            
-            echo "Listing directory contents:"
-            ls -la ${{ env.SERVER_DIR }} | head -20
-            
-            # Add domain-specific verification
-            echo "Verifying domain setup for ${{ env.DEPLOY_DOMAIN }}"
-            if [ -f "${{ env.SERVER_DIR }}/index.html" ]; then
-              echo "Adding domain information to index.html meta tags"
-              sed -i "s|<meta name=\"last-updated\" content=\".*\"|<meta name=\"last-updated\" content=\"$(date '+%Y-%m-%d')\" data-domain=\"${{ env.DEPLOY_DOMAIN }}\"|" ${{ env.SERVER_DIR }}/index.html
-            fi
-            
-            # Test HTTP connectivity if possible
-            if command -v curl >/dev/null 2>&1; then
-              echo "Testing HTTP connectivity:"
-              if curl -s --head --fail "http://${{ env.DEPLOY_DOMAIN }}/version.json" >/dev/null; then
-                echo "✅ HTTP connectivity test passed"
-              else
-                echo "⚠️ WARNING: HTTP connectivity test failed - domain may not be configured"
-              fi
-            fi
-            
-            echo "Deployment verification complete."
-
-      # Try to perform an external accessibility check if possible
-      - name: External accessibility check
-        if: env.FORCE_UPDATE == 'true'
-        run: |
-          echo "Attempting external connectivity check..."
-          sleep 15  # Give servers time to process deployment
-          
-          if curl -s --head --fail "https://${{ env.DEPLOY_DOMAIN }}/version.json" > /dev/null; then
-            echo "✅ Site is externally accessible"
-            VERSION_CONTENT=$(curl -s "https://${{ env.DEPLOY_DOMAIN }}/version.json")
-            echo "Version content: $VERSION_CONTENT"
-          else
-            echo "⚠️ WARNING: Could not access site externally"
-          fi
-
-      - name: Deployment summary
-        uses: ./.github/actions/deployment-summary
-
-      - name: Domain update notification
-        run: |
-          echo "::notice title=Domain Update::Deployment completed to ${{ env.DEPLOY_DOMAIN }}. If DNS is properly configured, the site should be accessible at https://${{ env.DEPLOY_DOMAIN }} shortly."
+            echo "Deployment verified successfully."
