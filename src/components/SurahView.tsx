@@ -54,8 +54,8 @@ const SurahView = ({
 
   if (!surah) {
     return (
-      <div className="flex-1 p-6 flex items-center justify-center pattern-bg">
-        <div className="text-center p-10 geometric-pattern backdrop-blur-sm rounded-2xl border border-quran-primary/10">
+      <div className="flex-1 p-6 flex items-center justify-center islamic-pattern-bg">
+        <div className="text-center p-10 islamic-card backdrop-blur-sm rounded-2xl border border-quran-secondary/30">
           <h2 className="text-3xl font-['UthmanicHafs'] arabic text-center dir-rtl mb-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             {displayLanguage === 'english' ? 'Select a Surah to begin reading' : 'Sélectionnez une sourate pour commencer la lecture'}
@@ -87,15 +87,16 @@ const SurahView = ({
   console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations, textSize: ${textSize}`);
 
   return (
-    <div className={`flex-1 px-4 md:px-8 lg:px-16 py-4 md:py-6 overflow-y-auto h-[calc(100vh-12rem)] pattern-bg ${mainTextSize} scroll-smooth`}>
+    <div className={`flex-1 px-4 md:px-8 lg:px-16 py-4 md:py-6 overflow-y-auto h-[calc(100vh-12rem)] islamic-pattern-bg ${mainTextSize} scroll-smooth`}>
       <div className="max-w-4xl mx-auto">
-        <Card className="mb-12 pt-8 pb-6 px-6 rounded-2xl surah-header-gradient backdrop-blur-sm shadow-lg border border-black/5 hover:shadow-xl transition-shadow duration-300 fade-in-up">
+        <Card className="mb-12 pt-8 pb-6 px-6 rounded-2xl islamic-card-gradient backdrop-blur-sm shadow-lg border border-quran-secondary/20 hover:shadow-xl transition-shadow duration-300 fade-in-up">
           <CardContent className="p-0">
+            <div className="ornament-divider mb-4"></div>
             <h1 className={`arabic my-6 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize}`}>
               {surah.name}
             </h1>
             
-            <h2 className="text-xl font-medium bg-gradient-to-r from-quran-primary to-quran-primary/70 bg-clip-text text-transparent w-full text-center">
+            <h2 className="text-xl font-medium bg-gradient-to-r from-quran-secondary to-quran-secondary/70 bg-clip-text text-transparent w-full text-center">
               {surah.englishName} - {surah.frenchName}
             </h2>
             
@@ -103,11 +104,12 @@ const SurahView = ({
               {surah.englishNameTranslation} | {surah.numberOfAyahs} Verses | {surah.revelationType}
             </p>
             
-            <Separator className="my-6 bg-quran-primary/20 w-full" />
+            <Separator className="my-6 bg-quran-secondary/20 w-full" />
             
             <p className={`arabic my-6 font-['UthmanicHafs'] dir-rtl text-center ${surahNameSize === "text-xl" ? "text-lg" : surahNameSize}`}>
               بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
             </p>
+            <div className="ornament-divider mt-4 rotate-180"></div>
           </CardContent>
         </Card>
         
