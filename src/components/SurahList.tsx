@@ -4,7 +4,6 @@ import { Surah } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
 import VerseSelector from './VerseSelector';
-import SubjectFilter from './SubjectFilter';
 
 interface SurahListProps {
   surahs: Surah[];
@@ -45,16 +44,6 @@ const SurahList = ({
     }
   };
 
-  const handleSubjectSelect = (subject: string) => {
-    console.log('Selected subject:', subject);
-    // Here we would implement the actual theme/subject filtering
-    // This implementation will be added when the API is ready
-    // For now, we'll just show what happens when a subject is selected
-    alert(displayLanguage === 'english' 
-      ? `Selected subject: ${subject}. Subject filtering will be implemented soon.` 
-      : `Sujet sélectionné: ${subject}. Le filtrage par sujet sera implémenté bientôt.`);
-  };
-
   // Mobile overlay for small screens
   return (
     <>
@@ -70,10 +59,6 @@ const SurahList = ({
           <VerseSelector
             totalVerses={selectedSurahData?.numberOfAyahs || 0}
             onSelectVerse={handleVerseSelect}
-            displayLanguage={displayLanguage}
-          />
-          <SubjectFilter
-            onSelectSubject={handleSubjectSelect}
             displayLanguage={displayLanguage}
           />
         </div>
@@ -127,10 +112,6 @@ const SurahList = ({
               <VerseSelector
                 totalVerses={selectedSurahData?.numberOfAyahs || 0}
                 onSelectVerse={handleVerseSelect}
-                displayLanguage={displayLanguage}
-              />
-              <SubjectFilter
-                onSelectSubject={handleSubjectSelect}
                 displayLanguage={displayLanguage}
               />
             </div>
