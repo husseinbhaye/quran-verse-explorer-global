@@ -166,11 +166,7 @@ const Header = ({
         </nav>
 
         <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-4">
-          <BookmarksDrawer 
-            displayLanguage={displayLanguage} 
-            onSelectAyah={onSelectAyah || (() => {})}
-          />
-          <div className="flex items-center pl-2 border-l border-white/30">
+          <div className="flex items-center">
             <AudioRecorder 
               displayLanguage={displayLanguage} 
             />
