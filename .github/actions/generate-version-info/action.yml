@@ -1,0 +1,22 @@
+
+name: 'Generate Version Info'
+description: 'Creates version.json file for cache validation'
+author: 'Eemaan Foundation'
+branding:
+  icon: 'tag'
+  color: 'purple'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Ensure version.json exists
+      shell: bash
+      run: |
+        if [ ! -f dist/version.json ]; then
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$(date +%s),\"runId\":\"${{ github.run_id }}\"}" > dist/version.json
+          echo "Created version.json:"
+          cat dist/version.json
+        else
+          echo "Using existing version.json:"
+          cat dist/version.json
+        fi

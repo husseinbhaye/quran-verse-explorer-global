@@ -1,0 +1,149 @@
+
+name: 'Generate Test Page'
+description: 'Creates test.html file for server verification'
+author: 'Eemaan Foundation'
+branding:
+  icon: 'check-circle'
+  color: 'blue'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create test HTML file
+      shell: bash
+      run: |
+        cat > dist/test.html << 'EOF'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Eemaan Foundation Test Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .success {
+      background-color: #d4edda;
+      border-color: #c3e6cb;
+      color: #155724;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    .info {
+      background-color: #cce5ff;
+      border-color: #b8daff;
+      color: #004085;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Eemaan Foundation Quran Explorer</h1>
+  <h2>Deployment Test Page</h2>
+  <div class="success">
+    <strong>Success!</strong> If you can see this page, the web server is functioning correctly.
+  </div>
+  <div class="info">
+    <strong>Last Deployment:</strong> <span id="deployTime"></span>
+  </div>
+  <h3>System Information</h3>
+  <table>
+    <tr>
+      <th>Information</th>
+      <th>Value</th>
+    </tr>
+    <tr>
+      <td>Deployment Timestamp</td>
+      <td id="timestamp"></td>
+    </tr>
+    <tr>
+      <td>Browser</td>
+      <td id="browser"></td>
+    </tr>
+    <tr>
+      <td>Current Time</td>
+      <td id="currentTime"></td>
+    </tr>
+    <tr>
+      <td>Cache Status</td>
+      <td id="cacheStatus">Checking...</td>
+    </tr>
+  </table>
+  <h3>Actions</h3>
+  <p>
+    <button onclick="clearCacheAndRedirect()">Clear Cache and Go to Homepage</button>
+  </p>
+  <script>
+    // Set current time
+    document.getElementById('currentTime').textContent = new Date().toLocaleString();
+    // Set browser info
+    document.getElementById('browser').textContent = navigator.userAgent;
+    // Get deployment timestamp
+    fetch('/version.json?nocache=' + Date.now())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Version file not found');
+        }
+        return response.json();
+      })
+      .then(data => {
+        document.getElementById('timestamp').textContent = data.timestamp;
+        document.getElementById('deployTime').textContent = new Date(data.buildTime).toLocaleString();
+        // Check if cache is fresh
+        const storedBuild = localStorage.getItem('app_build_timestamp');
+        if (storedBuild && storedBuild === data.timestamp.toString()) {
+          document.getElementById('cacheStatus').textContent = 'Using fresh cache';
+        } else {
+          document.getElementById('cacheStatus').textContent = 'Cache outdated or not set';
+        }
+      })
+      .catch(error => {
+        document.getElementById('timestamp').textContent = 'Error: ' + error.message;
+      });
+    // Function to clear cache and redirect
+    function clearCacheAndRedirect() {
+      localStorage.clear();
+      sessionStorage.clear();
+      alert('Cache cleared. Redirecting to homepage...');
+      window.location.href = '/?fresh=' + Date.now();
+    }
+  </script>
+</body>
+</html>
+EOF

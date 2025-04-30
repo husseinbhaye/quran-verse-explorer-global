@@ -1,0 +1,37 @@
+
+name: 'Generate .htaccess File'
+description: 'Creates .htaccess file for SPA routing with aggressive cache control'
+author: 'Eemaan Foundation'
+branding:
+  icon: 'file-text'
+  color: 'green'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create .htaccess file for SPA routing with aggressive cache control
+      shell: bash
+      run: |
+        echo '<IfModule mod_rewrite.c>' > dist/.htaccess
+        echo '  RewriteEngine On' >> dist/.htaccess
+        echo '  RewriteBase /' >> dist/.htaccess
+        echo '  RewriteRule ^index\.html$ - [L]' >> dist/.htaccess
+        echo '  RewriteCond %{REQUEST_FILENAME} !-f' >> dist/.htaccess
+        echo '  RewriteCond %{REQUEST_FILENAME} !-d' >> dist/.htaccess
+        echo '  RewriteRule . /index.html [L]' >> dist/.htaccess
+        echo '</IfModule>' >> dist/.htaccess
+        echo '' >> dist/.htaccess
+        echo '# Aggressive Cache Control' >> dist/.htaccess
+        echo '<IfModule mod_headers.c>' >> dist/.htaccess
+        echo '  # Disable caching for HTML, PHP, and JSON files completely' >> dist/.htaccess
+        echo '  <FilesMatch "\.(html|htm|php|json)$">' >> dist/.htaccess
+        echo '    Header unset ETag' >> dist/.htaccess
+        echo '    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"' >> dist/.htaccess
+        echo '    Header set Pragma "no-cache"' >> dist/.htaccess
+        echo '    Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"' >> dist/.htaccess
+        echo '  </FilesMatch>' >> dist/.htaccess
+        echo '  # Allow caching of versioned assets but force revalidation' >> dist/.htaccess
+        echo '  <FilesMatch "\.(js|css|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot|otf)$">' >> dist/.htaccess
+        echo '    Header set Cache-Control "public, max-age=31536000, immutable"' >> dist/.htaccess
+        echo '  </FilesMatch>' >> dist/.htaccess
+        echo '</IfModule>' >> dist/.htaccess
