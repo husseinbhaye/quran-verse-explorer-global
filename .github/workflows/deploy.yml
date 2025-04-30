@@ -1,22 +1,11 @@
 
-name: Build & Deploy to Web Server
+name: Build & Deploy
 
 on:
   push:
     branches:
       - main
-  # Allow manual workflow runs
   workflow_dispatch:
-    inputs:
-      domain:
-        description: 'Domain to deploy to (defaults to primary domain)'
-        required: false
-        default: 'eemaanfoundation.com'
-      force_update:
-        description: 'Force complete update (ignores cache)'
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   build:
@@ -36,50 +25,10 @@ jobs:
 
       - name: Build production bundle
         run: npm run build
-        env:
-          BUILD_TIMESTAMP: ${{ github.run_id }}-${{ github.sha }}
-        
-      - name: Generate deployment files
+
+      - name: Generate version file
         run: |
-          # Generate version.json file
-          CURRENT_TIME=$(date +%s)
-          DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
-          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"deployId\":\"$DEPLOY_ID\",\"buildNumber\":\"${{ github.run_number }}\"}" > dist/version.json
-          
-          # Generate .htaccess file
-          echo "<IfModule mod_rewrite.c>" > dist/.htaccess
-          echo "  RewriteEngine On" >> dist/.htaccess
-          echo "  RewriteBase /" >> dist/.htaccess
-          echo "  RewriteRule ^index\.html$ - [L]" >> dist/.htaccess
-          echo "  RewriteCond %{REQUEST_FILENAME} !-f" >> dist/.htaccess
-          echo "  RewriteCond %{REQUEST_FILENAME} !-d" >> dist/.htaccess
-          echo "  RewriteRule . /index.html [L]" >> dist/.htaccess
-          echo "</IfModule>" >> dist/.htaccess
-          echo "" >> dist/.htaccess
-          echo "# Cache Control" >> dist/.htaccess
-          echo "<IfModule mod_headers.c>" >> dist/.htaccess
-          echo "  # Disable caching for HTML, PHP, and JSON files" >> dist/.htaccess
-          echo "  <FilesMatch \"\.(html|htm|php|json)$\">" >> dist/.htaccess
-          echo "    Header set Cache-Control \"no-store, no-cache, must-revalidate\"" >> dist/.htaccess
-          echo "  </FilesMatch>" >> dist/.htaccess
-          echo "  # Allow caching of assets" >> dist/.htaccess
-          echo "  <FilesMatch \"\.(js|css|jpg|jpeg|png|gif|svg|woff|woff2|ttf)$\">" >> dist/.htaccess
-          echo "    Header set Cache-Control \"public, max-age=31536000, immutable\"" >> dist/.htaccess
-          echo "  </FilesMatch>" >> dist/.htaccess
-          echo "</IfModule>" >> dist/.htaccess
-          
-          # Create the test.html and clear-cache.html files
-          cp public/test.html dist/test.html
-          cp public/clear-cache.html dist/clear-cache.html
-          
-          # Create deployment marker
-          echo "Deployment completed at $(date)" > dist/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> dist/deployment-marker.txt
-          echo "Timestamp: $(date +%s)" >> dist/deployment-marker.txt
-          
-          # List files for verification
-          echo "Generated deployment files:"
-          ls -la dist/
+          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > dist/version.json
           
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -87,64 +36,3 @@ jobs:
           name: dist-files
           path: dist/
           retention-days: 1
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      SERVER_DIR: /public_html
-      DEPLOY_DOMAIN: ${{ github.event.inputs.domain || 'eemaanfoundation.com' }}
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: dist-files
-          path: dist/
-
-      - name: Update version timestamp
-        run: |
-          CURRENT_TIME=$(date +%s)
-          DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
-          echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"domain\":\"${{ env.DEPLOY_DOMAIN }}\",\"deployId\":\"$DEPLOY_ID\"}" > dist/version.json
-          echo "Updated version.json with timestamp: $CURRENT_TIME"
-          cat dist/version.json
-
-      - name: Deploy files to server via SCP
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          source: "dist/*"
-          target: "${{ env.SERVER_DIR }}"
-          strip_components: 1
-          overwrite: true
-
-      - name: Verify deployment
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          port: 22
-          script: |
-            echo "=== DEPLOYMENT VERIFICATION ==="
-            echo "Checking deployment at: ${{ env.SERVER_DIR }}"
-            echo "Domain: ${{ env.DEPLOY_DOMAIN }}"
-            
-            # Check for critical files
-            for file in index.html version.json test.html clear-cache.html; do
-              if [ -f "${{ env.SERVER_DIR }}/$file" ]; then
-                echo "✅ $file exists"
-              else
-                echo "❌ $file is missing!"
-                exit 1
-              fi
-            done
-            
-            # Touch files to ensure freshness
-            touch ${{ env.SERVER_DIR }}/index.html
-            touch ${{ env.SERVER_DIR }}/version.json
-            
-            echo "Deployment verified successfully."

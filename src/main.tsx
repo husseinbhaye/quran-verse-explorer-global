@@ -14,40 +14,31 @@ sessionStorage.setItem('last_load', Date.now().toString());
 // Function to force refresh the page
 const forceRefresh = () => {
   console.log('Forcing page refresh due to new version');
-  try {
-    localStorage.setItem('refresh_reason', 'New version detected');
-    localStorage.setItem('refresh_time', Date.now().toString());
-    window.location.reload();
-  } catch (err) {
-    console.error('Error during refresh:', err);
-    window.location.href = window.location.pathname + '?t=' + Date.now();
-  }
+  window.location.reload();
 };
 
-// Check for version updates
+// Check for version updates (simplified)
 if (import.meta.env.PROD) {
   const checkForUpdates = async () => {
     try {
-      const cacheKey = `nocache=${Date.now()}`;
-      const response = await fetch(`/version.json?${cacheKey}`, {
-        headers: { 'Cache-Control': 'no-cache' },
+      const response = await fetch(`/version.json?nocache=${Date.now()}`, {
         cache: 'no-store'
       });
       
       if (response.ok) {
         const data = await response.json();
-        const lastBuild = data.timestamp;
-        const storedBuild = localStorage.getItem('app_build_timestamp');
+        const currentVersion = data.version;
+        const storedVersion = localStorage.getItem('app_version');
         
-        if (storedBuild && storedBuild !== lastBuild.toString()) {
-          console.log(`Version change detected: ${storedBuild} → ${lastBuild}`);
-          localStorage.setItem('app_build_timestamp', lastBuild.toString());
+        if (storedVersion && storedVersion !== currentVersion) {
+          console.log(`Version change detected: ${storedVersion} → ${currentVersion}`);
+          localStorage.setItem('app_version', currentVersion);
           
           toast.info('New version detected! Updating application...');
           setTimeout(forceRefresh, 1500);
-        } else if (!storedBuild) {
-          console.log('Initial version stored:', lastBuild);
-          localStorage.setItem('app_build_timestamp', lastBuild.toString());
+        } else if (!storedVersion) {
+          console.log('Initial version stored:', currentVersion);
+          localStorage.setItem('app_version', currentVersion);
         }
       }
     } catch (e) {
@@ -55,8 +46,9 @@ if (import.meta.env.PROD) {
     }
   };
   
-  checkForUpdates(); // Run immediately
-  setInterval(checkForUpdates, 30 * 1000); // Check every 30 seconds
+  // Check for updates less frequently (once per minute)
+  checkForUpdates(); 
+  setInterval(checkForUpdates, 60000);
 }
 
 // Mount the React application

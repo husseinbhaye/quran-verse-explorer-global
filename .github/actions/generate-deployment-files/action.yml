@@ -1,18 +1,17 @@
 
 name: 'Generate Deployment Files'
-description: 'Creates all necessary deployment files'
-author: 'Eemaan Foundation'
-branding:
-  icon: 'terminal'
-  color: 'green'
+description: 'Creates basic deployment files'
 
 runs:
   using: "composite"
   steps:
-    - name: Generate all deployment files
+    - name: Generate files
       shell: bash
       run: |
-        # Generate .htaccess file
+        # Generate version.json file
+        echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > dist/version.json
+        
+        # Generate basic .htaccess file
         echo "<IfModule mod_rewrite.c>" > dist/.htaccess
         echo "  RewriteEngine On" >> dist/.htaccess
         echo "  RewriteBase /" >> dist/.htaccess
@@ -21,33 +20,3 @@ runs:
         echo "  RewriteCond %{REQUEST_FILENAME} !-d" >> dist/.htaccess
         echo "  RewriteRule . /index.html [L]" >> dist/.htaccess
         echo "</IfModule>" >> dist/.htaccess
-        echo "" >> dist/.htaccess
-        echo "# Cache Control" >> dist/.htaccess
-        echo "<IfModule mod_headers.c>" >> dist/.htaccess
-        echo "  # Disable caching for HTML, PHP, and JSON files" >> dist/.htaccess
-        echo "  <FilesMatch \"\.(html|htm|php|json)$\">" >> dist/.htaccess
-        echo "    Header set Cache-Control \"no-store, no-cache, must-revalidate\"" >> dist/.htaccess
-        echo "  </FilesMatch>" >> dist/.htaccess
-        echo "</IfModule>" >> dist/.htaccess
-        
-        # Generate version.json file
-        CURRENT_TIME=$(date +%s)
-        DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
-        echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"deployId\":\"$DEPLOY_ID\"}" > dist/version.json
-        
-        # Copy test and cache-clear files
-        if [ -f "public/test.html" ]; then
-          cp public/test.html dist/test.html
-        else
-          echo "Test file not found in public directory, creating basic version"
-          echo "<!DOCTYPE html><html><head><title>Test Page</title></head><body><h1>Test Successful</h1><p>Deployment timestamp: $(date)</p></body></html>" > dist/test.html
-        fi
-        
-        if [ -f "public/clear-cache.html" ]; then
-          cp public/clear-cache.html dist/clear-cache.html
-        else
-          echo "Cache clear file not found in public directory, creating basic version"
-          echo "<!DOCTYPE html><html><head><title>Clear Cache</title></head><body><h1>Cache Management</h1><button onclick=\"localStorage.clear(); sessionStorage.clear(); window.location.reload();\">Clear Cache & Reload</button></body></html>" > dist/clear-cache.html
-        fi
-        
-        echo "All deployment files generated successfully."

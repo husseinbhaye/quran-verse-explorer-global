@@ -12,9 +12,4 @@ runs:
     - name: Generate version.json
       shell: bash
       run: |
-        CURRENT_TIME=$(date +%s)
-        DEPLOY_ID="${{ github.run_id }}-${CURRENT_TIME}"
-        
-        echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\",\"timestamp\":$CURRENT_TIME,\"runId\":\"${{ github.run_id }}\",\"deployId\":\"$DEPLOY_ID\",\"buildNumber\":\"${{ github.run_number }}\"}" > dist/version.json
-        echo "Created version.json:"
-        cat dist/version.json
+        echo "{\"version\":\"${{ github.sha }}\",\"buildTime\":\"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"}" > dist/version.json

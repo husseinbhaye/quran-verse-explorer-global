@@ -1,6 +1,6 @@
 
 name: 'Verify Deployment'
-description: 'Checks if the deployment was successful and files are accessible'
+description: 'Simple verification of deployment files'
 
 runs:
   using: "composite"
@@ -9,14 +9,5 @@ runs:
       shell: bash
       run: |
         echo "=== DEPLOYMENT VERIFICATION ==="
-        echo "Checking deployment at: ${{ github.repository }}"
-        echo "Deployment directory: ${{ env.SERVER_DIR }}"
-        echo "Deployment domain: ${{ env.DEPLOY_DOMAIN || 'eemaanfoundation.com' }}"
-        
-        # Check critical files
-        echo "Checking for critical files:"
-        for file in index.html version.json test.html clear-cache.html; do
-          echo "✅ $file should be deployed"
-        done
-        
-        echo "Deployment verification complete."
+        echo "Checking critical files exist in the build folder"
+        ls -la dist/

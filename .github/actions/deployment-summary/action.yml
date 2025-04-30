@@ -1,6 +1,6 @@
 
 name: 'Deployment Summary'
-description: 'Creates a summary of the deployment status and next steps'
+description: 'Creates a simple deployment summary'
 
 runs:
   using: "composite"
@@ -10,17 +10,6 @@ runs:
       run: |
         echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
         echo "Deployment completed at $(date)" >> $GITHUB_STEP_SUMMARY
-        echo "Domain: ${{ env.DEPLOY_DOMAIN || 'eemaanfoundation.com' }}" >> $GITHUB_STEP_SUMMARY
-        echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
-        echo "1. Verify your website is accessible at https://${{ env.DEPLOY_DOMAIN || 'eemaanfoundation.com' }}" >> $GITHUB_STEP_SUMMARY
-        echo "2. If you don't see your changes, clear cache using methods below:" >> $GITHUB_STEP_SUMMARY
-        echo "   - Visit /clear-cache.html directly" >> $GITHUB_STEP_SUMMARY
-        echo "   - Hard refresh browser (Ctrl+F5 or Cmd+Shift+R)" >> $GITHUB_STEP_SUMMARY
-        echo "   - Try incognito/private browsing window" >> $GITHUB_STEP_SUMMARY
-        echo "3. Check that the following pages work:" >> $GITHUB_STEP_SUMMARY
-        echo "   - Main site" >> $GITHUB_STEP_SUMMARY
-        echo "   - /clear-cache.html - Use this to clear old caches" >> $GITHUB_STEP_SUMMARY
-        echo "   - /test.html - Verify server connectivity" >> $GITHUB_STEP_SUMMARY
-        echo "   - /version.json - Check build version" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "If changes still aren't visible, try accessing the /clear-cache.html page directly and click the Clear Cache button" >> $GITHUB_STEP_SUMMARY
+        echo "### Build Information" >> $GITHUB_STEP_SUMMARY
+        echo "- Commit: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Run ID: ${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
