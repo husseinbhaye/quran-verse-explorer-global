@@ -83,23 +83,31 @@
   }
 
   .pattern-bg {
-    background-color: #f8fafc;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b98036' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-color: #fcfaf7;
+    background-image: url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b98036' fill-opacity='0.05'%3E%3Cpath d='M0 0h35v35H0V0zm5 5h25v25H5V5zm5 5h15v15H10V10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
 
   .dark .pattern-bg {
     background-color: #0f172a; 
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b98036' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='70' height='70' viewBox='0 0 70 70' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b98036' fill-opacity='0.07'%3E%3Cpath d='M0 0h35v35H0V0zm5 5h25v25H5V5zm5 5h15v15H10V10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
 
   .geometric-pattern {
-    background-color: rgba(255, 255, 255, 0.5);
-    background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b98036' fill-opacity='0.08' fill-rule='evenodd'%3E%3Cpath d='M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-color: rgba(255, 255, 255, 0.9);
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b98036' fill-opacity='0.07' fill-rule='evenodd'%3E%3Cpath d='M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z'/%3E%3C/g%3E%3C/svg%3E");
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .geometric-pattern:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
   }
 
   .dark .geometric-pattern {
-    background-color: rgba(15, 23, 42, 0.5);
-    background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b98036' fill-opacity='0.12' fill-rule='evenodd'%3E%3Cpath d='M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z'/%3E%3C/g%3E%3C/svg%3E");
+    background-color: rgba(15, 23, 42, 0.85);
+    background-image: url("data:image/svg+xml,%3Csvg width='24' height='40' viewBox='0 0 24 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23b98036' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z'/%3E%3C/g%3E%3C/svg%3E");
   }
 
   /* Create a scrolling effect when using scroll-smooth class */
@@ -110,6 +118,24 @@
   /* Additional padding for scroll targets to account for header */
   .scroll-mt-24 {
     scroll-margin-top: 6rem;
+  }
+  
+  .ayah-card {
+    border-radius: 1rem;
+    background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0.95));
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+  }
+  
+  .ayah-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  }
+  
+  .dark .ayah-card {
+    background: linear-gradient(to right, rgba(30,41,59,0.8), rgba(30,41,59,0.95));
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   }
 }
 
@@ -138,4 +164,58 @@
   .pattern-bg {
     background-attachment: fixed;
   }
+}
+
+/* Animation for content elements */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Subtle gradient for the surah header */
+.surah-header-gradient {
+  background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+}
+
+.dark .surah-header-gradient {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+/* Marquee animation improvements */
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  background: rgba(212, 175, 55, 0.05);
+  padding: 8px 0;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.marquee-content {
+  display: inline-block;
+  white-space: nowrap;
+  color: #D4AF37;
+  font-weight: 600;
+  animation: marquee-scroll 20s linear infinite;
+  will-change: transform;
 }
