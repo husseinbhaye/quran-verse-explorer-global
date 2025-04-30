@@ -24,7 +24,7 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 22 82% 45%;     /* Changed from blue to match primary */
     --radius: 0.5rem;
-    --quran-primary: 22 82% 45%;
+    --quran-primary: 22 9% 36%; /* Updated to match #625953 (taupe brown) */
     --quran-secondary: 39 78% 56%;
   }
 
@@ -48,7 +48,7 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 22 82% 60%;     /* Dark mode version of ring */
-    --quran-primary: 22 82% 60%;
+    --quran-primary: 22 15% 42%; /* Slightly lighter version for dark mode */
     --quran-secondary: 39 78% 65%;
   }
 

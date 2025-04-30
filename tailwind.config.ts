@@ -64,7 +64,7 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				quran: {
-					primary: '#1D6A4F', // Islamic green
+					primary: '#625953', // Changed from #1D6A4F to #625953 (taupe brown)
 					secondary: '#D4AF37', // Gold
 					light: '#F8F5E6', // Light cream
 					dark: '#2D3748', // Dark slate
@@ -75,9 +75,9 @@ export default {
 						dark: '#996515', // Dark gold
 					},
 					emerald: {
-						DEFAULT: '#1D6A4F', // Islamic green
-						light: '#66B395', // Light green
-						dark: '#0F4F37' // Dark green
+						DEFAULT: '#625953', // Changed from #1D6A4F to #625953 (taupe brown)
+						light: '#8A8178', // Lighter version of #625953
+						dark: '#4A433F' // Darker version of #625953
 					},
 					sand: {
 						DEFAULT: '#E2D1C3', // Sand color

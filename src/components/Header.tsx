@@ -63,6 +63,7 @@ const Header = ({
   };
 
   return (
+    // Updated to use the new color
     <header className="bg-quran-primary text-white p-4 shadow-md">
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
         <div className="flex items-center space-x-4 mb-4 md:mb-0">
