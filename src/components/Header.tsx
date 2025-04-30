@@ -76,7 +76,7 @@ const Header = ({
           </div>
           
           <div className="flex flex-col">
-            <div className="text-quran-secondary font-bold text-9xl">
+            <div className="text-quran-secondary font-bold text-4xl">
               القرآن الكريم
             </div>
             <div className="text-white font-medium text-lg hidden md:block">
