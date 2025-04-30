@@ -3,7 +3,6 @@ import React from 'react';
 import { Surah, Ayah, Translation } from '../types/quran';
 import SurahView from './SurahView';
 import LanguageSelector from './LanguageSelector';
-import BookmarksDrawer from './BookmarksDrawer';
 import TextSizeControl from './TextSizeControl';
 
 interface MainContentProps {
@@ -41,10 +40,6 @@ const MainContent: React.FC<MainContentProps> = ({
     <div className="flex-1 flex flex-col">
       <div className="flex justify-between items-center px-4 py-2 border-b bg-background">
         <div className="flex items-center gap-2">
-          <BookmarksDrawer 
-            displayLanguage={displayLanguage} 
-            onSelectAyah={onSelectAyah}
-          />
           <TextSizeControl 
             textSize={textSize}
             setTextSize={setTextSize}
@@ -67,11 +62,9 @@ const MainContent: React.FC<MainContentProps> = ({
         showBothTranslations={showBothTranslations}
         displayLanguage={displayLanguage}
         textSize={textSize}
-        // setTextSize removed here as it is now in header
       />
     </div>
   );
 };
 
 export default MainContent;
-
