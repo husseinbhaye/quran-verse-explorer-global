@@ -15,18 +15,18 @@ runs:
         port: 22
         script: |
           echo "=== DEPLOYMENT VERIFICATION ==="
-          echo "Checking deployment at: public_html/Quran"
+          echo "Checking deployment at: public_html"
           
           # Check if directory exists
-          if [ ! -d "public_html/Quran" ]; then
+          if [ ! -d "public_html" ]; then
             echo "ERROR: Deployment directory does not exist!"
             exit 1
           fi
           
           # Check for critical files
-          echo "Checking for critical files in public_html/Quran:"
+          echo "Checking for critical files in public_html:"
           for file in index.html version.json test.html clear-cache.html; do
-            if [ -f "public_html/Quran/$file" ]; then
+            if [ -f "public_html/$file" ]; then
               echo "✅ $file exists"
             else
               echo "❌ $file is missing!"
@@ -35,15 +35,16 @@ runs:
           
           # Force clear server-side caches if any
           echo "Touching files to ensure freshness..."
-          touch public_html/Quran/index.html
-          touch public_html/Quran/version.json
+          touch public_html/index.html
+          touch public_html/version.json
           
           # Create a deployment marker with current time to force cache invalidation
-          echo "Deployment completed at $(date)" > public_html/Quran/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> public_html/Quran/deployment-marker.txt
-          echo "Timestamp: $(date +%s)" >> public_html/Quran/deployment-marker.txt
+          echo "Deployment completed at $(date)" > public_html/deployment-marker.txt
+          echo "GitHub Run ID: ${{ github.run_id }}" >> public_html/deployment-marker.txt
+          echo "Timestamp: $(date +%s)" >> public_html/deployment-marker.txt
           
           echo "Listing directory contents:"
-          ls -la public_html/Quran | head -20
+          ls -la public_html | head -20
           
           echo "Deployment verification complete."
+

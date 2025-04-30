@@ -32,6 +32,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
+    base: '/', // Set base URL to root instead of subdirectory
     server: {
       host: "::",
       port: 8080,

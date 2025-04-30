@@ -67,7 +67,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           source: "dist/*"
-          target: "public_html/Quran"
+          target: "public_html"
           strip_components: 1
           overwrite: true
 
@@ -76,3 +76,4 @@ jobs:
 
       - name: Deployment summary
         uses: ./.github/actions/deployment-summary
+
