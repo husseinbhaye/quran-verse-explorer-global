@@ -13,7 +13,6 @@ import {
 import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
 import TextSizeControl from './TextSizeControl';
-import BookmarksDrawer from './BookmarksDrawer';
 import { toast } from 'sonner';
 
 interface HeaderProps {
@@ -81,14 +80,45 @@ const Header = ({
             <span className="text-white font-medium text-lg">Quran Explorer</span>
           </div>
         </div>
-        
-        <div className="flex w-full md:w-auto gap-2 justify-center md:justify-end">
-          <form onSubmit={handleSubmit} className="flex w-full md:w-auto space-x-2">
+      </div>
+
+      <div className="container mx-auto mt-4 flex flex-wrap items-center justify-between">
+        <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+          <a 
+            href="https://www.eemaanfoundation.org/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-white hover:text-quran-secondary transition-colors"
+          >
+            Eemaan Foundation
+          </a>
+          <span className="hidden md:inline text-quran-secondary">|</span>
+          <a 
+            href="https://islamic-institute.com/" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-white hover:text-quran-secondary transition-colors"
+          >
+            Islamic Institute
+          </a>
+          <span className="hidden md:inline text-quran-secondary">|</span>
+          <a 
+            href="https://www.facebook.com/FatwaSeries" 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-white hover:text-quran-secondary transition-colors"
+          >
+            Fatwa Series
+          </a>
+        </nav>
+
+        <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-2">
+          <form onSubmit={handleSubmit} className="flex space-x-2">
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={displayLanguage === 'english' ? "Search the Quran..." : "Rechercher dans le Coran..."}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/60 w-32 md:w-auto"
             />
             <Button 
               type="submit" 
@@ -132,41 +162,8 @@ const Header = ({
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      </div>
-
-      <div className="container mx-auto mt-4 flex flex-wrap items-center justify-between">
-        <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
-          <a 
-            href="https://www.eemaanfoundation.org/" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-white hover:text-quran-secondary transition-colors"
-          >
-            Eemaan Foundation
-          </a>
-          <span className="hidden md:inline text-quran-secondary">|</span>
-          <a 
-            href="https://islamic-institute.com/" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-white hover:text-quran-secondary transition-colors"
-          >
-            Islamic Institute
-          </a>
-          <span className="hidden md:inline text-quran-secondary">|</span>
-          <a 
-            href="https://www.facebook.com/FatwaSeries" 
-            target="_blank" 
-            rel="noopener noreferrer" 
-            className="text-white hover:text-quran-secondary transition-colors"
-          >
-            Fatwa Series
-          </a>
-        </nav>
-
-        <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-4">
-          <div className="flex items-center">
+          
+          <div className="border-l border-white/30 ml-1 pl-2">
             <AudioRecorder 
               displayLanguage={displayLanguage} 
             />
