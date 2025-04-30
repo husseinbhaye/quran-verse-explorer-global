@@ -82,6 +82,9 @@ export default {
 					sand: {
 						DEFAULT: '#E2D1C3', // Sand color
 						light: '#F8F5E6', // Light sand
+						medium: '#EFE8DB', // Medium sand tone
+						beige: '#F5F0E5', // Beige sand
+						cream: '#FFFBF0', // Cream sand
 						dark: '#BFA68F' // Dark sand
 					}
 				}
@@ -141,6 +144,8 @@ export default {
 			backgroundImage: {
 				'islamic-pattern': "url('data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"80\" height=\"80\" viewBox=\"0 0 80 80\"%3E%3Cg fill=\"%23d4af37\" fill-opacity=\"0.1\"%3E%3Cpath d=\"M20 0L0 20h20zm0 40V20H0zm20-40v20h20zm0 40h20V20z\"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')",
 				'arabesque': "url('data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"40\" viewBox=\"0 0 24 40\"%3E%3Cg fill=\"%23b98036\" fill-opacity=\"0.1\" fill-rule=\"evenodd\"%3E%3Cpath d=\"M0 40L2 40L24 40L24 38L2 38L0 38L0 40ZM0 30L2 30L24 30L24 28L2 28L0 28L0 30ZM0 20L2 20L24 20L24 18L2 18L0 18L0 20ZM0 10L2 10L24 10L24 8L2 8L0 8L0 10Z\"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')",
+				'moroccan': "url('data:image/svg+xml,%3Csvg xmlns=\"http://www.w3.org/2000/svg\" width=\"80\" height=\"80\" viewBox=\"0 0 80 80\"%3E%3Cg fill=\"%23625953\" fill-opacity=\"0.07\"%3E%3Cpath d=\"M0 0h20v20H0V0zm10 17L3 10h14L10 17zM10 3l7 7H3l7-7zM30 0h20v20H30V0zm10 17l-7-7h14l-7 7zm0-14l7 7H33l7-7zM60 0h20v20H60V0zm10 17l-7-7h14l-7 7zm0-14l7 7H63l7-7zM0 30h20v20H0V30zm10 17l-7-7h14l-7 7zm0-14l7 7H3l7-7zM30 30h20v20H30V30zm10 17l-7-7h14l-7 7zm0-14l7 7H33l7-7zM60 30h20v20H60V30zm10 17l-7-7h14l-7 7zm0-14l7 7H63l7-7zM0 60h20v20H0V60zm10 17l-7-7h14l-7 7zm0-14l7 7H3l7-7zM30 60h20v20H30V60zm10 17l-7-7h14l-7 7zm0-14l7 7H33l7-7zM60 60h20v20H60V60zm10 17l-7-7h14l-7 7zm0-14l7 7H63l7-7z\"%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E')",
+				'sand-gradient': 'linear-gradient(to right bottom, rgba(248, 245, 230, 0.8), rgba(226, 209, 195, 0.8))'
 			}
 		}
 	},

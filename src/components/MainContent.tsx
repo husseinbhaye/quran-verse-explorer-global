@@ -39,7 +39,7 @@ const MainContent: React.FC<MainContentProps> = ({
   
   return (
     <div className="flex-1 flex flex-col">
-      <div className="flex justify-between items-center px-4 py-2 border-b bg-background">
+      <div className="flex justify-between items-center px-4 py-2 border-b bg-quran-sand-beige/50 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <BookmarksDrawer 
             displayLanguage={displayLanguage} 
@@ -67,11 +67,9 @@ const MainContent: React.FC<MainContentProps> = ({
         showBothTranslations={showBothTranslations}
         displayLanguage={displayLanguage}
         textSize={textSize}
-        // setTextSize removed here as it is now in header
       />
     </div>
   );
 };
 
 export default MainContent;
-
