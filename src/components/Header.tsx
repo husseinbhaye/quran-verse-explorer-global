@@ -13,6 +13,7 @@ import {
 import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
 import TextSizeControl from './TextSizeControl';
+import BookmarksDrawer from './BookmarksDrawer';
 import { toast } from 'sonner';
 
 interface HeaderProps {
@@ -165,16 +166,15 @@ const Header = ({
         </nav>
 
         <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-4">
-          <Input
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={displayLanguage === 'english' ? "Search..." : "Rechercher..."}
-            className="w-32 md:w-40 h-8 text-xs bg-white/10 border-white/20 text-white placeholder:text-white/60"
-          />
-          
-          <AudioRecorder 
+          <BookmarksDrawer 
             displayLanguage={displayLanguage} 
+            onSelectAyah={onSelectAyah || (() => {})}
           />
+          <div className="flex items-center pl-2 border-l border-white/30">
+            <AudioRecorder 
+              displayLanguage={displayLanguage} 
+            />
+          </div>
         </div>
       </div>
     </header>
