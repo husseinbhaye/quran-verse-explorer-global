@@ -1,3 +1,4 @@
+
 name: 'Generate Deployment Files'
 description: 'Creates necessary deployment files (.htaccess, test.html, clear-cache.html, version.json)'
 author: 'Your Name'
