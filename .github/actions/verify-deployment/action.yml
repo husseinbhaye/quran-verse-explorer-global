@@ -47,4 +47,3 @@ runs:
           ls -la public_html | head -20
           
           echo "Deployment verification complete."
-
