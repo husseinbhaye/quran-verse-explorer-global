@@ -1,15 +1,6 @@
 
 import React, { useState } from 'react';
-import { Filter, Search, RefreshCw } from 'lucide-react';
-import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from './ui/dropdown-menu';
 import { commonThemes } from '../services/themeService';
 import { AudioRecorder } from './audio';
 import TextSizeControl from './TextSizeControl';
@@ -48,21 +39,6 @@ const Header = ({
     }
   };
 
-  const clearCacheAndReload = () => {
-    // Clear localStorage
-    localStorage.clear();
-    // Clear sessionStorage
-    sessionStorage.clear();
-    // Show toast notification
-    toast.info(displayLanguage === 'english' ? 'Clearing cache and reloading...' : 'Effacement du cache et rechargement...');
-    
-    // Short timeout to allow toast to display before reload
-    setTimeout(() => {
-      // Force reload from server without using cache
-      window.location.href = window.location.href.split('?')[0] + '?fresh=' + Date.now();
-    }, 1000);
-  };
-
   return (
     <header className="bg-quran-primary text-white p-4 shadow-md">
       <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
@@ -90,48 +66,13 @@ const Header = ({
               placeholder={displayLanguage === 'english' ? "Search the Quran..." : "Rechercher dans le Coran..."}
               className="bg-white/10 border-white/20 text-white placeholder:text-white/60"
             />
-            <Button 
-              type="submit" 
-              variant="secondary"
-              className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
-            >
-              <Search size={18} />
-            </Button>
           </form>
           
-          <Button 
-            variant="secondary"
-            className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
-            onClick={clearCacheAndReload}
-            title={displayLanguage === 'english' ? "Clear cache and reload" : "Effacer le cache et recharger"}
-          >
-            <RefreshCw size={18} />
-          </Button>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button 
-                variant="secondary"
-                className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
-                aria-label={displayLanguage === 'english' ? "Filter by theme" : "Filtrer par thème"}
-              >
-                <Filter size={18} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 bg-white/95 shadow-lg backdrop-blur-sm border border-quran-primary/20">
-              <DropdownMenuGroup>
-                {commonThemes.map((theme) => (
-                  <DropdownMenuItem 
-                    key={theme.id}
-                    onClick={() => handleThemeSelect(theme.id)}
-                    className="cursor-pointer hover:bg-quran-primary/10"
-                  >
-                    {displayLanguage === 'english' ? theme.label.english : theme.label.french}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center pl-2 border-l border-white/30">
+            <AudioRecorder 
+              displayLanguage={displayLanguage} 
+            />
+          </div>
         </div>
       </div>
 
@@ -170,11 +111,6 @@ const Header = ({
             displayLanguage={displayLanguage} 
             onSelectAyah={onSelectAyah || (() => {})}
           />
-          <div className="flex items-center pl-2 border-l border-white/30">
-            <AudioRecorder 
-              displayLanguage={displayLanguage} 
-            />
-          </div>
         </div>
       </div>
     </header>

@@ -67,11 +67,9 @@ const MainContent: React.FC<MainContentProps> = ({
         showBothTranslations={showBothTranslations}
         displayLanguage={displayLanguage}
         textSize={textSize}
-        // setTextSize removed here as it is now in header
       />
     </div>
   );
 };
 
 export default MainContent;
-
