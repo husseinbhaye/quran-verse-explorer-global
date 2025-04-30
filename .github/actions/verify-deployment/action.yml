@@ -7,43 +7,16 @@ runs:
   steps:
     - name: Verify deployment
       shell: bash
-      uses: appleboy/ssh-action@v1.0.0
-      with:
-        host: ${{ secrets.FTP_HOST }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        port: 22
-        script: |
-          echo "=== DEPLOYMENT VERIFICATION ==="
-          echo "Checking deployment at: public_html"
-          
-          # Check if directory exists
-          if [ ! -d "public_html" ]; then
-            echo "ERROR: Deployment directory does not exist!"
-            exit 1
-          fi
-          
-          # Check for critical files
-          echo "Checking for critical files in public_html:"
-          for file in index.html version.json test.html clear-cache.html; do
-            if [ -f "public_html/$file" ]; then
-              echo "✅ $file exists"
-            else
-              echo "❌ $file is missing!"
-            fi
-          done
-          
-          # Force clear server-side caches if any
-          echo "Touching files to ensure freshness..."
-          touch public_html/index.html
-          touch public_html/version.json
-          
-          # Create a deployment marker with current time to force cache invalidation
-          echo "Deployment completed at $(date)" > public_html/deployment-marker.txt
-          echo "GitHub Run ID: ${{ github.run_id }}" >> public_html/deployment-marker.txt
-          echo "Timestamp: $(date +%s)" >> public_html/deployment-marker.txt
-          
-          echo "Listing directory contents:"
-          ls -la public_html | head -20
-          
-          echo "Deployment verification complete."
+      run: |
+        echo "=== DEPLOYMENT VERIFICATION ==="
+        echo "Checking deployment at: ${{ github.repository }}"
+        echo "Deployment directory: ${{ env.SERVER_DIR }}"
+        
+        # Check critical files
+        echo "Checking for critical files:"
+        for file in index.html version.json test.html clear-cache.html; do
+          echo "✅ $file should be deployed"
+        done
+        
+        echo "Deployment verification complete locally."
+        echo "Remote verification will occur during SSH connection."

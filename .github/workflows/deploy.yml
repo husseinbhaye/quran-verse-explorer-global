@@ -41,6 +41,8 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      SERVER_DIR: /public_html
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -59,7 +61,7 @@ jobs:
           echo "Version file updated with timestamp: $CURRENT_TIME"
           cat dist/version.json
 
-      - name: Deploy files to server
+      - name: Deploy files to server via SCP
         uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.FTP_HOST }}
@@ -67,12 +69,51 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           port: 22
           source: "dist/*"
-          target: "public_html"
+          target: "${{ env.SERVER_DIR }}"
           strip_components: 1
           overwrite: true
 
       - name: Verify deployment
-        uses: ./.github/actions/verify-deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 22
+          script: |
+            echo "=== DEPLOYMENT VERIFICATION ==="
+            echo "Checking deployment at: ${{ env.SERVER_DIR }}"
+            
+            # Check if directory exists
+            if [ ! -d "${{ env.SERVER_DIR }}" ]; then
+              echo "ERROR: Deployment directory does not exist!"
+              exit 1
+            fi
+            
+            # Check for critical files
+            echo "Checking for critical files in ${{ env.SERVER_DIR }}:"
+            for file in index.html version.json test.html clear-cache.html; do
+              if [ -f "${{ env.SERVER_DIR }}/$file" ]; then
+                echo "✅ $file exists"
+              else
+                echo "❌ $file is missing!"
+              fi
+            done
+            
+            # Force clear server-side caches if any
+            echo "Touching files to ensure freshness..."
+            touch ${{ env.SERVER_DIR }}/index.html
+            touch ${{ env.SERVER_DIR }}/version.json
+            
+            # Create a deployment marker with current time to force cache invalidation
+            echo "Deployment completed at $(date)" > ${{ env.SERVER_DIR }}/deployment-marker.txt
+            echo "GitHub Run ID: ${{ github.run_id }}" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
+            echo "Timestamp: $(date +%s)" >> ${{ env.SERVER_DIR }}/deployment-marker.txt
+            
+            echo "Listing directory contents:"
+            ls -la ${{ env.SERVER_DIR }} | head -20
+            
+            echo "Deployment verification complete."
 
       - name: Deployment summary
         uses: ./.github/actions/deployment-summary
