@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Ayah, Translation } from '../types/quran';
 import AudioPlayer from './audio';
@@ -105,24 +104,35 @@ const AyahView = ({
       
       // Create a new div for the postcard that we'll capture
       const postcardContainer = document.createElement('div');
+      postcardContainer.className = 'postcard-container';
       postcardContainer.style.position = 'fixed';
       postcardContainer.style.left = '-9999px';
       postcardContainer.style.width = '800px';
       postcardContainer.style.height = '600px';
-      postcardContainer.style.backgroundColor = 'white';
-      postcardContainer.style.padding = '40px';
-      postcardContainer.style.borderRadius = '12px';
-      postcardContainer.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
       postcardContainer.style.display = 'flex';
       postcardContainer.style.flexDirection = 'column';
       postcardContainer.style.overflow = 'hidden';
       
+      // Add corner decorative elements
+      const cornerTL = document.createElement('div');
+      cornerTL.className = 'postcard-corner-design postcard-corner-tl';
+      postcardContainer.appendChild(cornerTL);
+      
+      const cornerTR = document.createElement('div');
+      cornerTR.className = 'postcard-corner-design postcard-corner-tr';
+      postcardContainer.appendChild(cornerTR);
+      
+      const cornerBL = document.createElement('div');
+      cornerBL.className = 'postcard-corner-design postcard-corner-bl';
+      postcardContainer.appendChild(cornerBL);
+      
+      const cornerBR = document.createElement('div');
+      cornerBR.className = 'postcard-corner-design postcard-corner-br';
+      postcardContainer.appendChild(cornerBR);
+      
       // Add logo and title area
       const logoArea = document.createElement('div');
-      logoArea.style.display = 'flex';
-      logoArea.style.alignItems = 'center';
-      logoArea.style.gap = '15px';
-      logoArea.style.marginBottom = '20px';
+      logoArea.className = 'postcard-logo-area';
       
       // Add logo
       const logo = document.createElement('img');
@@ -134,8 +144,8 @@ const AyahView = ({
       const title = document.createElement('div');
       title.innerHTML = `
         <div style="display: flex; flex-direction: column;">
-          <span style="color: #D4B254; font-weight: bold; font-size: 24px; font-family: Arial, sans-serif;">القرآن الكريم</span>
-          <span style="font-size: 16px; font-family: Arial, sans-serif;">Quran Explorer</span>
+          <span style="color: #3F6473; font-weight: bold; font-size: 24px; font-family: Arial, sans-serif;">القرآن الكريم</span>
+          <span style="font-size: 16px; color: #D4B254; font-family: Arial, sans-serif;">Quran Explorer</span>
         </div>
       `;
       
@@ -145,57 +155,35 @@ const AyahView = ({
       
       // Create content area
       const contentArea = document.createElement('div');
-      contentArea.style.backgroundColor = '#f9f9f9';
-      contentArea.style.borderRadius = '8px';
-      contentArea.style.padding = '30px';
+      contentArea.className = 'postcard-content';
       contentArea.style.flex = '1';
       contentArea.style.display = 'flex';
       contentArea.style.flexDirection = 'column';
-      contentArea.style.border = '1px solid #eaeaea';
       
       // Add Arabic text
       const arabicText = document.createElement('p');
+      arabicText.className = 'postcard-arabic';
       arabicText.textContent = ayah.text;
-      arabicText.dir = 'rtl';
-      arabicText.style.fontSize = '30px';
-      arabicText.style.fontFamily = 'UthmanicHafs, Arabic, sans-serif';
-      arabicText.style.marginBottom = '20px';
-      arabicText.style.lineHeight = '1.6';
-      arabicText.style.textAlign = 'right';
       
       // Add translation text
       const translationText = document.createElement('p');
+      translationText.className = 'postcard-translation';
       const translationContent = displayLanguage === 'english' 
         ? (englishTranslation?.text || '') 
         : (frenchTranslation?.text || '');
       translationText.textContent = translationContent;
-      translationText.style.fontSize = '16px';
-      translationText.style.fontFamily = 'Arial, sans-serif';
-      translationText.style.lineHeight = '1.5';
-      translationText.style.color = '#333';
       
       // Add reference label
       const referenceLabel = document.createElement('div');
-      referenceLabel.style.marginTop = 'auto';
-      referenceLabel.style.display = 'flex';
-      referenceLabel.style.justifyContent = 'space-between';
-      referenceLabel.style.paddingTop = '20px';
+      referenceLabel.className = 'postcard-reference';
       
       const surahRef = document.createElement('span');
+      surahRef.className = 'postcard-reference-badge';
       surahRef.textContent = `${surahName} ${ayah.numberInSurah}`;
-      surahRef.style.backgroundColor = '#f0f0f0';
-      surahRef.style.padding = '5px 12px';
-      surahRef.style.borderRadius = '20px';
-      surahRef.style.fontSize = '14px';
-      surahRef.style.color = '#555';
       
       const ayahRef = document.createElement('span');
+      ayahRef.className = 'postcard-reference-badge';
       ayahRef.textContent = `Ayah #${ayah.number}`;
-      ayahRef.style.backgroundColor = '#f0f0f0';
-      ayahRef.style.padding = '5px 12px';
-      ayahRef.style.borderRadius = '20px';
-      ayahRef.style.fontSize = '14px';
-      ayahRef.style.color = '#555';
       
       referenceLabel.appendChild(surahRef);
       referenceLabel.appendChild(ayahRef);
@@ -205,13 +193,10 @@ const AyahView = ({
       contentArea.appendChild(translationText);
       contentArea.appendChild(referenceLabel);
       
-      // Add footer with website URL
+      // Add footer with website URL and message
       const footer = document.createElement('div');
-      footer.style.marginTop = '20px';
-      footer.style.textAlign = 'center';
-      footer.style.color = '#888';
-      footer.style.fontSize = '14px';
-      footer.textContent = 'www.eemaan.org';
+      footer.className = 'postcard-footer';
+      footer.innerHTML = '🌿 Quranic Verse Reminder – Visit us at www.eemaanfoundation.com for daily inspiration.';
       
       // Assemble the postcard
       postcardContainer.appendChild(logoArea);
