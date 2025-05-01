@@ -15,7 +15,7 @@ const VolumeControl = ({ isMuted, hasError, onToggleMute }: VolumeControlProps) 
       variant="ghost"
       size="icon"
       onClick={onToggleMute}
-      className="text-quran-dark bg-white/5 hover:bg-white/10 hover:text-quran-dark dark:text-quran-secondary dark:hover:text-white"
+      className="text-black bg-white/5 hover:bg-white/10 hover:text-black dark:text-quran-secondary dark:hover:text-white"
       disabled={hasError}
     >
       {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
