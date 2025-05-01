@@ -80,18 +80,20 @@ const AyahView = ({
         </span>
       </div>
       
-      <div className="flex flex-col mt-6">
-        <div className="border-t border-black/5 dark:border-white/5 pt-4 mb-4">
-          <AudioPlayer surahId={ayah.surah} ayahId={ayah.numberInSurah} />
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <TextEditor displayLanguage={displayLanguage} />
-          <BookmarkButton 
-            ayah={ayah} 
-            surahName={surahName}
-            displayLanguage={displayLanguage}
-          />
+      <div className="border-t border-black/5 dark:border-white/5 pt-4 mt-6">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <TextEditor displayLanguage={displayLanguage} />
+            <BookmarkButton 
+              ayah={ayah} 
+              surahName={surahName}
+              displayLanguage={displayLanguage}
+            />
+          </div>
+          
+          <div className="flex-1">
+            <AudioPlayer surahId={ayah.surah} ayahId={ayah.numberInSurah} />
+          </div>
         </div>
       </div>
     </div>
