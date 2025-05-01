@@ -45,7 +45,7 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
 
   return (
     <AudioErrorBoundary>
-      <div className={cn("flex flex-col space-y-2", className)}>
+      <div className={cn("flex flex-col space-y-2 w-full", className)}>
         <AudioElement 
           audioRef={audioRef}
           audioUrl={audioUrl}
