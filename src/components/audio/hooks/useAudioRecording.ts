@@ -50,14 +50,7 @@ export const useAudioRecording = (displayLanguage: "english" | "french") => {
       // Determine supported mime types with better desktop compatibility
       // Try different formats in order of preference and compatibility
       let mimeType = '';
-      const preferredTypes = [
-        'audio/mp3',
-        'audio/wav', 
-        'audio/mpeg',
-        'audio/aac',
-        'audio/ogg',
-        'audio/webm'
-      ];
+      const preferredTypes = getMimeTypePreferences();
       
       for (const type of preferredTypes) {
         if (MediaRecorder.isTypeSupported(type)) {
@@ -78,6 +71,17 @@ export const useAudioRecording = (displayLanguage: "english" | "french") => {
       toast(message);
       throw error;
     }
+  };
+
+  const getMimeTypePreferences = () => {
+    return [
+      'audio/mp3',
+      'audio/wav', 
+      'audio/mpeg',
+      'audio/aac',
+      'audio/ogg',
+      'audio/webm'
+    ];
   };
 
   return {
