@@ -33,7 +33,7 @@ const AudioRecorderControls: React.FC<AudioRecorderControlsProps> = ({
           onClick={startRecording}
           variant="outline"
           size="sm"
-          className="bg-white border-quran-primary text-quran-primary hover:bg-quran-primary/10"
+          className="bg-white border-[#D44C37] text-[#D44C37] hover:bg-[#D44C37]/10"
         >
           <Mic className="mr-1" size={16} />
           {displayLanguage === "english" ? "Record" : "Enregistrer"}
