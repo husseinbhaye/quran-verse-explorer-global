@@ -54,7 +54,7 @@ const SurahView = ({
 
   if (!surah) {
     return (
-      <div className="flex-1 p-4 md:p-6 flex items-center justify-center bg-gradient-to-r from-quran-sand-light to-quran-sand bg-opacity-80">
+      <div className="flex-1 p-4 md:p-6 flex items-center justify-center bg-white dark:bg-slate-900">
         <div className="text-center p-6 md:p-10 backdrop-blur-sm rounded-2xl border border-quran-secondary/30 shadow-lg">
           <h2 className="text-2xl md:text-3xl font-['UthmanicHafs'] arabic text-center dir-rtl mb-4">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</h2>
           <p className="text-base md:text-lg text-gray-600 dark:text-gray-300">
@@ -88,7 +88,7 @@ const SurahView = ({
   console.log(`Rendering surah with ${primaryTranslations.length} primary translations (${displayLanguage}) and ${secondaryTranslations.length} secondary translations, textSize: ${textSize}`);
 
   return (
-    <div className={`flex-1 px-3 sm:px-4 md:px-8 lg:px-16 py-4 md:py-6 overflow-y-auto h-[calc(100vh-12rem)] bg-gradient-to-br from-quran-sand-light to-quran-sand/60 scroll-smooth ${mainTextSize}`}>
+    <div className={`flex-1 px-3 sm:px-4 md:px-8 lg:px-16 py-4 md:py-6 overflow-y-auto h-[calc(100vh-12rem)] bg-white dark:bg-slate-900 scroll-smooth ${mainTextSize}`}>
       <div className="w-full max-w-4xl mx-auto">
         <Card className="mb-8 md:mb-12 pt-6 md:pt-8 pb-4 md:pb-6 px-4 md:px-6 rounded-2xl shadow-lg border border-quran-secondary/20 hover:shadow-xl transition-shadow duration-300 fade-in-up bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm">
           <CardContent className="p-0">
