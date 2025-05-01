@@ -11,15 +11,25 @@ import RepeatControl from './RepeatControl';
 import VolumeControl from './VolumeControl';
 import ErrorDisplay from './ErrorDisplay';
 import LoadingMessage from './LoadingMessage';
+import AudioRecorder from './AudioRecorder';
 
 interface AudioPlayerProps {
   surahId: number;
   ayahId: number;
   reciterId?: ReciterId;
   className?: string;
+  displayLanguage: "english" | "french";
+  showRecordButton?: boolean;
 }
 
-const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: AudioPlayerProps) => {
+const AudioPlayer = ({ 
+  surahId, 
+  ayahId, 
+  reciterId = 'ar.alafasy', 
+  className,
+  displayLanguage,
+  showRecordButton = false
+}: AudioPlayerProps) => {
   const {
     audioRef,
     audioUrl,
@@ -82,6 +92,12 @@ const AudioPlayer = ({ surahId, ayahId, reciterId = 'ar.alafasy', className }: A
             hasError={!!error && !isAudioUnloaded} 
             onToggleMute={toggleMute} 
           />
+          
+          {showRecordButton && (
+            <div className="ml-1 border-l border-gray-200 dark:border-gray-700 pl-1">
+              <AudioRecorder displayLanguage={displayLanguage} />
+            </div>
+          )}
         </div>
 
         <ErrorDisplay error={isAudioUnloaded ? null : error} onRetry={handleRetry} />

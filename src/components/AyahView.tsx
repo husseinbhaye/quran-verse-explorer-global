@@ -92,7 +92,12 @@ const AyahView = ({
           </div>
           
           <div className="flex-1">
-            <AudioPlayer surahId={ayah.surah} ayahId={ayah.numberInSurah} />
+            <AudioPlayer 
+              surahId={ayah.surah} 
+              ayahId={ayah.numberInSurah}
+              displayLanguage={displayLanguage}
+              showRecordButton={true}
+            />
           </div>
         </div>
       </div>
