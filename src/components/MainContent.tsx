@@ -39,7 +39,7 @@ const MainContent: React.FC<MainContentProps> = ({
   
   return (
     <div className="flex-1 flex flex-col">
-      <div className="flex justify-between items-center px-4 py-2 border-b bg-quran-sand-beige/50 backdrop-blur-sm">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 px-3 md:px-4 py-2 border-b bg-quran-sand-beige/50 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <BookmarksDrawer 
             displayLanguage={displayLanguage} 

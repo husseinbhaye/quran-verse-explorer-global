@@ -33,11 +33,13 @@ const Header = ({
   onSelectAyah 
 }: HeaderProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchBar, setShowSearchBar] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       onSearch(searchQuery);
+      setShowSearchBar(false);
     }
   };
 
@@ -63,11 +65,11 @@ const Header = ({
   };
 
   return (
-    // Updated to use the new color
-    <header className="bg-quran-primary text-white p-4 shadow-md">
-      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between">
-        <div className="flex items-center space-x-4 mb-4 md:mb-0">
-          <div className="w-24 h-24 flex items-center justify-center">
+    <header className="bg-quran-primary text-white p-3 md:p-4 shadow-md">
+      <div className="container mx-auto flex flex-col items-center">
+        {/* Logo and Title Section */}
+        <div className="flex items-center space-x-2 md:space-x-4 mb-2 md:mb-4 w-full justify-center">
+          <div className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center">
             <img 
               src="/lovable-uploads/72b66895-06f2-4960-a5ff-52e2a9ed4e85.png" 
               alt="Eemaan Foundation Logo" 
@@ -75,16 +77,17 @@ const Header = ({
             />
           </div>
           
-          <div className="flex flex-row items-center">
-            <span className="text-quran-secondary font-bold text-4xl ml-2">القرآن الكريم</span>
-            <span className="text-white mx-3 font-medium">|</span>
-            <span className="text-white font-medium text-lg">Quran Explorer</span>
+          <div className="flex flex-col md:flex-row items-center">
+            <span className="text-quran-secondary font-bold text-2xl md:text-4xl">القرآن الكريم</span>
+            <span className="hidden md:inline text-white mx-3 font-medium">|</span>
+            <span className="text-white font-medium text-base md:text-lg">Quran Explorer</span>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto mt-4 flex flex-wrap items-center justify-between">
-        <nav className="flex flex-wrap justify-center md:justify-start gap-4 text-sm">
+      <div className="container mx-auto mt-2 md:mt-4">
+        {/* Navigation Links */}
+        <nav className="flex flex-wrap justify-center gap-2 md:gap-4 text-xs md:text-sm mb-2 md:mb-0">
           <a 
             href="https://www.eemaanfoundation.org/" 
             target="_blank" 
@@ -113,8 +116,48 @@ const Header = ({
           </a>
         </nav>
 
-        <div className="flex items-center mt-3 md:mt-0 justify-center md:justify-end gap-2">
-          <form onSubmit={handleSubmit} className="flex space-x-2">
+        {/* Search and Actions */}
+        <div className="flex items-center mt-2 justify-center gap-2">
+          {/* Mobile search toggle */}
+          {!showSearchBar ? (
+            <Button 
+              variant="secondary"
+              size="sm"
+              className="md:hidden bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
+              onClick={() => setShowSearchBar(true)}
+            >
+              <Search size={16} />
+            </Button>
+          ) : (
+            <form onSubmit={handleSubmit} className="flex space-x-1 w-full md:w-auto">
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={displayLanguage === 'english' ? "Search..." : "Rechercher..."}
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/60 text-sm h-8"
+                autoFocus
+              />
+              <Button 
+                type="submit" 
+                variant="secondary"
+                size="sm"
+                className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
+              >
+                <Search size={16} />
+              </Button>
+              <Button 
+                variant="ghost"
+                size="sm"
+                className="text-white hover:bg-white/20"
+                onClick={() => setShowSearchBar(false)}
+              >
+                ✕
+              </Button>
+            </form>
+          )}
+          
+          {/* Desktop search */}
+          <form onSubmit={handleSubmit} className="hidden md:flex space-x-2">
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -132,21 +175,23 @@ const Header = ({
           
           <Button 
             variant="secondary"
+            size="sm"
             className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
             onClick={clearCacheAndReload}
             title={displayLanguage === 'english' ? "Clear cache and reload" : "Effacer le cache et recharger"}
           >
-            <RefreshCw size={18} />
+            <RefreshCw size={16} className="md:size-18" />
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button 
                 variant="secondary"
+                size="sm"
                 className="bg-quran-secondary text-quran-dark hover:bg-quran-secondary/90"
                 aria-label={displayLanguage === 'english' ? "Filter by theme" : "Filtrer par thème"}
               >
-                <Filter size={18} />
+                <Filter size={16} className="md:size-18" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-white/95 shadow-lg backdrop-blur-sm border border-quran-primary/20">
