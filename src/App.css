@@ -13,10 +13,10 @@
   transition: filter 300ms;
 }
 .logo:hover {
-  filter: drop-shadow(0 0 2em #d4af37aa);
+  filter: drop-shadow(0 0 2em #d4b254aa);
 }
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #d4af37aa);
+  filter: drop-shadow(0 0 2em #d4b254aa);
 }
 
 @keyframes logo-spin {
@@ -52,8 +52,8 @@
 
 /* Islamic-inspired spinner */
 .islamic-spinner {
-  border: 4px solid rgba(212, 175, 55, 0.1);
-  border-left-color: #D4AF37;
+  border: 4px solid rgba(63, 100, 115, 0.1);
+  border-left-color: #3F6473;
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -80,16 +80,16 @@
   width: 100%;
   overflow: hidden;
   position: relative;
-  background: rgba(212, 175, 55, 0.05);
-  border-top: 1px solid rgba(212, 175, 55, 0.1);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  background: rgba(212, 178, 84, 0.05);
+  border-top: 1px solid rgba(212, 178, 84, 0.1);
+  border-bottom: 1px solid rgba(212, 178, 84, 0.1);
 }
 
 .marquee-content {
   display: inline-block;
   white-space: nowrap;
   padding: 5px 0;
-  color: #D4AF37;
+  color: #D4B254;
   font-weight: 600;
   animation: marquee-scroll 20s linear infinite;
   will-change: transform;
@@ -100,7 +100,7 @@
   position: absolute;
   width: 50px;
   height: 50px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Cpath fill='%23d4af37' fill-opacity='0.3' d='M25,0 L50,25 L25,50 L0,25 L25,0 Z M25,10 L40,25 L25,40 L10,25 L25,10 Z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Cpath fill='%23d4b254' fill-opacity='0.3' d='M25,0 L50,25 L25,50 L0,25 L25,0 Z M25,10 L40,25 L25,40 L10,25 L25,10 Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   opacity: 0.5;
 }

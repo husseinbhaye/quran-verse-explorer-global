@@ -143,7 +143,7 @@ const AyahView = ({
               variant="ghost" 
               size="icon" 
               onClick={handleShare}
-              className="bg-white/10 hover:bg-white/20 text-black dark:text-gray-200"
+              className="bg-white/10 hover:bg-white/20 text-quran-primary dark:text-quran-secondary"
               title={displayLanguage === 'english' ? 'Share this verse' : 'Partager ce verset'}
             >
               <Share2 size={18} />

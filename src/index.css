@@ -10,22 +10,22 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 22 82% 45%;  /* Changed from blue to an earthy brown-red */
+    --primary: 200 35% 35%;  /* Changed from brown-red to teal blue */
     --primary-foreground: 210 40% 98%;
-    --secondary: 40 79% 60%; /* Changed from light blue to a rich gold */
+    --secondary: 43 60% 58%; /* Changed to a warmer gold */
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 35 91% 90%;   /* Changed to a soft sand accent */
+    --accent: 30 50% 40%;   /* Changed to warm brown accent */
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 22 82% 45%;     /* Changed from blue to match primary */
+    --ring: 200 35% 35%;     /* Changed to match primary */
     --radius: 0.5rem;
-    --quran-primary: 22 9% 36%; /* Updated to match #625953 (taupe brown) */
-    --quran-secondary: 39 78% 56%;
+    --quran-primary: 200 30% 35%; /* Teal blue (#3F6473) */
+    --quran-secondary: 43 60% 58%; /* Warm gold (#D4B254) */
   }
 
   .dark {
@@ -35,21 +35,21 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 22 82% 60%;  /* Dark mode version of primary */
+    --primary: 200 35% 45%;  /* Dark mode version of primary */
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 40 70% 65%; /* Dark mode version of secondary */
+    --secondary: 43 55% 65%; /* Dark mode version of secondary */
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 35 70% 50%;   /* Dark mode version of accent */
+    --accent: 30 45% 45%;   /* Dark mode version of accent */
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 22 82% 60%;     /* Dark mode version of ring */
-    --quran-primary: 22 15% 42%; /* Slightly lighter version for dark mode */
-    --quran-secondary: 39 78% 65%;
+    --ring: 200 35% 45%;     /* Dark mode version of ring */
+    --quran-primary: 200 30% 45%; /* Slightly lighter version for dark mode */
+    --quran-secondary: 43 55% 65%;
   }
 
   * {
