@@ -7,6 +7,7 @@ import { useRecordingState } from "./useRecordingState";
 import { saveRecording as saveRecordingUtil } from "../utils/saveRecording";
 import { UseAudioRecorderProps } from "../types/audio";
 import { useEffect } from "react";
+import { configureMediaRecorder, createMediaRecorder } from "../utils/mediaRecorderUtils";
 
 export function useRecorderControls({ displayLanguage }: UseAudioRecorderProps) {
   const { toast } = useToast();
@@ -46,27 +47,17 @@ export function useRecorderControls({ displayLanguage }: UseAudioRecorderProps) 
     try {
       const { stream, mimeType } = await initializeRecording();
       
-      // Create MediaRecorder with appropriate options for better platform compatibility
-      try {
-        // Try with specified mime type if available
-        if (mimeType) {
-          mediaRecorderRef.current = new MediaRecorder(stream, {
-            mimeType: mimeType,
-            audioBitsPerSecond: 128000
-          });
-          console.log(`MediaRecorder created with mime type: ${mimeType}`);
-        } else {
-          // Fallback to default options
-          mediaRecorderRef.current = new MediaRecorder(stream);
-          console.log("MediaRecorder created with default options");
-        }
-      } catch (err) {
-        console.warn(`Failed to create MediaRecorder with specified options, trying default`, err);
-        mediaRecorderRef.current = new MediaRecorder(stream);
-        console.log("MediaRecorder created with default options after fallback");
-      }
-
-      configureMediaRecorderEvents();
+      // Create MediaRecorder with the utility function
+      mediaRecorderRef.current = createMediaRecorder(stream, mimeType);
+      
+      // Configure media recorder events
+      configureMediaRecorder({
+        mediaRecorderRef,
+        audioChunksRef,
+        streamRef,
+        showRecordingError,
+        onRecordingStopped: handleRecordingStopped
+      });
 
       // Use smaller timeslices for more responsive data collection
       mediaRecorderRef.current.start(200); // More frequent data collection
@@ -78,31 +69,6 @@ export function useRecorderControls({ displayLanguage }: UseAudioRecorderProps) 
     } catch (error) {
       console.error("Error in startRecording:", error);
     }
-  };
-  
-  const configureMediaRecorderEvents = () => {
-    if (!mediaRecorderRef.current) return;
-    
-    mediaRecorderRef.current.addEventListener("dataavailable", (event) => {
-      if (event.data.size > 0) {
-        audioChunksRef.current.push(event.data);
-        console.log("Audio data chunk received:", event.data.size, "bytes, type:", event.data.type);
-      } else {
-        console.warn("Received empty audio data chunk");
-      }
-    });
-
-    mediaRecorderRef.current.addEventListener("start", () => {
-      console.log("MediaRecorder started successfully");
-      audioChunksRef.current = []; // Clear previous chunks on new recording
-    });
-
-    mediaRecorderRef.current.addEventListener("error", (event) => {
-      console.error("MediaRecorder error:", event);
-      showRecordingError();
-    });
-
-    mediaRecorderRef.current.addEventListener("stop", handleRecordingStopped);
   };
   
   const handleRecordingStopped = () => {

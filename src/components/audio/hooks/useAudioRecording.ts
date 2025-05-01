@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { getToastMessage } from "../utils/toastMessages";
+import { getMimeTypePreferences } from "../utils/mediaRecorderUtils";
 
 export const useAudioRecording = (displayLanguage: "english" | "french") => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -71,17 +72,6 @@ export const useAudioRecording = (displayLanguage: "english" | "french") => {
       toast(message);
       throw error;
     }
-  };
-
-  const getMimeTypePreferences = () => {
-    return [
-      'audio/mp3',
-      'audio/wav', 
-      'audio/mpeg',
-      'audio/aac',
-      'audio/ogg',
-      'audio/webm'
-    ];
   };
 
   return {
