@@ -1,4 +1,3 @@
-
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -128,147 +127,38 @@
   transform: rotate(180deg);
 }
 
-/* Postcard related styles */
-.postcard-container {
-  background: linear-gradient(145deg, #f8f5e6, #e2d1c3);
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(212, 178, 84, 0.2);
-  position: relative;
-  overflow: hidden;
+/* Clean up old postcard styles and keep only what's needed for highlights */
+.highlight-ayah {
+  animation: highlight-pulse 2s ease-in-out;
 }
 
-.postcard-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: linear-gradient(90deg, #D4B254, #3F6473, #D4B254);
+@keyframes highlight-pulse {
+  0% { background-color: rgba(212, 178, 84, 0); }
+  50% { background-color: rgba(212, 178, 84, 0.2); }
+  100% { background-color: rgba(212, 178, 84, 0); }
 }
 
-.postcard-container::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: linear-gradient(90deg, #D4B254, #3F6473, #D4B254);
+/* Fade in animations */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease forwards;
+  opacity: 0;
 }
 
-.postcard-logo-area {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid rgba(63, 100, 115, 0.15);
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.postcard-content {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(248, 245, 230, 0.8));
-  border-radius: 8px;
-  padding: 30px;
-  border: 1px solid rgba(212, 178, 84, 0.15);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  position: relative;
-}
-
-.postcard-content::before {
-  content: '❝';
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 40px;
-  color: rgba(63, 100, 115, 0.15);
-}
-
-.postcard-content::after {
-  content: '❞';
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  font-size: 40px;
-  color: rgba(63, 100, 115, 0.15);
-}
-
-.postcard-arabic {
-  font-family: 'UthmanicHafs', Arial, sans-serif;
-  font-size: 30px;
-  line-height: 1.6;
-  margin-bottom: 20px;
-  text-align: right;
-  direction: rtl;
-  color: #3F6473;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-
-.postcard-translation {
-  font-size: 16px;
-  line-height: 1.5;
-  color: #333;
-  margin-bottom: 15px;
-}
-
-.postcard-reference {
-  margin-top: auto;
-  display: flex;
-  justify-content: space-between;
-  padding-top: 20px;
-}
-
-.postcard-reference-badge {
-  background-color: rgba(63, 100, 115, 0.1);
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  color: #3F6473;
-  font-weight: 600;
-}
-
-.postcard-footer {
-  margin-top: 20px;
-  text-align: center;
-  color: #3F6473;
-  font-size: 14px;
-  padding: 8px 15px;
-  background-color: rgba(255, 255, 255, 0.7);
-  border-radius: 30px;
-  display: inline-block;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(212, 178, 84, 0.15);
-}
-
-.postcard-corner-design {
-  position: absolute;
-  width: 40px;
-  height: 40px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='%23D4B254' fill-opacity='0.2' d='M20,0 L40,20 L20,40 L0,20 L20,0 Z M20,10 L30,20 L20,30 L10,20 L20,10 Z'/%3E%3C/svg%3E");
-  opacity: 0.8;
-}
-
-.postcard-corner-tl {
-  top: 10px;
-  left: 10px;
-}
-
-.postcard-corner-tr {
-  top: 10px;
-  right: 10px;
-  transform: rotate(90deg);
-}
-
-.postcard-corner-bl {
-  bottom: 10px;
-  left: 10px;
-  transform: rotate(270deg);
-}
-
-.postcard-corner-br {
-  bottom: 10px;
-  right: 10px;
-  transform: rotate(180deg);
+/* Ornament divider */
+.ornament-divider {
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='10' viewBox='0 0 100 10'%3E%3Cpath fill='%23d4b254' fill-opacity='0.4' d='M0 5 L25 0 L50 5 L75 0 L100 5 L100 10 L0 10 Z'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  opacity: 0.5;
 }
