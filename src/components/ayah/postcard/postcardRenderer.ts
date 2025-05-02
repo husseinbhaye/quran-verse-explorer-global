@@ -39,10 +39,10 @@ export const createPostcardElement = ({ ayah, surahName, translationContent }: P
     </div>
   `;
   
-  // Add Eemaan logo
+  // Add Eemaan logo - updated to use the new logo
   const logoDiv = document.createElement('div');
   logoDiv.innerHTML = `
-    <img src="/lovable-uploads/814f8fae-d6b5-483c-8b05-8f99afbf7cb9.png" style="height: 60px; width: auto;" />
+    <img src="/lovable-uploads/6e963b5f-bb43-428f-b735-f40c221a435f.png" style="height: 60px; width: auto;" />
   `;
   
   headerSection.appendChild(titleDiv);
