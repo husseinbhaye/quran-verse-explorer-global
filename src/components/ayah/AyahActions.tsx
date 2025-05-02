@@ -2,7 +2,7 @@
 import TextEditor from '@/components/TextEditor';
 import BookmarkButton from '@/components/BookmarkButton';
 import AyahShareButton from './AyahShareButton';
-import PostcardGenerator from './PostcardGenerator';
+import PostcardGenerator from './postcard/PostcardGenerator';
 import AudioPlayer from '@/components/audio';
 import { AyahActionsProps } from './types';
 
