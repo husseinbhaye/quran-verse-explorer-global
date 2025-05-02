@@ -1,7 +1,7 @@
 
 import { toast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
-import { Camera } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PostcardGeneratorProps } from './types';
 import { dataURLToFile, downloadImage } from './utils/postcardUtils';
@@ -161,25 +161,13 @@ const PostcardGenerator = ({ ayah, surahName, displayLanguage, translationConten
           return;
         } catch (error) {
           console.error('Error sharing with files:', error);
-          // Fall back to other methods
-        }
-      }
-      
-      // Try sharing just the link if file sharing isn't supported
-      if (navigator.share) {
-        try {
-          const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(`${surahName} ${ayah.numberInSurah} - ${translationContent} - Visit us at www.eemaanfoundation.com`)}`;
-          window.open(whatsappUrl);
-          // Also download the image
+          // Fall back to download
           downloadImage(imageData, `quran-verse-${ayah.surah}-${ayah.numberInSurah}.png`);
-          return;
-        } catch (error) {
-          console.error('Error sharing to WhatsApp:', error);
         }
+      } else {
+        // Just download the image if sharing isn't supported
+        downloadImage(imageData, `quran-verse-${ayah.surah}-${ayah.numberInSurah}.png`);
       }
-      
-      // Final fallback - just download the image
-      downloadImage(imageData, `quran-verse-${ayah.surah}-${ayah.numberInSurah}.png`);
       
       toast({
         title: displayLanguage === 'english' ? 'Postcard created!' : 'Carte postale créée !',
@@ -207,7 +195,7 @@ const PostcardGenerator = ({ ayah, surahName, displayLanguage, translationConten
       className="bg-white/10 hover:bg-white/20 text-quran-primary dark:text-quran-secondary"
       title={displayLanguage === 'english' ? 'Save as postcard' : 'Enregistrer comme carte postale'}
     >
-      <Camera size={18} />
+      <Download size={18} />
     </Button>
   );
 };
