@@ -1,3 +1,4 @@
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -127,7 +128,7 @@
   transform: rotate(180deg);
 }
 
-/* Clean up old postcard styles and keep only what's needed for highlights */
+/* Highlight animations */
 .highlight-ayah {
   animation: highlight-pulse 2s ease-in-out;
 }
