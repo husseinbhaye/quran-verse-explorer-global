@@ -57,6 +57,7 @@ const GoToVerseSearch: React.FC<GoToVerseSearchProps> = ({
       return;
     }
     
+    console.log(`Navigating to Surah ${surahId}, Verse ${verse}`);
     onGotoVerse(surahId, verse);
   };
 

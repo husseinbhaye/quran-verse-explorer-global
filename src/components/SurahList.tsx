@@ -22,21 +22,29 @@ const SurahList = ({
 }: SurahListProps) => {
   
   const handleGotoVerse = (surahId: number, verse: number) => {
+    console.log(`SurahList: Navigating to Surah ${surahId}, Verse ${verse}`);
+    
     // First select the surah
     onSelectSurah(surahId);
     
-    // Then scroll to the verse
+    // Then scroll to the verse - use the specific ayah ID format
     setTimeout(() => {
-      const element = document.getElementById(`ayah-${surahId}-${verse}`);
+      const ayahElementId = `ayah-${surahId}-${verse}`;
+      console.log(`Looking for element with ID: ${ayahElementId}`);
+      
+      const element = document.getElementById(ayahElementId);
       if (element) {
+        console.log(`Element found, scrolling to ${ayahElementId}`);
         element.scrollIntoView({ behavior: 'smooth' });
         // Add a brief highlight effect
         element.classList.add('highlight-ayah');
         setTimeout(() => {
           element.classList.remove('highlight-ayah');
         }, 2000);
+      } else {
+        console.error(`Element with ID ${ayahElementId} not found`);
       }
-    }, 800); // Increased timeout to give more time for content to load
+    }, 1000); // Increased timeout to give more time for content to load
   };
 
   const validateSurah = (surahId: number) => {

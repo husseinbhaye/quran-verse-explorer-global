@@ -51,6 +51,7 @@ const Index = () => {
   } = useQuranSearch({ displayLanguage });
 
   const handleSelectSurah = (surahId: number) => {
+    console.log(`Index: Selecting surah ${surahId}`);
     setSelectedSurah(surahId);
     if (isMobile) setShowSidebarMobile(false);
     setThemeResults(null);

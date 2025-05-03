@@ -47,7 +47,11 @@ const MobileSidebar: React.FC<MobileSidebarProps> = ({
 
         <GoToVerseSearch 
           displayLanguage={displayLanguage}
-          onGotoVerse={onGotoVerse}
+          onGotoVerse={(surahId, verse) => {
+            console.log(`MobileSidebar: Navigating to Surah ${surahId}, Verse ${verse}`);
+            onGotoVerse(surahId, verse);
+            onClose(); // Close the mobile sidebar after navigation
+          }}
           validateSurah={validateSurah}
         />
 
