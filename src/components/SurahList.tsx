@@ -4,6 +4,7 @@ import { Surah } from '../types/quran';
 import { ScrollArea } from './ui/scroll-area';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { useToast } from './ui/use-toast';
 
 interface SurahListProps {
   surahs: Surah[];
@@ -24,18 +25,44 @@ const SurahList = ({
 }: SurahListProps) => {
   const [surahNumber, setSurahNumber] = useState<string>('');
   const [verseNumber, setVerseNumber] = useState<string>('');
+  const { toast } = useToast();
   
   const handleGotoVerse = () => {
     const surahId = parseInt(surahNumber, 10);
     const verse = parseInt(verseNumber, 10);
     
     if (isNaN(surahId) || surahId < 1 || surahId > 114) {
-      console.log('Invalid surah number');
+      toast({
+        title: displayLanguage === 'english' ? 'Invalid Input' : 'Entrée invalide',
+        description: displayLanguage === 'english' 
+          ? 'Please enter a valid surah number (1-114)' 
+          : 'Veuillez entrer un numéro de sourate valide (1-114)',
+        variant: 'destructive',
+      });
       return;
     }
     
     if (isNaN(verse) || verse < 1) {
-      console.log('Invalid verse number');
+      toast({
+        title: displayLanguage === 'english' ? 'Invalid Input' : 'Entrée invalide',
+        description: displayLanguage === 'english' 
+          ? 'Please enter a valid verse number' 
+          : 'Veuillez entrer un numéro de verset valide',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    // Check if surah exists in our data
+    const surahExists = surahs.some(surah => surah.id === surahId);
+    if (!surahExists) {
+      toast({
+        title: displayLanguage === 'english' ? 'Surah Not Found' : 'Sourate non trouvée',
+        description: displayLanguage === 'english' 
+          ? 'The requested surah could not be found' 
+          : 'La sourate demandée est introuvable',
+        variant: 'destructive',
+      });
       return;
     }
     
@@ -53,9 +80,15 @@ const SurahList = ({
           element.classList.remove('highlight-ayah');
         }, 2000);
       } else {
-        console.log('Element not found:', `ayah-${surahId}-${verse}`);
+        toast({
+          title: displayLanguage === 'english' ? 'Verse Not Found' : 'Verset non trouvé',
+          description: displayLanguage === 'english' 
+            ? `Could not find verse ${verse} in Surah ${surahId}` 
+            : `Impossible de trouver le verset ${verse} dans la sourate ${surahId}`,
+          variant: 'destructive',
+        });
       }
-    }, 100);
+    }, 800); // Increased timeout to give more time for content to load
   };
 
   // Mobile overlay for small screens
@@ -70,9 +103,9 @@ const SurahList = ({
         </div>
         
         <div className="p-3 space-y-3 border-b">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 flex flex-col">
-              <label className="text-sm mb-1">
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <label className="text-sm mb-1 block">
                 {displayLanguage === 'english' ? 'Surah' : 'Sourate'}
               </label>
               <Input
@@ -85,8 +118,8 @@ const SurahList = ({
                 className="h-9"
               />
             </div>
-            <div className="flex-1 flex flex-col">
-              <label className="text-sm mb-1">
+            <div className="flex-1">
+              <label className="text-sm mb-1 block">
                 {displayLanguage === 'english' ? 'Verse' : 'Verset'}
               </label>
               <Input
@@ -98,15 +131,13 @@ const SurahList = ({
                 className="h-9"
               />
             </div>
-            <div className="flex flex-col justify-end">
-              <Button 
-                onClick={handleGotoVerse}
-                className="h-9"
-                variant="secondary"
-              >
-                Ok
-              </Button>
-            </div>
+            <Button 
+              onClick={handleGotoVerse}
+              className="h-9"
+              variant="secondary"
+            >
+              Ok
+            </Button>
           </div>
         </div>
 
@@ -156,9 +187,9 @@ const SurahList = ({
             </div>
 
             <div className="p-3 space-y-3 border-b">
-              <div className="flex items-center gap-2">
-                <div className="flex-1 flex flex-col">
-                  <label className="text-sm mb-1">
+              <div className="flex items-end gap-2">
+                <div className="flex-1">
+                  <label className="text-sm mb-1 block">
                     {displayLanguage === 'english' ? 'Surah' : 'Sourate'}
                   </label>
                   <Input
@@ -171,8 +202,8 @@ const SurahList = ({
                     className="h-9"
                   />
                 </div>
-                <div className="flex-1 flex flex-col">
-                  <label className="text-sm mb-1">
+                <div className="flex-1">
+                  <label className="text-sm mb-1 block">
                     {displayLanguage === 'english' ? 'Verse' : 'Verset'}
                   </label>
                   <Input
@@ -184,15 +215,13 @@ const SurahList = ({
                     className="h-9"
                   />
                 </div>
-                <div className="flex flex-col justify-end">
-                  <Button 
-                    onClick={handleGotoVerse}
-                    className="h-9"
-                    variant="secondary"
-                  >
-                    Ok
-                  </Button>
-                </div>
+                <Button 
+                  onClick={handleGotoVerse}
+                  className="h-9"
+                  variant="secondary"
+                >
+                  Ok
+                </Button>
               </div>
             </div>
 
